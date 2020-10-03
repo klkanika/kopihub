@@ -1,0 +1,86 @@
+# Migration `20200913040035`
+
+This migration has been generated at 9/13/2020, 11:00:35 AM.
+You can check out the [state of the schema](./schema.prisma) after the migration.
+
+## Database Steps
+
+```sql
+
+```
+
+## Changes
+
+```diff
+diff --git schema.prisma schema.prisma
+migration ..20200913040035
+--- datamodel.dml
++++ datamodel.dml
+@@ -1,0 +1,64 @@
++datasource db {
++  provider = "postgresql"
++  url = "***"
++}
++
++generator prisma_client_js {
++  provider = "prisma-client-js"
++}
++
++enum EnableStatus {
++  SHOW
++  HIDE
++  DELETE
++}
++
++enum UserRole {
++  CASHIER
++  CHEF
++  NONE
++}
++
++enum TaskStatus {
++  PENDING
++  ONGOING
++  CANCELED
++  TIMEUP
++  COMPLETED
++}
++
++model User {
++  id        String    @default(uuid()) @id
++  createdAt DateTime  @default(now())
++  updatedAt DateTime  @updatedAt
++  name      String?
++  userName  String    @unique
++  password  String
++  enableStatus EnableStatus
++}
++
++model LogUser {
++  id        String    @default(uuid()) @id
++  @@index(userId)
++  user      User      @relation(fields: [userId], references: [id])
++  userId    String
++  createdAt DateTime  @default(now())
++  role      UserRole
++}
++
++model Task {
++  id          String      @default(uuid()) @id
++  name        String
++  total       Int
++  status      TaskStatus
++  createdAt   DateTime    @default(now())
++  updatedAt   DateTime    @updatedAt
++  finishTime  DateTime
++  countTime   Int
++  priority    Int
++  @@index(createdBy)
++  user        User     @relation(fields: [createdBy], references: [id])
++  createdBy   String
++  updatedBy   String
++}
++
+```
+
+

@@ -1,0 +1,61 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@apollo/react-hooks": "^4.0.0",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/jest": "^24.0.0",
+    "@types/node": "^12.0.0",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/react-router-dom": "^5.1.5",
+    "@types/socket.io-client": "^1.4.33",
+    "antd": "^4.6.1",
+    "apollo-boost": "^0.4.9",
+    "apollo-client": "^2.6.10",
+    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "graphql": "^15.3.0",
+    "npm-reinstall": "^3.1.0",
+    "react": "^16.13.1",
+    "react-apollo": "^3.1.5",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "3.4.3",
+    "react-sortablejs": "DZakh-forks/react-sortablejs#590162f054090cb5b361b407767dc760be8908f2",
+    "socket.io-client": "^2.3.0",
+    "tailwindcss": "^1.6.2",
+    "typescript": "~3.7.2",
+    "use-socketio": "^2.0.3"
+  },
+  "scripts": {
+    "build:style": "tailwind build src/styles/style.css  -o src/styles/tailwind.css",
+    "start": "npm run build:style && react-scripts start",
+    "build": "npm run build:style && react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/graphql": "^14.5.0",
+    "apollo": "^2.30.3"
+  }
+}

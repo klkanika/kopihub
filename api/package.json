@@ -1,0 +1,29 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nexus dev",
+    "build": "nexus build",
+    "generate:prisma": "prisma generate",
+    "generate:nexus": "ts-node --transpile-only src/schema",
+    "migrate": "rm -rf prisma/migrations  && rm -rf prisma/migrate.lock && node before-migrate  && yarn migrate:save && yarn migrate:up",
+    "migrate:save": "prisma migrate save --experimental --name \"\"",
+    "migrate:up": "prisma migrate up  --experimental --auto-approve"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@nexus/schema": "^0.15.0",
+    "@types/bcrypt": "^3.0.0",
+    "@types/socket.io": "^2.1.11",
+    "apollo-boost": "^0.4.9",
+    "bcrypt": "^5.0.0",
+    "nexus": "^0.26.1",
+    "nexus-plugin-prisma": "^0.17.0",
+    "pg": "^8.3.3",
+    "socket.io": "^2.3.0"
+  }
+}
