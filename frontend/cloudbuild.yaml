@@ -1,0 +1,11 @@
+steps:
+    - id: docker
+      name: gcr.io/cloud-builders/docker
+      entrypoint: /bin/bash
+      args:
+        - "-c"
+        - >
+            docker build -t asia.gcr.io/kopihub-app/kopihub-frontend:master . &&
+            docker push asia.gcr.io/kopihub-app/kopihub-frontend:master
+  timeout: 1200s
+  
