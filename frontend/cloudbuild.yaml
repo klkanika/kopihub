@@ -5,7 +5,7 @@ steps:
       args:
         - "-c"
         - >
-            docker build -t asia.gcr.io/kopihub-app/kopihub-frontend:master . &&
-            docker push asia.gcr.io/kopihub-app/kopihub-frontend:master
+            docker build -t asia.gcr.io/kopihub-app/kopihub-frontend:main . &&
+            docker push asia.gcr.io/kopihub-app/kopihub-frontend:main
   timeout: 1200s
   
