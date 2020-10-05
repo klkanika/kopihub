@@ -39,8 +39,8 @@ options:
 substitutions:
   _PLATFORM: managed
   _SERVICE_NAME: kopihub-api
-  _LABELS: gcb-trigger-id=b6f10438-4c74-470e-b335-bd31115d07ab
-  _TRIGGER_ID: b6f10438-4c74-470e-b335-bd31115d07ab
+  _LABELS: gcb-trigger-id=5f9e9743-2529-4f38-a8c5-8b18ad36364f
+  _TRIGGER_ID: 5f9e9743-2529-4f38-a8c5-8b18ad36364f
   _DEPLOY_REGION: asia-southeast1
   _GCR_HOSTNAME: asia.gcr.io
 tags:
