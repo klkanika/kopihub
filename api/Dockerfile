@@ -8,7 +8,7 @@ ENV DATABASE_URL=${DATABASE_URL}
 EXPOSE ${PORT}
 EXPOSE 5432
 RUN apk add git
-WORKDIR /api/api/app
+WORKDIR /api/app
 ADD . .
 RUN echo  DATABASE_URL=${DATABASE_URL} > prisma/.env
 RUN mkdir uploads
