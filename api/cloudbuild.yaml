@@ -7,9 +7,9 @@ steps:
       - "DATABASE_URL=$_DATABASE_URL"
       - "-t"
       - "$_GCR_HOSTNAME/$PROJECT_ID/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA"
-      - backend
+      - api
       - "-f"
-      - backend/DockerfileAdmin
+      - api/Dockerfile
     id: Build
   - name: gcr.io/cloud-builders/docker
     args:
