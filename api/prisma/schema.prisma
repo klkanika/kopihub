@@ -1,6 +1,6 @@
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = "postgresql://postgres:postgres@34.87.187.163:5432/kopihub-app"
 }
 
 generator prisma_client_js {
