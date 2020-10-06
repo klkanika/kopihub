@@ -16,6 +16,7 @@ RUN ls -la
 RUN rm -rf prisma/migrations
 RUN rm -rf yarn.lock
 RUN rm -rf package-lock.json
+RUN yarn
 RUN yarn --network-timeout 100000
 RUN yarn prisma migrate save --experimental
 RUN yarn prisma migrate up --experimental
