@@ -8,7 +8,7 @@ ENV DATABASE_URL=${DATABASE_URL}
 EXPOSE ${PORT}
 EXPOSE 5432
 RUN apk add git
-WORKDIR /api/app
+WORKDIR /api
 ADD . .
 RUN echo  DATABASE_URL=${DATABASE_URL} > prisma/.env
 RUN mkdir uploads
@@ -16,7 +16,7 @@ RUN ls -la
 RUN rm -rf prisma/migrations
 RUN rm -rf yarn.lock
 RUN rm -rf package-lock.json
-RUN yarn
+RUN npm install
 RUN yarn --network-timeout 100000
 RUN yarn prisma migrate save --experimental
 RUN yarn prisma migrate up --experimental
