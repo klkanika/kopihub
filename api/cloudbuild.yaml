@@ -43,6 +43,7 @@ substitutions:
   _TRIGGER_ID: 5f9e9743-2529-4f38-a8c5-8b18ad36364f
   _DEPLOY_REGION: asia-southeast1
   _GCR_HOSTNAME: asia.gcr.io
+  _DATABASE_URL: postgresql://postgres:postgres@34.87.187.163:5432/kopihub-app
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
