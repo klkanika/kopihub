@@ -8,7 +8,7 @@
     "build": "nexus build",
     "generate": " yarn generate:prisma && yarn generate:nexus",
     "generate:prisma": "prisma generate",
-    "generate:nexus": "ts-node --transpile-only src/schema",
+    "generate:nexus": "ts-node --transpile-only ./prisma",
     "migrate": "rm -rf prisma/migrations  && rm -rf prisma/migrate.lock && node before-migrate  && yarn migrate:save && yarn migrate:up",
     "migrate:save": "prisma migrate save --experimental --name \"\"",
     "migrate:up": "prisma migrate up  --experimental --auto-approve"
