@@ -18,8 +18,6 @@ RUN rm -rf yarn.lock
 RUN rm -rf package-lock.json
 RUN npm install
 RUN yarn --network-timeout 100000
-RUN yarn prisma migrate save --experimental
-RUN yarn prisma migrate up --experimental
-RUN yarn prisma generate
+RUN yarn generate
 RUN yarn build
 CMD [ "yarn", "start" ]
