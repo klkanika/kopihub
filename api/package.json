@@ -18,13 +18,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@nexus/schema": "^0.15.0",
+    
     "@types/bcrypt": "^3.0.0",
     "@types/socket.io": "^2.1.11",
     "apollo-boost": "^0.4.9",
     "bcrypt": "^5.0.0",
     "nexus": "^0.26.1",
-    "nexus-plugin-prisma": "^0.17.0",
+    "nexus-plugin-prisma": "^0.18.1",
     "pg": "^8.3.3",
     "socket.io": "^2.3.0"
   }
