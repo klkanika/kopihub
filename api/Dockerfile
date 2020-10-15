@@ -17,6 +17,6 @@ RUN rm -rf prisma/migrations
 RUN rm -rf yarn.lock
 RUN rm -rf package-lock.json
 RUN yarn --network-timeout 100000
-RUN yarn generate
+RUN yarn migrate
 RUN yarn build
 CMD [ "yarn", "start" ]
