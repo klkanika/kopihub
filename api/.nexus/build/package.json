@@ -5,9 +5,11 @@
   "main": "index.js",
   "scripts": {
     "dev": "nexus dev",
-    "build": "nexus build",
+    "build": "nexus build -e api/app.ts",
+    "nhelp": "nexus build --help",
+    "generate": " yarn generate:prisma && yarn generate:nexus",
     "generate:prisma": "prisma generate",
-    "generate:nexus": "ts-node --transpile-only src/schema",
+    "generate:nexus": "ts-node --transpile-only api/graphql/index",
     "migrate": "rm -rf prisma/migrations  && rm -rf prisma/migrate.lock && node before-migrate  && yarn migrate:save && yarn migrate:up",
     "migrate:save": "prisma migrate save --experimental --name \"\"",
     "migrate:up": "prisma migrate up  --experimental --auto-approve"

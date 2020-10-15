@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nexus dev",
-    "build": "nexus build",
+    "build": "LOG_LEVEL=trace LOG_PRETTY=true nexus build -e api/app.ts",
+    "nhelp": "nexus build --help",
     "generate": " yarn generate:prisma && yarn generate:nexus",
     "generate:prisma": "prisma generate",
     "generate:nexus": "ts-node --transpile-only api/graphql/index",

@@ -16,6 +16,7 @@ RUN ls -la
 RUN rm -rf prisma/migrations
 RUN rm -rf yarn.lock
 RUN rm -rf package-lock.json
+RUN rm -rf node_modules
 RUN yarn --network-timeout 100000
 RUN yarn migrate
 RUN yarn build
