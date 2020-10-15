@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nexus dev",
+    "start": "node .nexus/build/api/index.js",
     "build": "DEBUG=* LOG_LEVEL=trace LOG_PRETTY=true nexus build -e api/app.ts",
     "nhelp": "nexus build --help",
     "generate": " yarn generate:prisma && yarn generate:nexus",
