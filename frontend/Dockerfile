@@ -7,5 +7,6 @@ RUN yarn cache clean
 RUN rm -rf yarn.lock
 RUN rm -rf package-lock.json
 RUN yarn
+RUN yarn build:style
 RUN yarn build
 CMD [ "yarn", "start" ]
