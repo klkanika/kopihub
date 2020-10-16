@@ -14,8 +14,10 @@ import 'antd/dist/antd.css';
 
 
 const link = createHttpLink({
-  uri: 'http://localhost:4000/graphql',
-  
+  //uri: 'http://localhost:4000/graphql',
+  uri:
+    process.env.API_URL ||
+    "https://kopihub-api-ura2vr67wa-as.a.run.app/graphql",
 });
 const cache = new InMemoryCache();
 const outerClient = new ApolloClient({
@@ -59,7 +61,8 @@ const App = () => {
   transports:['websocket']
 }
   return (
-    <SocketIOProvider url="http://localhost:4000" opts={opt}>
+    //<SocketIOProvider url="http://localhost:4000" opts={opt}>
+     <SocketIOProvider url="https://kopihub-api-ura2vr67wa-as.a.run.app" opts={opt}>
       <ApolloProvider client={outerClient}>
           {/* <button onClick={load()} */}
           <Inner />
