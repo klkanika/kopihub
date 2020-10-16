@@ -48,5 +48,3 @@ tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
   - kopihub-api
-network:
-  session_affinity: false
