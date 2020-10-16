@@ -12,6 +12,8 @@ import Routing from './components/routing/Routes';
 import './styles/tailwind.css';
 import 'antd/dist/antd.css';
 
+const socketUrl = process.env.SOCKET_URL ||
+"https://kopihub-api-ura2vr67wa-as.a.run.app";
 
 const link = createHttpLink({
   //uri: 'http://localhost:4000/graphql',
@@ -62,7 +64,7 @@ const App = () => {
 }
   return (
     //<SocketIOProvider url="http://localhost:4000" opts={opt}>
-     <SocketIOProvider url="https://kopihub-api-ura2vr67wa-as.a.run.app" opts={opt}>
+     <SocketIOProvider url={socketUrl} opts={opt}>
       <ApolloProvider client={outerClient}>
           {/* <button onClick={load()} */}
           <Inner />
