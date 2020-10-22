@@ -9,10 +9,6 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
 """
 scalar DateTime
 
-input DateTimeFieldUpdateOperationsInput {
-  set: DateTime
-}
-
 input DateTimeFilter {
   equals: DateTime
   gt: DateTime
@@ -28,10 +24,6 @@ enum EnableStatus {
   DELETE
   HIDE
   SHOW
-}
-
-input IntFieldUpdateOperationsInput {
-  set: Int
 }
 
 input IntFilter {
@@ -92,15 +84,15 @@ input LogUserScalarWhereInput {
 }
 
 input LogUserUpdateInput {
-  createdAt: DateTimeFieldUpdateOperationsInput
-  id: StringFieldUpdateOperationsInput
+  createdAt: DateTime
+  id: String
   role: UserRole
   user: UserUpdateOneRequiredWithoutLogUserInput
 }
 
 input LogUserUpdateManyDataInput {
-  createdAt: DateTimeFieldUpdateOperationsInput
-  id: StringFieldUpdateOperationsInput
+  createdAt: DateTime
+  id: String
   role: UserRole
 }
 
@@ -122,8 +114,8 @@ input LogUserUpdateManyWithWhereNestedInput {
 }
 
 input LogUserUpdateWithoutUserDataInput {
-  createdAt: DateTimeFieldUpdateOperationsInput
-  id: StringFieldUpdateOperationsInput
+  createdAt: DateTime
+  id: String
   role: UserRole
 }
 
@@ -221,10 +213,6 @@ input NestedStringNullableFilter {
   startsWith: String
 }
 
-input NullableStringFieldUpdateOperationsInput {
-  set: String
-}
-
 type Query {
   tasks(after: TaskWhereUniqueInput, before: TaskWhereUniqueInput, first: Int, last: Int, orderBy: [TaskOrderByInput!], where: TaskWhereInput): [Task!]!
   users(after: UserWhereUniqueInput, before: UserWhereUniqueInput, first: Int, last: Int, where: UserWhereInput): [User!]!
@@ -233,10 +221,6 @@ type Query {
 enum SortOrder {
   asc
   desc
-}
-
-input StringFieldUpdateOperationsInput {
-  set: String
 }
 
 input StringFilter {
@@ -355,30 +339,30 @@ enum TaskStatus {
 }
 
 input TaskUpdateInput {
-  countTime: IntFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  finishTime: DateTimeFieldUpdateOperationsInput
-  id: StringFieldUpdateOperationsInput
-  name: StringFieldUpdateOperationsInput
-  priority: IntFieldUpdateOperationsInput
+  countTime: Int
+  createdAt: DateTime
+  finishTime: DateTime
+  id: String
+  name: String
+  priority: Int
   status: TaskStatus
-  total: IntFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  updatedBy: StringFieldUpdateOperationsInput
+  total: Int
+  updatedAt: DateTime
+  updatedBy: String
   user: UserUpdateOneRequiredWithoutTaskInput
 }
 
 input TaskUpdateManyDataInput {
-  countTime: IntFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  finishTime: DateTimeFieldUpdateOperationsInput
-  id: StringFieldUpdateOperationsInput
-  name: StringFieldUpdateOperationsInput
-  priority: IntFieldUpdateOperationsInput
+  countTime: Int
+  createdAt: DateTime
+  finishTime: DateTime
+  id: String
+  name: String
+  priority: Int
   status: TaskStatus
-  total: IntFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  updatedBy: StringFieldUpdateOperationsInput
+  total: Int
+  updatedAt: DateTime
+  updatedBy: String
 }
 
 input TaskUpdateManyWithoutUserInput {
@@ -399,16 +383,16 @@ input TaskUpdateManyWithWhereNestedInput {
 }
 
 input TaskUpdateWithoutUserDataInput {
-  countTime: IntFieldUpdateOperationsInput
-  createdAt: DateTimeFieldUpdateOperationsInput
-  finishTime: DateTimeFieldUpdateOperationsInput
-  id: StringFieldUpdateOperationsInput
-  name: StringFieldUpdateOperationsInput
-  priority: IntFieldUpdateOperationsInput
+  countTime: Int
+  createdAt: DateTime
+  finishTime: DateTime
+  id: String
+  name: String
+  priority: Int
   status: TaskStatus
-  total: IntFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  updatedBy: StringFieldUpdateOperationsInput
+  total: Int
+  updatedAt: DateTime
+  updatedBy: String
 }
 
 input TaskUpdateWithWhereUniqueWithoutUserInput {
@@ -503,15 +487,15 @@ enum UserRole {
 }
 
 input UserUpdateInput {
-  createdAt: DateTimeFieldUpdateOperationsInput
+  createdAt: DateTime
   enableStatus: EnableStatus
-  id: StringFieldUpdateOperationsInput
+  id: String
   LogUser: LogUserUpdateManyWithoutUserInput
-  name: NullableStringFieldUpdateOperationsInput
-  password: StringFieldUpdateOperationsInput
+  name: String
+  password: String
   Task: TaskUpdateManyWithoutUserInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  userName: StringFieldUpdateOperationsInput
+  updatedAt: DateTime
+  userName: String
 }
 
 input UserUpdateOneRequiredWithoutLogUserInput {
@@ -529,25 +513,25 @@ input UserUpdateOneRequiredWithoutTaskInput {
 }
 
 input UserUpdateWithoutLogUserDataInput {
-  createdAt: DateTimeFieldUpdateOperationsInput
+  createdAt: DateTime
   enableStatus: EnableStatus
-  id: StringFieldUpdateOperationsInput
-  name: NullableStringFieldUpdateOperationsInput
-  password: StringFieldUpdateOperationsInput
+  id: String
+  name: String
+  password: String
   Task: TaskUpdateManyWithoutUserInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  userName: StringFieldUpdateOperationsInput
+  updatedAt: DateTime
+  userName: String
 }
 
 input UserUpdateWithoutTaskDataInput {
-  createdAt: DateTimeFieldUpdateOperationsInput
+  createdAt: DateTime
   enableStatus: EnableStatus
-  id: StringFieldUpdateOperationsInput
+  id: String
   LogUser: LogUserUpdateManyWithoutUserInput
-  name: NullableStringFieldUpdateOperationsInput
-  password: StringFieldUpdateOperationsInput
-  updatedAt: DateTimeFieldUpdateOperationsInput
-  userName: StringFieldUpdateOperationsInput
+  name: String
+  password: String
+  updatedAt: DateTime
+  userName: String
 }
 
 input UserUpsertWithoutLogUserInput {

@@ -1,5 +1,5 @@
 import { schema } from 'nexus'
-import { io } from '../app'
+// import { io } from '../app'
 
 schema.objectType({
   name: 'Task',

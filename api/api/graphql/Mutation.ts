@@ -2,7 +2,7 @@ import { schema } from 'nexus'
 import { intArg, stringArg, arg, core } from '@nexus/schema'
 // import { compare, hash } from 'bcryptjs'
 import { compare ,hash } from 'bcrypt'
-import { io } from '../app'
+// import { io } from '../app'
 
 const dateTimeArg = (
   opts: core.NexusArgConfig<'DateTime'>
@@ -58,7 +58,7 @@ schema.mutationType({
         if (!passwordValid) {
           throw new Error('Invalid password')
         }
-        io.emit('hello','hello');
+        // io.emit('hello','hello');
         return ctx.db.logUser.create({
           data: {
             role : 'NONE',
@@ -94,8 +94,8 @@ schema.mutationType({
           },
         }).finally(
           () => {
-            io.emit('taskUpdate','update')
-            io.emit('pendingTaskUpdate','update')
+            // io.emit('taskUpdate','update')
+            // io.emit('pendingTaskUpdate','update')
           }
           
         )
@@ -124,8 +124,8 @@ schema.mutationType({
           },
         }).finally(
           () => {
-            io.emit('taskUpdate','update')
-            io.emit('pendingTaskUpdate','update')
+            // io.emit('taskUpdate','update')
+            // io.emit('pendingTaskUpdate','update')
           }
         )
       },
@@ -147,7 +147,7 @@ schema.mutationType({
             status : 'TIMEUP'
           },
         }).finally(
-          () => io.emit('taskUpdate','update')
+          // () => io.emit('taskUpdate','update')
         )
       },
     })
@@ -168,7 +168,7 @@ schema.mutationType({
             status : 'COMPLETED'
           },
         }).finally(
-          () => io.emit('taskUpdate','update')
+          // () => io.emit('taskUpdate','update')
         )
       },
     })
@@ -190,8 +190,8 @@ schema.mutationType({
           },
         }).finally(
           () =>{
-            io.emit('taskUpdate','update')
-            io.emit('pendingTaskUpdate','update')
+            // io.emit('taskUpdate','update')
+            // io.emit('pendingTaskUpdate','update')
           } 
         )
       },
@@ -214,7 +214,7 @@ schema.mutationType({
             priority : priority
           },
         }).finally(
-          () => io.emit('taskUpdate','update')
+          // () => io.emit('taskUpdate','update')
         )
       },
     })
