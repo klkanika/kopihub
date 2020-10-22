@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {useQuery,useLazyQuery,useMutation} from '@apollo/react-hooks'
 import {
   GET_PENDING_TASKS, UPDATE_TASK_PRIORITY
@@ -17,27 +17,51 @@ function EditTask() {
   const userName = sessionStorage.getItem("loggedUserName");
   const userRole = sessionStorage.getItem("loggedUserRole");
 
-  const { subscribe, unsubscribe } = useSocket("pendingTaskUpdate", (dataFromServer) =>
-    getTaks()
-  );
+  // const { subscribe, unsubscribe } = useSocket("pendingTaskUpdate", (dataFromServer) =>
+  //   getTaks()
+  // );
 
-  useEffect(()=>{
-    subscribe()
-    return () =>{
-      unsubscribe()
-    }
-  },[])
+  // useEffect(()=>{
+  //   subscribe()
+  //   return () =>{
+  //     unsubscribe()
+  //   }
+  // },[])
 
-  const [getTaks , {called, loading : taskLazyLoading,data : taskLazyData}] = useLazyQuery(GET_PENDING_TASKS,{
-    fetchPolicy: 'network-only',
-    variables: {},
-    onCompleted: (sre) => {
-      info()
-    },
-    onError: (err) => {
-      window.alert(err)
-    }
-  });
+  // function useInterval(callback: () => void, delay: number | null) {
+  //   const savedCallback = useRef<() => void>();
+  
+  //   // Remember the latest function.
+  //   useEffect(() => {
+  //     savedCallback.current = callback;
+  //   }, [callback]);
+  
+  //   // Set up the interval.
+  //   useEffect(() => {
+  //     function tick() {
+  //       savedCallback.current?.();
+  //     }
+  //     if (delay !== null) {
+  //       let id = setInterval(tick, delay);
+  //       return () => clearInterval(id);
+  //     }
+  //   }, [delay]);
+  // }
+
+  // useInterval(() => {
+  //   getTaks()
+  // }, 200);
+
+  // const [getTaks , {called, loading : taskLazyLoading,data : taskLazyData}] = useLazyQuery(GET_PENDING_TASKS,{
+  //   fetchPolicy: 'network-only',
+  //   variables: {},
+  //   onCompleted: (sre) => {
+  //     // info()
+  //   },
+  //   onError: (err) => {
+  //     window.alert(err)
+  //   }
+  // });
 
   const {data: tasksData, loading: tasksLoading} = useQuery(GET_PENDING_TASKS,{
     fetchPolicy: 'network-only',

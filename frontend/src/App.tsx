@@ -5,15 +5,15 @@ import {
   Route,
   Switch
 } from 'react-router-dom'
-import { SocketIOProvider, useSocket } from "use-socketio";
+// import { SocketIOProvider, useSocket } from "use-socketio";
 
 
 import Routing from './components/routing/Routes';
 import './styles/tailwind.css';
 import 'antd/dist/antd.css';
 
-const socketUrl = process.env.SOCKET_URL ||
-"https://kopihub-api-ura2vr67wa-as.a.run.app";
+// const socketUrl = process.env.SOCKET_URL ||
+// "https://kopihub-api-ura2vr67wa-as.a.run.app";
 
 const link = createHttpLink({
   //uri: 'http://localhost:4000/graphql',
@@ -28,15 +28,15 @@ const outerClient = new ApolloClient({
 })
 
 const Inner = ()=>{
-  const { subscribe, unsubscribe } = useSocket("broadCastMessege", (dataFromServer) =>
-    console.log(dataFromServer)
-  );
-  useEffect(()=>{
-    subscribe()
-    return ()=>{
-      unsubscribe()
-    }
-  },[])
+  // const { subscribe, unsubscribe } = useSocket("broadCastMessege", (dataFromServer) =>
+  //   console.log(dataFromServer)
+  // );
+  // useEffect(()=>{
+  //   subscribe()
+  //   return ()=>{
+  //     unsubscribe()
+  //   }
+  // },[])
 
   // const {data,loading} = useQuery(gql`
   // {users{
@@ -57,19 +57,19 @@ const Inner = ()=>{
 const App = () => {
   // {data,loading} = useQuery
   // [load,{data,loading}] = useLazyQuery 
-  const opt:any = {
-  path:'/socket',  
-  withCredentials:false,
-  transports:['websocket']
-}
+  // const opt:any = {
+  // path:'/socket',  
+  // withCredentials:false,
+  // transports:['websocket']
+// }
   return (
     //<SocketIOProvider url="http://localhost:4000" opts={opt}>
-     <SocketIOProvider url={socketUrl} opts={opt}>
+    //  <SocketIOProvider url={socketUrl} opts={opt}>
       <ApolloProvider client={outerClient}>
           {/* <button onClick={load()} */}
           <Inner />
       </ApolloProvider>
-    </SocketIOProvider>
+    // </SocketIOProvider>
 
   )
 }

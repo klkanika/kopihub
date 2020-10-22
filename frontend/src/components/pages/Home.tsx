@@ -6,7 +6,7 @@ import {
 import { Form, Input, Button, Checkbox, message  } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { LOGIN } from '../../utils/graphql';
-import { useSocket } from 'use-socketio';
+// import { useSocket } from 'use-socketio';
 import logo from '../../imgs/kopihub-logo.png'
 
 interface loginInput {
@@ -15,15 +15,15 @@ interface loginInput {
 }
 
 const Home = () => {
-  const { subscribe, unsubscribe } = useSocket("hello", (dataFromServer) =>
-    console.log(dataFromServer)
-  );
-  useEffect(()=>{
-    subscribe()
-    return ()=>{
-      unsubscribe()
-    }
-  },[])
+  // const { subscribe, unsubscribe } = useSocket("hello", (dataFromServer) =>
+  //   console.log(dataFromServer)
+  // );
+  // useEffect(()=>{
+  //   subscribe()
+  //   return ()=>{
+  //     unsubscribe()
+  //   }
+  // },[])
   const history = useHistory()
   const layout = {
     labelCol: { span: 4 },

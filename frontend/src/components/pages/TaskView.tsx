@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Task from './Task';
 import InsertTask from './InsertTask';
 import SetTime from './SetTime';
@@ -25,20 +25,44 @@ function TaskView() {
   const [ tasks, setTasks] = useState([])
   const [ userRole, setUserRole] = useState(sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
 
-  const { subscribe, unsubscribe } = useSocket("taskUpdate", (dataFromServer) =>
-    getTaks()
-  );
+  // const { subscribe, unsubscribe } = useSocket("taskUpdate", (dataFromServer) =>
+  //   getTaks()
+  // );
 
-  useEffect(()=>{
-    subscribe()
-    return () =>{
-      unsubscribe()
-    }
-  },[])
+  // useEffect(()=>{
+  //   subscribe()
+  //   return () =>{
+  //     unsubscribe()
+  //   }
+  // },[])
   
   const [ curTaskId, setCurTaskId ] = useState("")
+
+  function useInterval(callback: () => void, delay: number | null) {
+    const savedCallback = useRef<() => void>();
   
-  const [getTaks , {called, loading : taskLazyLoading,data : taskLazyData}] = useLazyQuery(GET_TASKS,{
+    // Remember the latest function.
+    useEffect(() => {
+      savedCallback.current = callback;
+    }, [callback]);
+  
+    // Set up the interval.
+    useEffect(() => {
+      function tick() {
+        savedCallback.current?.();
+      }
+      if (delay !== null) {
+        let id = setInterval(tick, delay);
+        return () => clearInterval(id);
+      }
+    }, [delay]);
+  }
+
+  useInterval(() => {
+    getTasks()
+  }, 200);
+  
+  const [getTasks , {called, loading : taskLazyLoading,data : taskLazyData}] = useLazyQuery(GET_TASKS,{
     fetchPolicy: 'network-only',
     variables: {},
     onCompleted: (sre) => {
