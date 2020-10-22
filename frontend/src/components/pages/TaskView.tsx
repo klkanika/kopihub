@@ -60,7 +60,7 @@ function TaskView() {
 
   useInterval(() => {
     getTasks()
-  }, 200);
+  }, 900);
   
   const [getTasks , {called, loading : taskLazyLoading,data : taskLazyData}] = useLazyQuery(GET_TASKS,{
     fetchPolicy: 'network-only',
