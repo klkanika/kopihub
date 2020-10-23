@@ -22,7 +22,7 @@ function TaskView() {
   const [ insertTask, setInsertTask ] = useState(false)
   const [ setTime, setSetTime ] = useState(false)
   const [ timeUp, setTimeUp ] = useState(false)
-  const [ tasks, setTasks] = useState([])
+  
   const [ userRole, setUserRole] = useState(sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
 
   // const { subscribe, unsubscribe } = useSocket("taskUpdate", (dataFromServer) =>
@@ -58,32 +58,17 @@ function TaskView() {
     }, [delay]);
   }
 
-  useInterval(() => {
-    getTasks()
-  }, 900);
   
-  const [getTasks , {called, loading : taskLazyLoading,data : taskLazyData}] = useLazyQuery(GET_TASKS,{
-    fetchPolicy: 'network-only',
-    variables: {},
-    onCompleted: (sre) => {
-      setTasks(sre.tasks)
-    },
-    onError: (err) => {
-      window.alert(err)
-    }
-  });
-
   const {data: tasksData, loading: tasksLoading} = useQuery(GET_TASKS,{
-    fetchPolicy: 'network-only',
-    // pollInterval: 5000,
-    variables: {},
-    onCompleted: (sre) => {
-      setTasks(sre.tasks)
-    },
+    fetchPolicy: 'no-cache',
+    pollInterval: 5000,
+    variables: {},    
     onError: (err) => {
       window.alert(err)
     }
   });
+  const tasks = (tasksData && tasksData.tasks)||[]
+  console.log(tasks)
 
   const toggleInsertTaskPopup = () => {
     setInsertTask(!insertTask)
@@ -218,8 +203,8 @@ function TaskView() {
       }
     <div className="flex flex-wrap">
     {
-      tasks.map( (item: any, i) => (
-        <div key={i} className="m-1">
+      tasks.map( (item: any) => (
+        <div key={item.id} className="m-1">
           <Task taskId={item.id} taskName={item.name} total={item.total} userRole={userRole ? userRole : "CASHIER"}
               status={item.status} finishDate={new Date(item.finishTime)} page="TaskView"
               setTime={toggleSetTimePopup} timeUp={updateTimeUp} toggleTimeUp={toggleSetTimeupPopup}/>
