@@ -38,19 +38,27 @@ class SetTime extends Component<ITimeProps, ITimeState> {
       <Modal
       visible={this.props.visible}
       title="จับเวลา"
-      okText="เริ่มจับเวลา"
+      okButtonProps={{ style: { display: 'none' } }}
+      // okText="เริ่มจับเวลา"
       cancelText="ยกเลิก"
       onCancel={() => this.props.closePopup("")}
-      onOk={() => this.verifyData(this.props.taskId, this.state.time)}
+      // onOk={() => this.verifyData(this.props.taskId, this.state.time)}
       >
         {/* <InputNumber  style={{ width: '90%' }} placeholder="จับเวลา" onChange={onchange}/> */}
-        <Input
+        {/* <Input
           size="large"
           type="number"
           placeholder="จับเวลา"
           defaultValue={this.state.time}
           onChange={(e) => this.setTime(Number(e.target.value))}
-        />
+        /> */}
+        <div className="flex flex-wrap py-8">
+          <div className="px-8 py-4 mr-2 bg-yellow-600 font-bold text-lg rounded-md" onClick={() => {this.verifyData(this.props.taskId, 1);this.props.closePopup("")}}>1</div>
+          <div className="px-8 py-4 mr-2 bg-yellow-600 font-bold text-lg rounded-md" onClick={() => {this.verifyData(this.props.taskId, 3);this.props.closePopup("")}}>3</div>
+          <div className="px-8 py-4 mr-2 bg-yellow-600 font-bold text-lg rounded-md" onClick={() => {this.verifyData(this.props.taskId, 5);this.props.closePopup("")}}>5</div>
+          <div className="px-8 py-4 mr-2 bg-yellow-600 font-bold text-lg rounded-md" onClick={() => {this.verifyData(this.props.taskId, 8);this.props.closePopup("")}}>8</div>
+          <div className="px-8 py-4 mr-2 bg-yellow-600 font-bold text-lg rounded-md" onClick={() => {this.verifyData(this.props.taskId, 10);this.props.closePopup("")}}>10</div>
+        </div>
       </Modal>
     
     )
