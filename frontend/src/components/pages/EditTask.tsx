@@ -9,6 +9,7 @@ import { useSocket } from 'use-socketio';
 import { Button, Modal } from 'antd';
 import {useHistory} from "react-router-dom";
 import Header from './Header';
+import Loadding from '../layout/loadding'
 
 function EditTask() {
   const history = useHistory()
@@ -100,39 +101,47 @@ function EditTask() {
   }
 
   return (
-    <div style={{margin:"2em"}} className="relative">
-      <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="edit" toggleRole={() => {}}></Header>
-      <div className="flex justify-end items-center absolute top-0 right-0 z-10">
-        <a href="/TaskView" className="underline mr-4" style={{color:'#535050'}}>ยกเลิก</a>
-        <div className="p-2 px-4 inline-block font-bold text-white" style={{background: '#683830',borderRadius:'5px'}} onClick={save}>บันทึก</div>
-      </div>
-      <ReactSortable
-        list={tasks} 
-        setList={setTasks}
-        animation={200}
-        className="flex flex-wrap"
-        onChange={(order, sortable, evt) => {
-            var sortArray = sortable?.toArray();
-            var newArray = [""];
-            sortArray?.map(i => 
-              newArray.push(i.toString())
-            )
-            setNewOrderingtasks(newArray)
+    <>
+    {
+      tasksLoading
+      ? <Loadding />
+      :
+      <div style={{margin:"2em"}} className="relative">
+        <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="edit" toggleRole={() => {}}></Header>
+        <div className="flex justify-end items-center absolute top-0 right-0 z-10">
+          <a href="/TaskView" className="underline mr-4" style={{color:'#535050'}}>ยกเลิก</a>
+          <div className="p-2 px-4 inline-block font-bold text-white" style={{background: '#683830',borderRadius:'5px'}} onClick={save}>บันทึก</div>
+        </div>
+        <ReactSortable
+          list={tasks} 
+          setList={setTasks}
+          animation={200}
+          className="flex flex-wrap"
+          onChange={(order, sortable, evt) => {
+              var sortArray = sortable?.toArray();
+              var newArray = [""];
+              sortArray?.map(i => 
+                newArray.push(i.toString())
+              )
+              setNewOrderingtasks(newArray)
+            }
           }
-        }
-      >
-        {/* <div className="flex flex-wrap"> */}
-        {tasks.map((item:any) => (
-         <div key={item.id} className="m-2">
-             <Task taskId={item.id} taskName={item.name} total={item.total} userRole={""}
-               status={item.status} finishDate={new Date(item.finishTime)} page="EditTask"
-               setTime={(taskId: string) => {}} timeUp={(taskId: string) => {}} toggleTimeUp={(taskId: string) => {}}
-               cancel={onCancel}/>
-           </div>
-        ))}
-        {/* </div> */}
-      </ReactSortable>
-    </div>);
+        >
+          {/* <div className="flex flex-wrap"> */}
+          {tasks.map((item:any) => (
+          <div key={item.id} className="m-2">
+              <Task taskId={item.id} taskName={item.name} total={item.total} userRole={""}
+                status={item.status} finishDate={new Date(item.finishTime)} page="EditTask"
+                setTime={(taskId: string) => {}} timeUp={(taskId: string) => {}} toggleTimeUp={(taskId: string) => {}}
+                cancel={onCancel}/>
+            </div>
+          ))}
+          {/* </div> */}
+        </ReactSortable>
+      </div>
+    }
+    </>
+  );
 }
 
 export default EditTask;

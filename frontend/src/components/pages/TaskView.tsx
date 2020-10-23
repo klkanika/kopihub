@@ -14,7 +14,7 @@ import {
 } from '@apollo/react-hooks'
 import {useHistory} from "react-router-dom";
 import { useSocket } from 'use-socketio';
-
+import Loadding from '../layout/loadding'
 
 function TaskView() {
   const history = useHistory()
@@ -190,46 +190,53 @@ function TaskView() {
   }
 
   return (
-    <div className="w-11/12 m-auto mt-8 mb-8">
-      {/* {console.log('TV:'+sessionStorage.getItem("loggedUserRole"))} */}
-      <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="" toggleRole={toggleRole}/>
-      {setTime && userRole === "CHEF" && <SetTime taskId={curTaskId} closePopup={toggleSetTimePopup} 
-        saveTime={updateFinishDate} visible={setTime}/>}
+    <>
+      {
+        !tasks ? 
+        <Loadding/>
+        :
+        <div className="w-11/12 m-auto mt-8 mb-8">
+          {/* {console.log('TV:'+sessionStorage.getItem("loggedUserRole"))} */}
+          <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="" toggleRole={toggleRole}/>
+          {setTime && userRole === "CHEF" && <SetTime taskId={curTaskId} closePopup={toggleSetTimePopup} 
+            saveTime={updateFinishDate} visible={setTime}/>}
 
-      {timeUp && userRole === "CHEF" && <TimeUp taskId={curTaskId} closePopup={toggleSetTimeupPopup} 
-        updateComplete={updateComplete} visible={timeUp}/>}
-      {insertTask &&
-          <InsertTask closePopup={toggleInsertTaskPopup} addTask={addTask} visible={insertTask}/>
-      }
-    <div className="flex flex-wrap">
-    {
-      tasks.map( (item: any) => (
-        <div key={item.id} className="m-1">
-          <Task taskId={item.id} taskName={item.name} total={item.total} userRole={userRole ? userRole : "CASHIER"}
-              status={item.status} finishDate={new Date(item.finishTime)} page="TaskView"
-              setTime={toggleSetTimePopup} timeUp={updateTimeUp} toggleTimeUp={toggleSetTimeupPopup}
-              cancel={(value:boolean) => {}}/>
+          {timeUp && userRole === "CHEF" && <TimeUp taskId={curTaskId} closePopup={toggleSetTimeupPopup} 
+            updateComplete={updateComplete} visible={timeUp}/>}
+          {insertTask &&
+              <InsertTask closePopup={toggleInsertTaskPopup} addTask={addTask} visible={insertTask}/>
+          }
+        <div className="flex flex-wrap">
+        {
+          tasks.map( (item: any) => (
+            <div key={item.id} className="m-1">
+              <Task taskId={item.id} taskName={item.name} total={item.total} userRole={userRole ? userRole : "CASHIER"}
+                  status={item.status} finishDate={new Date(item.finishTime)} page="TaskView"
+                  setTime={toggleSetTimePopup} timeUp={updateTimeUp} toggleTimeUp={toggleSetTimeupPopup}
+                  cancel={(value:boolean) => {}}/>
+            </div>
+          ))
+        }
+        <div 
+          id="btnAddTask" 
+          onClick={toggleInsertTaskPopup} 
+          className="w-48 m-1 flex items-center justify-center text-xl text-gray-600"
+          style={{
+            display: userRole === "CASHIER" ? "" : "none",
+            border:'1px dashed #ddd',
+            borderRadius:'5px',
+            flexFlow: 'column',
+            minHeight: '150px'
+          }}
+        >
+          <PlusOutlined style={{fontSize:'2em'}}/>
+          <div className="mt-4">เพิ่มโต๊ะ</div>
         </div>
-      ))
-    }
-    <div 
-      id="btnAddTask" 
-      onClick={toggleInsertTaskPopup} 
-      className="w-48 m-1 flex items-center justify-center text-xl text-gray-600"
-      style={{
-        display: userRole === "CASHIER" ? "" : "none",
-        border:'1px dashed #ddd',
-        borderRadius:'5px',
-        flexFlow: 'column',
-        minHeight: '150px'
-      }}
-    >
-      <PlusOutlined style={{fontSize:'2em'}}/>
-      <div className="mt-4">เพิ่มโต๊ะ</div>
-    </div>
-    </div>
+        </div>
 
-    </div>
+        </div>
+      }
+    </>
   );
 }
 
