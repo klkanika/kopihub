@@ -11,9 +11,68 @@
     />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
     <title>Kopi Hub</title>
+    <style>
+      #audio{
+        position: fixed;
+        z-index: 99999999;
+        bottom: 10px;
+        right: 10px;
+        /* width: 100px;
+        height: 100px;
+        background-color: red;
+        border-radius: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff; */
+      }
+    </style>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <!-- <div id="audio">เปิดเสียง</div> -->
+    <audio src="https://www.soundjay.com/button/beep-01a.mp3" id="audio" controls autostart muted></audio>
+    <script>
+      // let audio = new Audio("https://www.soundjay.com/button/beep-01a.mp3")
+      // document.getElementById('audio').addEventListener("click",()=>{
+      //   audio.play()   
+      // })
+      // window.playSound = ()=>{
+      //   audio.play()        
+      // }
+      let startedInterval = false
+      let initialLoad = false
+      const reload = ()=>{
+          console.log("pl",initialLoad)
+          if(initialLoad){                            
+            document.getElementById('audio').currentTime=0;          
+            document.getElementById('audio').load();                                    
+          }            
+        }
+        
+      document.getElementById('audio').addEventListener("play",()=>{
+        
+        if(!initialLoad){
+          initialLoad  = true
+          document.getElementById('audio').addEventListener("loadeddata",()=>{
+              document.getElementById('audio').play();
+              setTimeout(()=>{                  
+                reload()
+              },2000)            
+          })
+          reload()
+        }
+        
+      })
+      window.playSound = ()=>{
+        console.log("unmuted")        
+        document.getElementById('audio').muted = false
+      }
+      window.pauseSound = ()=>{
+        console.log("muted")        
+        document.getElementById('audio').muted = true
+      }
+    </script>
   </body>
 </html>

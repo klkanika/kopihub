@@ -45,12 +45,12 @@ function Header(props : IHeaderProps) {
       </Menu.Item>
     </Menu>
   );
-
+    console.log("render")
   return (
     <div className="flex items-center justify-between mb-8">
       <div className="flex items-center">
-        <Dropdown overlay={menu} placement="bottomLeft" arrow>
-          <div className="inline-block p-2 shadow mr-4"
+        <Dropdown overlay={menu} placement="bottomLeft" arrow className="z-50" trigger={['click']}>
+          <div className="inline-block p-4 shadow mr-4"
             style={{border:'1px solid #ddd',borderRadius:'50%'}}
           >
             <img 
@@ -63,6 +63,7 @@ function Header(props : IHeaderProps) {
           {props.userRole== 'CHEF'?'ครัว':'เคาน์เตอร์'} : {props.username}
         </div>
       </div>
+      {/* <div></div> */}
       <div style={{display: (props.page == 'edit')?'none':''}}>
         <a
           href="/EditTask"

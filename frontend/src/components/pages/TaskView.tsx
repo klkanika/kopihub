@@ -75,6 +75,7 @@ function TaskView() {
 
   const {data: tasksData, loading: tasksLoading} = useQuery(GET_TASKS,{
     fetchPolicy: 'network-only',
+    // pollInterval: 5000,
     variables: {},
     onCompleted: (sre) => {
       setTasks(sre.tasks)
@@ -205,7 +206,7 @@ function TaskView() {
 
   return (
     <div className="w-11/12 m-auto mt-8 mb-8">
-      {console.log('TV:'+sessionStorage.getItem("loggedUserRole"))}
+      {/* {console.log('TV:'+sessionStorage.getItem("loggedUserRole"))} */}
       <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="" toggleRole={toggleRole}/>
       {setTime && userRole === "CHEF" && <SetTime taskId={curTaskId} closePopup={toggleSetTimePopup} 
         saveTime={updateFinishDate} visible={setTime}/>}

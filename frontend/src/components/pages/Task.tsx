@@ -24,19 +24,33 @@ interface ITaskProps {
 
 interface ITaskState {
 }
+declare global {
+  interface Window {
+      playSound:any;
+  }
+}
+
 
 function Task (props : ITaskProps) { 
   let audio = new Audio("https://www.soundjay.com/button/beep-01a.mp3");
   const [ time, SetTime] = useState(0);
-
+  
   useInterval(() => {
-    const difference = props.finishDate.valueOf() - Date.now().valueOf();
-    SetTime(difference > 0 ? difference : 0);
-    if (difference <= 0 && props.status === "ONGOING") 
-      props.timeUp(props.taskId)
-    if (props.userRole === "CHEF" && props.status === "TIMEUP")
-      audio.play()
-  }, 200);
+    if (props.userRole === "CHEF" && props.status === "TIMEUP"){
+      try {
+        window.playSound()  
+      } catch (error) {
+        
+      }
+    }
+    
+    // const difference = props.finishDate.valueOf() - Date.now().valueOf();
+    // SetTime(difference > 0 ? difference : 0);
+    // if (difference <= 0 && props.status === "ONGOING") 
+    //   props.timeUp(props.taskId)
+    
+    //   window.playSound()
+  }, 2000);
 
   var click = function handleClick  (){
     if(props.userRole === "CHEF" && props.status === "PENDING"){

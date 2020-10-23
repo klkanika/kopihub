@@ -53,7 +53,10 @@ const Home = () => {
   }
 
   const [loggedUser, { error, loading, data }] = useMutation(LOGIN)
-  sessionStorage.setItem("loggedStatus","NOT_LOGGED_IN")
+  // sessionStorage.setItem("loggedStatus","NOT_LOGGED_IN")
+  if(sessionStorage.getItem('loggedStatus')){
+    history.push('/SelectRole') 
+  }
   
   return (
     <div className="flex items-center justify-center" style={{background: '#FFFCF9',width: '100vw',height: '100vh'}}>
