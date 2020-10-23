@@ -11,6 +11,7 @@ schema.objectType({
     t.model.status()
     t.model.priority()
     t.model.total()
+    t.model.updatedAt()
   },
 })
 // io.emit("data",{

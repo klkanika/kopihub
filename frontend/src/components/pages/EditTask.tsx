@@ -14,66 +14,42 @@ function EditTask() {
   const history = useHistory()
   const [ tasks, setTasks] = useState([])
   const [ newOrderingtasks, setNewOrderingtasks] = useState<string[]>([])
+  const [ updatedAt, setUpdatedAt] = useState(new Date)
+  const [ updatedAtCompare, setUpdatedAtCompare] = useState(new Date)
   const userName = sessionStorage.getItem("loggedUserName");
   const userRole = sessionStorage.getItem("loggedUserRole");
 
-  // const { subscribe, unsubscribe } = useSocket("pendingTaskUpdate", (dataFromServer) =>
-  //   getTaks()
-  // );
-
-  // useEffect(()=>{
-  //   subscribe()
-  //   return () =>{
-  //     unsubscribe()
-  //   }
-  // },[])
-
-  // function useInterval(callback: () => void, delay: number | null) {
-  //   const savedCallback = useRef<() => void>();
-  
-  //   // Remember the latest function.
-  //   useEffect(() => {
-  //     savedCallback.current = callback;
-  //   }, [callback]);
-  
-  //   // Set up the interval.
-  //   useEffect(() => {
-  //     function tick() {
-  //       savedCallback.current?.();
-  //     }
-  //     if (delay !== null) {
-  //       let id = setInterval(tick, delay);
-  //       return () => clearInterval(id);
-  //     }
-  //   }, [delay]);
-  // }
-
-  // useInterval(() => {
-  //   getTaks()
-  // }, 200);
-
-  // const [getTaks , {called, loading : taskLazyLoading,data : taskLazyData}] = useLazyQuery(GET_PENDING_TASKS,{
-  //   fetchPolicy: 'network-only',
-  //   variables: {},
-  //   onCompleted: (sre) => {
-  //     // info()
-  //   },
-  //   onError: (err) => {
-  //     window.alert(err)
-  //   }
-  // });
-
-  const {data: tasksData, loading: tasksLoading} = useQuery(GET_PENDING_TASKS,{
+  const [getTaksCompare , {called, loading : taskLazyLoading,data : taskLazyData}] = useLazyQuery(GET_PENDING_TASKS,{
     fetchPolicy: 'network-only',
     variables: {},
     onCompleted: (sre) => {
-      setTasks(sre.tasks)
+      var dates = sre.tasks.map((item:any) => { return new Date(item.updatedAt) })
+      var latest = new Date(Math.max.apply(null,dates))
+      setUpdatedAtCompare(latest)
     },
     onError: (err) => {
       window.alert(err)
     }
   });
 
+  const {data: tasksData, loading: tasksLoading} = useQuery(GET_PENDING_TASKS,{
+    fetchPolicy: 'network-only',
+    variables: {},
+    onCompleted: (sre) => {
+      setTasks(sre.tasks)
+      var dates = sre.tasks.map((item:any) => { return new Date(item.updatedAt) })
+      var latest = new Date(Math.max.apply(null,dates))
+      setUpdatedAt(latest)
+    },
+    onError: (err) => {
+      window.alert(err)
+    }
+  });
+  const onCancel =(value : boolean)=>{
+    if(value){
+      window.location.reload()
+    }
+  }
   const info = () => {
     Modal.info({
       title: 'Alert',
@@ -91,22 +67,35 @@ function EditTask() {
   const [updateTaskPriority, { error, loading, data }] = useMutation(UPDATE_TASK_PRIORITY)
 
   const save = () => {
-    newOrderingtasks.forEach(function(part, index, theArray) {
-      if(index > 0){
-        updateTaskPriority({variables : {
-          taskId : theArray[index],
-          priority : index
-        }}).then(
-          res => {
-            console.log("Update task succes")
-          }
-          ,err => {
-            console.log("Update task failed")
-          }
-        );
-      }
-    })
-    history.push('/TaskView')
+    getTaksCompare()
+    if(updatedAt.getFullYear() != updatedAtCompare.getFullYear()
+      || updatedAt.getMonth() != updatedAtCompare.getMonth()
+      || updatedAt.getDate() != updatedAtCompare.getDate()
+      || updatedAt.getHours() != updatedAtCompare.getHours()
+      || updatedAt.getMinutes() != updatedAtCompare.getMinutes()
+      || updatedAt.getSeconds() != updatedAtCompare.getSeconds()
+      || updatedAt.getMilliseconds() != updatedAtCompare.getMilliseconds()
+      )
+    {
+      info()
+    }else{
+      newOrderingtasks.forEach(function(part, index, theArray) {
+        if(index > 0){
+          updateTaskPriority({variables : {
+            taskId : theArray[index],
+            priority : index
+          }}).then(
+            res => {
+              console.log("Update task succes")
+            }
+            ,err => {
+              console.log("Update task failed")
+            }
+          );
+        }
+      })
+      history.push('/TaskView')
+    }
   }
 
   return (
@@ -136,7 +125,8 @@ function EditTask() {
          <div key={item.id} className="m-2">
              <Task taskId={item.id} taskName={item.name} total={item.total} userRole={""}
                status={item.status} finishDate={new Date(item.finishTime)} page="EditTask"
-               setTime={(taskId: string) => {}} timeUp={(taskId: string) => {}} toggleTimeUp={(taskId: string) => {}}/>
+               setTime={(taskId: string) => {}} timeUp={(taskId: string) => {}} toggleTimeUp={(taskId: string) => {}}
+               cancel={onCancel}/>
            </div>
         ))}
         {/* </div> */}

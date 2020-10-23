@@ -233,6 +233,7 @@ query GetPendingTask{
     status
     priority
     total
+    updatedAt
   }
 }
 `

@@ -275,6 +275,7 @@ type Task {
   priority: Int!
   status: TaskStatus!
   total: Int!
+  updatedAt: DateTime!
 }
 
 input TaskCreateInput {

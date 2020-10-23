@@ -20,6 +20,7 @@ interface ITaskProps {
   timeUp : ((taskId : string) => void)
   toggleTimeUp : ((taskId : string) => void)
   page : string
+  cancel : ((value : boolean) => void)
 }
 
 interface ITaskState {
@@ -65,6 +66,7 @@ function Task (props : ITaskProps) {
     UpdateTaskCancel({variables : {
       taskId : props.taskId}}).then(
         res => {
+          props.cancel(true)
           console.log("Update task cancel succes")
         }
         ,err => {

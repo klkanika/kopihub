@@ -61,7 +61,7 @@ function TaskView() {
   
   const {data: tasksData, loading: tasksLoading} = useQuery(GET_TASKS,{
     fetchPolicy: 'no-cache',
-    pollInterval: 5000,
+    pollInterval: 1000,
     variables: {},    
     onError: (err) => {
       window.alert(err)
@@ -207,7 +207,8 @@ function TaskView() {
         <div key={item.id} className="m-1">
           <Task taskId={item.id} taskName={item.name} total={item.total} userRole={userRole ? userRole : "CASHIER"}
               status={item.status} finishDate={new Date(item.finishTime)} page="TaskView"
-              setTime={toggleSetTimePopup} timeUp={updateTimeUp} toggleTimeUp={toggleSetTimeupPopup}/>
+              setTime={toggleSetTimePopup} timeUp={updateTimeUp} toggleTimeUp={toggleSetTimeupPopup}
+              cancel={(value:boolean) => {}}/>
         </div>
       ))
     }

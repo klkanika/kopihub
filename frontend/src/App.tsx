@@ -16,10 +16,10 @@ import 'antd/dist/antd.css';
 // "https://kopihub-api-ura2vr67wa-as.a.run.app";
 
 const link = createHttpLink({
-  //uri: 'http://localhost:4000/graphql',
-  uri:
-    process.env.API_URL ||
-    "https://kopihub-api-ura2vr67wa-as.a.run.app/graphql",
+  uri: 'http://localhost:4000/graphql',
+  // uri:
+  //   process.env.API_URL ||
+  //   "https://kopihub-api-ura2vr67wa-as.a.run.app/graphql",
 });
 const cache = new InMemoryCache();
 const outerClient = new ApolloClient({

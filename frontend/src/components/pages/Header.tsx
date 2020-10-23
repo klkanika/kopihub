@@ -71,8 +71,8 @@ function Header(props : IHeaderProps) {
           style={{
             borderRadius: '5px',
             background: '#683830',
-            display: "none",
-            // display: props.userRole === "CASHIER" ? "" : "none",
+            // display: "none",
+            display: props.userRole === "CASHIER" ? "" : "none",
           }}>
           แก้ไขออเดอร์
         </a>
