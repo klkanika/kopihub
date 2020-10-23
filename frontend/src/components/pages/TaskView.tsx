@@ -24,6 +24,7 @@ declare global {
 }
 
 function TaskView() {
+  window.pauseSound()
   const history = useHistory()
   const userName = sessionStorage.getItem("loggedUserName");
   const [ insertTask, setInsertTask ] = useState(false)
@@ -155,7 +156,6 @@ function TaskView() {
       taskId : dbTaskId}}).then(
         res => {
           console.log("Update task completed succes")
-          window.pauseSound()
         }
         ,err => {
           console.log("Update task completed failed")
