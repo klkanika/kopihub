@@ -16,6 +16,13 @@ import {useHistory} from "react-router-dom";
 import { useSocket } from 'use-socketio';
 import Loadding from '../layout/loadding'
 
+declare global {
+  interface Window {
+      playSound:any;
+      pauseSound:any;
+  }
+}
+
 function TaskView() {
   const history = useHistory()
   const userName = sessionStorage.getItem("loggedUserName");
@@ -148,6 +155,7 @@ function TaskView() {
       taskId : dbTaskId}}).then(
         res => {
           console.log("Update task completed succes")
+          window.pauseSound()
         }
         ,err => {
           console.log("Update task completed failed")
