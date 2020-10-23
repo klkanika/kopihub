@@ -30,6 +30,7 @@ function TaskView() {
   const [ insertTask, setInsertTask ] = useState(false)
   const [ setTime, setSetTime ] = useState(false)
   const [ timeUp, setTimeUp ] = useState(false)
+  const [ setTask, setSetTask ] = useState(false);
   
   const [ userRole, setUserRole] = useState(sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
 
@@ -112,6 +113,11 @@ function TaskView() {
     setCurTaskId(taskId)
     setTimeUp(!timeUp)
     console.log("timeup:"+timeUp)
+  }
+
+  const toggleEditTask = (taskId: string) => {
+    setCurTaskId(taskId)
+    setSetTask(!setTask)
   }
 
   const [UpdateTaskOngoing] = useMutation(UPDATE_TASK_ONGOING)
@@ -220,7 +226,8 @@ function TaskView() {
             <div key={item.id} className="m-1">
               <Task taskId={item.id} taskName={item.name} total={item.total} userRole={userRole ? userRole : "CASHIER"}
                   status={item.status} finishDate={new Date(item.finishTime)} page="TaskView"
-                  setTime={toggleSetTimePopup} timeUp={updateTimeUp} toggleTimeUp={toggleSetTimeupPopup}
+                  setTime={toggleSetTimePopup} timeUp={updateTimeUp} toggleTimeUp={toggleSetTimeupPopup} 
+                  setTask={toggleEditTask}
                   cancel={(value:boolean) => {}}/>
             </div>
           ))

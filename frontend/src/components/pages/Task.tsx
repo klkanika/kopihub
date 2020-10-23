@@ -21,6 +21,7 @@ interface ITaskProps {
   toggleTimeUp : ((taskId : string) => void)
   page : string
   cancel : ((value : boolean) => void)
+  setTask : ((taskId : string, taskName : string, total : number) => void)
 }
 
 interface ITaskState {
@@ -59,6 +60,8 @@ function Task (props : ITaskProps) {
     }else if(props.userRole === "CHEF" && props.status === "TIMEUP")
     {
       props.toggleTimeUp(props.taskId) 
+    }else if(props.userRole === "CASHIER"){
+      props.setTask(props.taskId,props.taskName,props.total)
     }
   }
   const [UpdateTaskCancel] = useMutation(UPDATE_TASK_CANCEL)

@@ -197,6 +197,33 @@ schema.mutationType({
       },
     })
 
+    t.field('UpdateEditTask', {
+      type: 'Task',
+      args: {
+        taskId : stringArg({ nullable: false }),
+        name : stringArg({ nullable: false }),
+        total : intArg({ nullable: false }),
+      },
+      nullable: true,
+      resolve: async (_parent, { taskId, name , total}, ctx) => {
+        
+        return ctx.db.task.update({
+          where: {
+            id : taskId
+          },
+          data: {
+            name : name,
+            total : total
+          },
+        }).finally(
+          () =>{
+            // io.emit('taskUpdate','update')
+            // io.emit('pendingTaskUpdate','update')
+          } 
+        )
+      },
+    })
+
     t.field('updateTaskPriority', {
       type: 'Task',
       args: {

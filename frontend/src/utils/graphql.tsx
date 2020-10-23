@@ -188,6 +188,25 @@ export const  UPDATE_TASK_CANCEL = gql`
 } 
 `
 
+export const  UPDATE_EDIT_TASK = gql`
+  mutation UpdateEditTask($taskId:String!,$name:String!,$total:Int!){
+    UpdateEditTask(
+      taskId : $taskId
+      name : $name
+      total : $total
+  )
+  {
+      id 
+      name
+      total
+      countTime
+      finishTime
+      status
+      priority
+  }
+} 
+`
+
 export const  UPDATE_TASK_PRIORITY = gql`
   mutation UpdateTaskPriority($taskId:String!,$priority:Int!){
     updateTaskPriority(
