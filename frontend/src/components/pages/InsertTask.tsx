@@ -83,6 +83,7 @@ class InsertTask extends Component<ITaskProps, ITaskState> {
             pattern="[0-9]*"
             style={{ width: '60%' }} 
             placeholder="เลขโต๊ะหรือเลขคิว" 
+            inputMode="decimal"
             onChange={(e) => this.setTaskName(e.target.value)}
           />
         </Input.Group>
@@ -94,6 +95,7 @@ class InsertTask extends Component<ITaskProps, ITaskState> {
             pattern="[0-9]*"
             style={{ width: '60%' }} 
             placeholder="จำนวนเข่ง" 
+            inputMode="decimal"
             onChange={(e) => this.setTotal(parseInt(e.target.value))}
           />
         </Input.Group>

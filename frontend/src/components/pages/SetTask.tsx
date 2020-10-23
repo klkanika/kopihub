@@ -85,7 +85,7 @@ class SetTask extends Component<ITimeProps, ITimeState> {
             style={{ width: '60%' }} 
             defaultValue = {this.state.taskName}
             placeholder="เลขโต๊ะหรือเลขคิว" 
-         
+            inputMode="decimal"
             onChange={(e) => this.setTaskName(e.target.value)}
           />
         </Input.Group>
@@ -98,6 +98,7 @@ class SetTask extends Component<ITimeProps, ITimeState> {
             defaultValue = {this.props.total}
             style={{ width: '60%' }} 
             placeholder="จำนวนเข่ง" 
+            inputMode="decimal"
             onChange={(e) => this.setTotal(parseInt(e.target.value))}
           />
         </Input.Group>
