@@ -34,27 +34,33 @@ const Home = () => {
     wrapperCol: { offset: 4, span: 16 },
   };
   
+  const [loggedUser, { error, loading, data }] = useMutation(LOGIN,{
+    onCompleted: ((res) => {
+      console.log("login succes",res)
+      sessionStorage.setItem("loggedUserRole", res.login.role)
+      sessionStorage.setItem("loggedId", res.login.id)
+      sessionStorage.setItem("loggedStatus", "LOGGED_IN")
+      sessionStorage.setItem("loggedUserId", res.login.userId)
+      history.push('/SelectRole')  
+    }),
+    onError: ((err)=>{
+      console.log("login failed",err)
+      message.error('error')
+      sessionStorage.clear()
+    })
+  })
   const onFinish = (value : loginInput) => {
-    loggedUser({ variables: { userName: value.username, password:value.password } }).then(
-      res => {
-        console.log("login succes")
-        sessionStorage.setItem("loggedUserRole", res.data.login.role)
-        sessionStorage.setItem("loggedId", res.data.login.id)
-        sessionStorage.setItem("loggedStatus", "LOGGED_IN")
-        sessionStorage.setItem("loggedUserId", res.data.login.userId)
-        sessionStorage.setItem("loggedUserName", value.username) 
-        history.push('/SelectRole')              
+    sessionStorage.setItem("loggedUserName", value.username) 
+    loggedUser({
+      variables: { 
+        userName: value.username, 
+        password:value.password 
       }
-      ,err => {
-        console.log("login failed")
-        message.error('error')
-      }
-    )      
+    })      
   }
 
-  const [loggedUser, { error, loading, data }] = useMutation(LOGIN)
   // sessionStorage.setItem("loggedStatus","NOT_LOGGED_IN")
-  if(sessionStorage.getItem('loggedStatus')){
+  if(sessionStorage.getItem('loggedUserId')){
     history.push('/SelectRole') 
   }
   

@@ -2,6 +2,7 @@ import React , {Fragment, useEffect} from 'react';
 import { ApolloClient,ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client'
 import {
   BrowserRouter as Router,
+  Redirect,
   Route,
   Switch
 } from 'react-router-dom'
@@ -43,15 +44,13 @@ const Inner = ()=>{
   //   id
   // }}`)
   // return <div>{JSON.stringify(data)}</div>
-  return <>
-    <Router>
+  return(
     <Fragment>      
       <Switch>
         <Route component={Routing} />
       </Switch>
     </Fragment>
-    </Router>
-  </>
+  )
 }
 
 const App = () => {
@@ -67,7 +66,9 @@ const App = () => {
     //  <SocketIOProvider url={socketUrl} opts={opt}>
       <ApolloProvider client={outerClient}>
           {/* <button onClick={load()} */}
-          <Inner />
+          <Router>
+            <Inner />
+          </Router>
       </ApolloProvider>
     // </SocketIOProvider>
 
