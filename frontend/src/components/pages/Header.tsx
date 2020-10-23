@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Dropdown, Menu } from 'antd';
-import {useHistory} from "react-router-dom";
+import {useHistory, Link} from "react-router-dom";
 import icon_chef from '../../imgs/icon_chef.svg'
 import icon_counter from '../../imgs/icon_counter.svg'
 import { useState } from 'react';
@@ -65,8 +65,8 @@ function Header(props : IHeaderProps) {
       </div>
       {/* <div></div> */}
       <div style={{display: (props.page == 'edit')?'none':''}}>
-        <a
-          href="/EditTask"
+        <Link
+          to="/EditTask"
           className="p-2 px-4 text-white font-bold text-lg"
           style={{
             borderRadius: '5px',
@@ -75,7 +75,7 @@ function Header(props : IHeaderProps) {
             display: props.userRole === "CASHIER" ? "" : "none",
           }}>
           แก้ไขออเดอร์
-        </a>
+        </Link>
       </div>
     </div>
   )

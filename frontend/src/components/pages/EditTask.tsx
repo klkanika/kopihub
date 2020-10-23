@@ -38,21 +38,25 @@ function EditTask() {
       {
         info()
       }else{
-        newOrderingtasks.forEach(function(part, index, theArray) {
-          if(index > 0){
-            updateTaskPriority({variables : {
-              taskId : theArray[index],
-              priority : index
-            }}).then(
-              res => {
-                console.log("Update task succes")
-              }
-              ,err => {
-                console.log("Update task failed")
-              }
-            );
-          }
+        console.log('newOrderingtasks',newOrderingtasks)
+        tasks.map((t:any, index)=>{
+          updateTaskPriority({variables : {
+            taskId : t.id,
+            priority : index+1
+          }}).then(
+            res => {
+              console.log("Update task succes")
+            }
+            ,err => {
+              console.log("Update task failed")
+            }
+          );
         })
+        // newOrderingtasks.forEach(function(part, index, theArray) {
+        //   // if(index > 0){
+        //   //   console.log(theArray[index], index)
+        //   // }
+        // })
         history.push('/TaskView')
       }
     },
@@ -117,15 +121,16 @@ function EditTask() {
           setList={setTasks}
           animation={200}
           className="flex flex-wrap"
-          onChange={(order, sortable, evt) => {
-              var sortArray = sortable?.toArray();
-              var newArray = [""];
-              sortArray?.map(i => 
-                newArray.push(i.toString())
-              )
-              setNewOrderingtasks(newArray)
-            }
-          }
+          // onChange={(order, sortable, evt) => {
+          //     // var sortArray = sortable?.toArray();
+          //     // var newArray = [""];
+          //     // sortArray?.map(i => 
+          //     //   newArray.push(i.toString())
+          //     // )
+          //     console.log('newArray',order)
+          //     // setNewOrderingtasks(newArray)
+          //   }
+          // }
         >
           {/* <div className="flex flex-wrap"> */}
           {tasks.map((item:any) => (
