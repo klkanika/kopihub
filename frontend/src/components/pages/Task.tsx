@@ -27,6 +27,7 @@ interface ITaskState {
 declare global {
   interface Window {
       playSound:any;
+      pauseSound:any;
   }
 }
 
@@ -45,6 +46,8 @@ function Task (props : ITaskProps) {
         window.playSound()  
       } catch (error) {
       }
+    }else if (props.userRole === "CASHIER"){
+      window.pauseSound()
     }
     //   window.playSound()
   }, 2000);

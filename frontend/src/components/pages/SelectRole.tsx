@@ -12,7 +12,15 @@ import {
 import icon_chef from '../../imgs/icon_chef.svg'
 import icon_counter from '../../imgs/icon_counter.svg'
 
+declare global {
+  interface Window {
+      playSound:any;
+      pauseSound:any;
+  }
+}
+
 function SelectRole() {
+  window.pauseSound()
   const history = useHistory()
  
   const saveValue = (value: any) => {
