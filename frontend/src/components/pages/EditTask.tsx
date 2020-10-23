@@ -15,7 +15,6 @@ function EditTask() {
   const [ tasks, setTasks] = useState([])
   const [ newOrderingtasks, setNewOrderingtasks] = useState<string[]>([])
   const [ updatedAt, setUpdatedAt] = useState(new Date)
-  const [ updatedAtCompare, setUpdatedAtCompare] = useState(new Date)
   const userName = sessionStorage.getItem("loggedUserName");
   const userRole = sessionStorage.getItem("loggedUserRole");
 
@@ -24,8 +23,37 @@ function EditTask() {
     variables: {},
     onCompleted: (sre) => {
       var dates = sre.tasks.map((item:any) => { return new Date(item.updatedAt) })
+      console.log("datescompare",dates)
       var latest = new Date(Math.max.apply(null,dates))
-      setUpdatedAtCompare(latest)
+
+      if(updatedAt.getFullYear() != latest.getFullYear()
+      || updatedAt.getMonth() != latest.getMonth()
+      || updatedAt.getDate() != latest.getDate()
+      || updatedAt.getHours() != latest.getHours()
+      || updatedAt.getMinutes() != latest.getMinutes()
+      || updatedAt.getSeconds() != latest.getSeconds()
+      || updatedAt.getMilliseconds() != latest.getMilliseconds()
+      )
+      {
+        info()
+      }else{
+        newOrderingtasks.forEach(function(part, index, theArray) {
+          if(index > 0){
+            updateTaskPriority({variables : {
+              taskId : theArray[index],
+              priority : index
+            }}).then(
+              res => {
+                console.log("Update task succes")
+              }
+              ,err => {
+                console.log("Update task failed")
+              }
+            );
+          }
+        })
+        history.push('/TaskView')
+      }
     },
     onError: (err) => {
       window.alert(err)
@@ -38,6 +66,7 @@ function EditTask() {
     onCompleted: (sre) => {
       setTasks(sre.tasks)
       var dates = sre.tasks.map((item:any) => { return new Date(item.updatedAt) })
+      console.log("dates",dates)
       var latest = new Date(Math.max.apply(null,dates))
       setUpdatedAt(latest)
     },
@@ -67,35 +96,7 @@ function EditTask() {
   const [updateTaskPriority, { error, loading, data }] = useMutation(UPDATE_TASK_PRIORITY)
 
   const save = () => {
-    getTaksCompare()
-    if(updatedAt.getFullYear() != updatedAtCompare.getFullYear()
-      || updatedAt.getMonth() != updatedAtCompare.getMonth()
-      || updatedAt.getDate() != updatedAtCompare.getDate()
-      || updatedAt.getHours() != updatedAtCompare.getHours()
-      || updatedAt.getMinutes() != updatedAtCompare.getMinutes()
-      || updatedAt.getSeconds() != updatedAtCompare.getSeconds()
-      || updatedAt.getMilliseconds() != updatedAtCompare.getMilliseconds()
-      )
-    {
-      info()
-    }else{
-      newOrderingtasks.forEach(function(part, index, theArray) {
-        if(index > 0){
-          updateTaskPriority({variables : {
-            taskId : theArray[index],
-            priority : index
-          }}).then(
-            res => {
-              console.log("Update task succes")
-            }
-            ,err => {
-              console.log("Update task failed")
-            }
-          );
-        }
-      })
-      history.push('/TaskView')
-    }
+    getTaksCompare() 
   }
 
   return (
