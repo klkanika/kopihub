@@ -179,7 +179,7 @@ function EditTask() {
               <Task taskId={item.id} taskName={item.name} total={item.total} userRole={"CASHIER"}
                 status={item.status} finishDate={new Date(item.finishTime)} page="EditTask"
                 setTime={(taskId: string) => {}} timeUp={(taskId: string) => {}} toggleTimeUp={(taskId: string) => {}}
-                cancel={onCancel} setTask={toggleEditTask}/>                
+                cancel={onCancel} setTask={toggleEditTask} setStatus={(status:string) => {}} setFinishDate={(finishDate : Date) => {}}/>                
             </div>
           ))}
           {/* </div> */}

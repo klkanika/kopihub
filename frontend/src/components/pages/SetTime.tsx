@@ -6,6 +6,8 @@ interface ITimeProps {
   closePopup: ((taskId : string) => void);
   saveTime: ((taskId : string, time : number) => void);
   visible : boolean
+  status : string
+  updateComplete : ((taskId : string) => void)
 }
 interface ITimeState {
   time: number
@@ -25,7 +27,10 @@ class SetTime extends Component<ITimeProps, ITimeState> {
   // this.setTime(Number(e.target.value)
 
   verifyData(taskId : string, time: number){
-    if(time <= 0){
+    if(time == -1){
+      this.props.updateComplete(taskId)
+    }
+    else if(time <= 0){
       message.error('กรุณาระบุ เวลา')
     }
     else{
@@ -34,10 +39,11 @@ class SetTime extends Component<ITimeProps, ITimeState> {
   }
 
   render(){
+    
     return (
       <Modal
       visible={this.props.visible}
-      title="จับเวลา"
+      title={this.props.status === "ONGOING" || this.props.status === "TIMEUP" ? "เสิร์ฟอาหารหรือเพิ่มเวลา" : "จับเวลา"}
       okButtonProps={{ style: { display: 'none' } }}
       // okText="เริ่มจับเวลา"
       cancelText="ยกเลิก"
@@ -53,11 +59,19 @@ class SetTime extends Component<ITimeProps, ITimeState> {
           onChange={(e) => this.setTime(Number(e.target.value))}
         /> */}
         <div className="flex flex-wrap py-8">
-          <div className="px-8 py-4 mr-2 bg-yellow-600 font-bold text-lg rounded-md" onClick={() => {this.verifyData(this.props.taskId, 1);this.props.closePopup("")}}>1</div>
-          <div className="px-8 py-4 mr-2 bg-yellow-600 font-bold text-lg rounded-md" onClick={() => {this.verifyData(this.props.taskId, 3);this.props.closePopup("")}}>3</div>
-          <div className="px-8 py-4 mr-2 bg-yellow-600 font-bold text-lg rounded-md" onClick={() => {this.verifyData(this.props.taskId, 5);this.props.closePopup("")}}>5</div>
-          <div className="px-8 py-4 mr-2 bg-yellow-600 font-bold text-lg rounded-md" onClick={() => {this.verifyData(this.props.taskId, 8);this.props.closePopup("")}}>8</div>
-          <div className="px-8 py-4 mr-2 bg-yellow-600 font-bold text-lg rounded-md" onClick={() => {this.verifyData(this.props.taskId, 10);this.props.closePopup("")}}>10</div>
+          <div className="px-6 py-2 mr-1 bg-yellow-600 font-bold text-lg rounded-md"
+            onClick={() => {this.verifyData(this.props.taskId, 1);this.props.closePopup("")}}>1</div>
+          <div className="px-6 py-2 mr-1 bg-yellow-600 font-bold text-lg rounded-md" 
+            onClick={() => {this.verifyData(this.props.taskId, 3);this.props.closePopup("")}}>3</div>
+          <div className="px-6 py-2 mr-1 bg-yellow-600 font-bold text-lg rounded-md"
+            onClick={() => {this.verifyData(this.props.taskId, 5);this.props.closePopup("")}}>5</div>
+          <div className="px-6 py-2 mr-1 bg-yellow-600 font-bold text-lg rounded-md" 
+            onClick={() => {this.verifyData(this.props.taskId, 8);this.props.closePopup("")}}>8</div>
+          <div className="px-6 py-2 mr-1 bg-yellow-600 font-bold text-lg rounded-md"
+            onClick={() => {this.verifyData(this.props.taskId, 10);this.props.closePopup("")}}>10</div>
+          <div className="px-6 py-2 mr-1 bg-orange-600 font-bold text-lg rounded-md" 
+            style={{display: this.props.status === "ONGOING" || this.props.status === "TIMEUP" ? "" : "none"}}
+            onClick={() => {this.verifyData(this.props.taskId, -1);this.props.closePopup("")}}>ยกเสิร์ฟ</div>
         </div>
       </Modal>
     

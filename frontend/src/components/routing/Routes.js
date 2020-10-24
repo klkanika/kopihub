@@ -17,6 +17,7 @@ export default () => (
       <PrivateRoute exact path="/TaskView" component={TaskView} />
       <PrivateRoute exact path="/Register" component={Register} />
       <PrivateRoute exact path="/EditTask" component={EditTask} />
+      <Route exact path="*" component={Home} />
     </Switch>
   </Fragment>
   </>

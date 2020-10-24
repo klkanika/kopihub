@@ -22,6 +22,8 @@ interface ITaskProps {
   page : string
   cancel : ((value : boolean) => void)
   setTask : ((taskId : string, taskName : string, total : number) => void)
+  setStatus : ((status : string) => void)
+  setFinishDate : ((finishDate : Date) => void)
 }
 
 interface ITaskState {
@@ -55,11 +57,15 @@ function Task (props : ITaskProps) {
   }, 2000);
 
   var click = function handleClick  (){
-    if(props.userRole === "CHEF" && props.status === "PENDING"){
+    if(props.userRole === "CHEF" && (props.status === "PENDING" || props.status === "ONGOING")){
+      props.setFinishDate(props.finishDate)
+      props.setStatus(props.status)
       props.setTime(props.taskId)
     }else if(props.userRole === "CHEF" && props.status === "TIMEUP")
     {
-      props.toggleTimeUp(props.taskId) 
+      props.setStatus(props.status)
+      props.setTime(props.taskId)
+      // props.toggleTimeUp(props.taskId) 
     }else if(props.userRole === "CASHIER"){
       props.setTask(props.taskId,props.taskName,props.total)
     }

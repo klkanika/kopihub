@@ -31,6 +31,8 @@ function TaskView() {
   const [ setTime, setSetTime ] = useState(false)
   const [ timeUp, setTimeUp ] = useState(false)
   const [ setTask, setSetTask ] = useState(false);
+  const [ status, setStatus ] = useState("");
+  const [ finishDate, setFinishDate] = useState(new Date)
   
   const [ userRole, setUserRole] = useState(sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
 
@@ -96,7 +98,6 @@ function TaskView() {
       countTime: 0,
       userId: sessionStorage.getItem("loggedUserId")}}).then(
         res => {
-          console.log("add task succes")
         }
         ,err => {
           console.log("add task failed")
@@ -112,7 +113,6 @@ function TaskView() {
   const toggleSetTimeupPopup = (taskId: string) => {
     setCurTaskId(taskId)
     setTimeUp(!timeUp)
-    console.log("timeup:"+timeUp)
   }
 
   const toggleEditTask = (taskId: string) => {
@@ -124,19 +124,18 @@ function TaskView() {
   const [UpdateTaskTimeUp] = useMutation(UPDATE_TASK_TIMEUP)
   const [UpdateTaskComplete] = useMutation(UPDATE_TASK_COMPLETE)
 
-  const updateFinishDate = (dbTaskId : string,time : number) => {
-    var finishDate = new Date(); // get current date
-    console.log(finishDate)
-    finishDate.setHours(finishDate.getHours() ,finishDate.getMinutes() + time,finishDate.getSeconds() ,finishDate.getMilliseconds());
-    console.log(finishDate)
+  const updateFinishDate = (dbTaskId : string, time : number) => {
+    var setFinishDate = new Date(); // get current 
+    if(status == "ONGOING"){
+      setFinishDate = finishDate;
+    }
+    setFinishDate.setHours(setFinishDate.getHours() ,setFinishDate.getMinutes() + time,setFinishDate.getSeconds() ,setFinishDate.getMilliseconds());
     setSetTime(!setTime)
-    console.log(time+","+ finishDate.valueOf.toString())
     UpdateTaskOngoing({variables : {
       countTime : time,
-      finishTime : finishDate,
+      finishTime : setFinishDate,
       taskId : dbTaskId}}).then(
         res => {
-          console.log("Update task succes")
         }
         ,err => {
           console.log("Update task failed")
@@ -148,7 +147,6 @@ function TaskView() {
     UpdateTaskTimeUp({variables : {
       taskId : dbTaskId}}).then(
         res => {
-          console.log("Update task timeup succes")
         }
         ,err => {
           console.log("Update task timeup failed")
@@ -157,11 +155,10 @@ function TaskView() {
   }
   
   const updateComplete = (dbTaskId : string) => {
-    setTimeUp(!timeUp)
+    // setTimeUp(!timeUp)
     UpdateTaskComplete({variables : {
       taskId : dbTaskId}}).then(
         res => {
-          console.log("Update task completed succes")
         }
         ,err => {
           console.log("Update task completed failed")
@@ -179,8 +176,6 @@ function TaskView() {
         .then(
             res => {
               sessionStorage.setItem("loggedUserRole","CHEF")
-              console.log('change role success')
-              console.log('change to chef'+sessionStorage.getItem("loggedUserRole"))
             },
             err => console.log('change role error')
             )  
@@ -193,8 +188,6 @@ function TaskView() {
         .then(
             res => {
             sessionStorage.setItem("loggedUserRole","CASHIER")
-            console.log('change role success')
-            console.log('change to cashier'+sessionStorage.getItem("loggedUserRole"))
           }
             ,
             err => console.log('change role error')
@@ -213,7 +206,8 @@ function TaskView() {
           {/* {console.log('TV:'+sessionStorage.getItem("loggedUserRole"))} */}
           <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="" toggleRole={toggleRole}/>
           {setTime && userRole === "CHEF" && <SetTime taskId={curTaskId} closePopup={toggleSetTimePopup} 
-            saveTime={updateFinishDate} visible={setTime}/>}
+            saveTime={updateFinishDate} visible={setTime} status={status}
+            updateComplete={updateComplete}/>}
 
           {timeUp && userRole === "CHEF" && <TimeUp taskId={curTaskId} closePopup={toggleSetTimeupPopup} 
             updateComplete={updateComplete} visible={timeUp}/>}
@@ -227,8 +221,7 @@ function TaskView() {
               <Task taskId={item.id} taskName={item.name} total={item.total} userRole={userRole ? userRole : "CASHIER"}
                   status={item.status} finishDate={new Date(item.finishTime)} page="TaskView"
                   setTime={toggleSetTimePopup} timeUp={updateTimeUp} toggleTimeUp={toggleSetTimeupPopup} 
-                  setTask={toggleEditTask}
-                  cancel={(value:boolean) => {}}/>
+                  setTask={toggleEditTask} cancel={(value:boolean) => {}} setStatus={setStatus} setFinishDate={setFinishDate}/>
             </div>
           ))
         }
