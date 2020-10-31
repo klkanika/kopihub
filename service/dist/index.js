@@ -16,7 +16,7 @@ require('dotenv').config();
 const express_1 = __importDefault(require("express"));
 const ocha_api_1 = require("./ocha-api");
 const node_fetch_1 = __importDefault(require("node-fetch"));
-const { AUTHEN, COOKIE, API } = process.env;
+const { AUTHEN, COOKIE, API, USER } = process.env;
 const app = express_1.default();
 app.listen(5000, () => {
     console.log(`server started at http://localhost:${5000}`);
@@ -25,33 +25,38 @@ app.listen(5000, () => {
     const interval = 10;
     setInterval(() => __awaiter(void 0, void 0, void 0, function* () {
         const orders = yield ocha_api_1.getOrders(AUTHEN, COOKIE);
-        console.log(orders);
         yield AddTask(orders);
+        console.log("fetched");
     }), interval * 1000);
 });
 const AddTask = (orders) => __awaiter(void 0, void 0, void 0, function* () {
     if (orders === [])
         return;
-    const tasks = yield (yield node_fetch_1.default(API, {
+    const taskRes = yield (yield node_fetch_1.default(API, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
         },
         body: JSON.stringify({
-            query: `
-          {
-            tasks{
-              name
-            }
-          }
-        `
+            query: TASK_QUERY
         })
     })).json();
-    console.log(JSON.stringify(tasks));
-    return;
+    const tasks = taskRes.data.tasks.map((t) => `${t.serverId}`);
     orders
-        .forEach((element) => __awaiter(void 0, void 0, void 0, function* () {
+        .map((o) => {
+        return {
+            serverId: `${o.cart.server_id}`,
+            name: `${o.tables[0].area_name} ${o.tables[0].table_name}`,
+            total: o.items
+                .filter((i) => i.category_name === "ติ่มซำ")
+                .reduce((acc, i) => i.quantity + acc, 0)
+        };
+    })
+        .filter(o => o.total > 0)
+        .filter((o) => !tasks.includes(o.serverId))
+        .forEach((order) => __awaiter(void 0, void 0, void 0, function* () {
+        const { serverId, total, name } = order;
         const res = yield (yield node_fetch_1.default(API, {
             method: 'POST',
             headers: {
@@ -59,44 +64,56 @@ const AddTask = (orders) => __awaiter(void 0, void 0, void 0, function* () {
                 'Accept': 'application/json',
             },
             body: JSON.stringify({
-                query: `
-        mutation 
-          createTask(
-            $name: String!
-            $total: Int!
-            $finishTime: DateTime
-            $countTime: Int!
-            $userId: String!
-          )
-          {
-            createTask(
-              name: $name
-              total: $total
-              finishTime: $finishTime
-              countTime: $countTime
-              userId: $userId
-            ){
-              id
-              name
-              countTime
-              finishTime
-              status
-              priority
-              total
-              updatedAt
-            }
-          }
-        `,
+                query: TASK_CREATE,
                 variables: {
-                    name: element.name,
-                    total: 2,
+                    name: name,
+                    total: total,
                     finishTime: new Date(),
                     countTime: 0,
-                    userId: "099f7b04-6487-4ec7-a585-73ccfdd9cefd"
+                    userId: USER,
+                    serverId: serverId
                 }
             })
         })).json();
-        console.log(JSON.stringify(res));
+        console.log("created: ", JSON.stringify(res));
     }));
 });
+const TASK_QUERY = `
+{
+  tasks{
+    serverId
+  }
+}
+`;
+const TASK_CREATE = `
+mutation 
+  createTask(
+    $name: String!
+    $total: Int!
+    $finishTime: DateTime
+    $countTime: Int!
+    $userId: String!
+    $serverId: String
+  )
+  {
+    createTask(
+      name: $name
+      total: $total
+      finishTime: $finishTime
+      countTime: $countTime
+      userId: $userId
+      serverId: $serverId
+    ){
+      id
+      name
+      countTime
+      finishTime
+      status
+      priority
+      total
+      updatedAt
+      serverId
+    }
+  }
+`;
 //# sourceMappingURL=index.js.map

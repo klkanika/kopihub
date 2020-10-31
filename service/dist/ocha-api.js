@@ -29,7 +29,6 @@ const getCartOrders = (authorization, cookie) => __awaiter(void 0, void 0, void 
     });
     if (res && res.data && res.data.cart_list) {
         const cartList = res.data.cart_list.map((c) => c.server_id);
-        console.log(cartList);
         return cartList;
     }
     return [];
@@ -50,7 +49,6 @@ const getOrderDetail = (authorization, cookie, cart_ids) => __awaiter(void 0, vo
         url,
     });
     if (res && res.data && res.data.cart_packs) {
-        console.log(res.data.cart_packs);
         return res.data.cart_packs;
     }
     return [];

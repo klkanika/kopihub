@@ -1,9 +1,9 @@
 require('dotenv').config()
 import express from "express";
-import {getOrders} from './ocha-api'
+import { getOrders } from './ocha-api'
 import fetch from 'node-fetch'
 
-const { AUTHEN, COOKIE, API } = process.env
+const { AUTHEN, COOKIE, API, USER } = process.env
 const app = express();
 
 app.listen(5000, () => {
@@ -13,36 +13,42 @@ app.listen(5000, () => {
   const interval = 10
   setInterval(async () => {
     const orders = await getOrders(AUTHEN, COOKIE);
-    console.log(orders);
     await AddTask(orders);
+    console.log("fetched")
   }, interval * 1000)
 
 });
 
 const AddTask = async (orders) => {
-  if(orders===[]) return;
+  if (orders === []) return;
 
-  const tasks = await (await fetch(API, {
+  const taskRes = await (await fetch(API, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
     },
     body: JSON.stringify({
-      query: `
-          {
-            tasks{
-              name
-            }
-          }
-        `
+      query: TASK_QUERY
     })
   })).json();
-  console.log(JSON.stringify(tasks))
-
-  return
+  const tasks = taskRes.data.tasks.map((t) => `${t.serverId}`)
+  
   orders
-    .forEach(async element => {
+    .map((o) => {
+      return {
+        serverId: `${o.cart.server_id}`,
+        name: `${o.tables[0].area_name} ${o.tables[0].table_name}`,
+        total: o.items
+          .filter((i) => i.category_name === "ติ่มซำ")
+          .reduce((acc, i) => i.quantity + acc, 0)
+      }
+    })
+    .filter(o => o.total > 0)
+    .filter((o) => !tasks.includes(o.serverId))
+    .forEach(async order => {
+      const { serverId, total, name } = order;
+
       const res = await (await fetch(API, {
         method: 'POST',
         headers: {
@@ -50,45 +56,58 @@ const AddTask = async (orders) => {
           'Accept': 'application/json',
         },
         body: JSON.stringify({
-          query:
-            `
-        mutation 
-          createTask(
-            $name: String!
-            $total: Int!
-            $finishTime: DateTime
-            $countTime: Int!
-            $userId: String!
-          )
-          {
-            createTask(
-              name: $name
-              total: $total
-              finishTime: $finishTime
-              countTime: $countTime
-              userId: $userId
-            ){
-              id
-              name
-              countTime
-              finishTime
-              status
-              priority
-              total
-              updatedAt
-            }
-          }
-        `,
+          query: TASK_CREATE,
           variables: {
-            name: element.name,
-            total: 2,
+            name: name,
+            total: total,
             finishTime: new Date(),
             countTime: 0,
-            userId: "099f7b04-6487-4ec7-a585-73ccfdd9cefd"
+            userId: USER,
+            serverId: serverId
           }
 
         })
       })).json();
-      console.log(JSON.stringify(res))
+      console.log("created: ", JSON.stringify(res))
     });
 }
+
+const TASK_QUERY = `
+{
+  tasks{
+    serverId
+  }
+}
+`
+
+const TASK_CREATE = `
+mutation 
+  createTask(
+    $name: String!
+    $total: Int!
+    $finishTime: DateTime
+    $countTime: Int!
+    $userId: String!
+    $serverId: String
+  )
+  {
+    createTask(
+      name: $name
+      total: $total
+      finishTime: $finishTime
+      countTime: $countTime
+      userId: $userId
+      serverId: $serverId
+    ){
+      id
+      name
+      countTime
+      finishTime
+      status
+      priority
+      total
+      updatedAt
+      serverId
+    }
+  }
+`

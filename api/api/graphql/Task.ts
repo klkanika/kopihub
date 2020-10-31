@@ -12,6 +12,7 @@ schema.objectType({
     t.model.priority()
     t.model.total()
     t.model.updatedAt()
+    t.model.serverId()
   },
 })
 // io.emit("data",{

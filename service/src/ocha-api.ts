@@ -20,7 +20,6 @@ const getCartOrders = async (authorization, cookie) => {
 
   if (res && res.data && res.data.cart_list) {
     const cartList = res.data.cart_list.map((c) => c.server_id);
-    console.log(cartList);
     return cartList;
   }
   return [];
@@ -43,7 +42,6 @@ const getOrderDetail = async (authorization, cookie, cart_ids) => {
   });
 
   if (res && res.data && res.data.cart_packs) {
-    console.log(res.data.cart_packs);
     return res.data.cart_packs;
   }
   return [];
