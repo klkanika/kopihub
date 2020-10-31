@@ -66,6 +66,7 @@ model Task {
   createdBy   String
   updatedBy   String
   Steamer     Steamer[]
+  serverId    String?
 }
 
 model Steamer {
@@ -75,7 +76,7 @@ model Steamer {
   status         SteamerStatus
   updatedAt      DateTime         @default(now()) @updatedAt
   updatedBy      String
-  Task           Task             @relation(fields: [taskId], references: [id])
-  taskId          String
+  Task           Task?             @relation(fields: [taskId], references: [id])
+  taskId         String?
 }
 
