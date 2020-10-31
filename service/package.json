@@ -12,8 +12,11 @@
   "keywords": [],
   "description": "",
   "dependencies": {
+    "apollo-link": "^1.2.14",
+    "axios": "^0.21.0",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "node-fetch": "^2.6.1",
     "puppeteer": "^5.2.1"
   },
   "devDependencies": {
