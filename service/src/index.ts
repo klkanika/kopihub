@@ -20,7 +20,7 @@ app.post("/sync-order",async (req,res)=>{
   
   res.send("ok")
 })
-app.listen(5000, () => {
+app.listen(PORT||5000, () => {
   console.log(`server started at http://localhost:${PORT||5000}`);
   if (!AUTHEN || !COOKIE) return;
   console.log("vvv")
