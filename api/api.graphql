@@ -159,7 +159,7 @@ type Mutation {
   createOneSteamer(data: SteamerCreateInput!): Steamer!
   createOneTask(data: TaskCreateInput!): Task!
   createOneUser(data: UserCreateInput!): User!
-  createTask(countTime: Int!, finishTime: DateTime, name: String!, total: Int!, userId: String!): Task
+  createTask(countTime: Int!, finishTime: DateTime, name: String!, serverId: String, total: Int!, userId: String!): Task
   createUser(name: String!, password: String!, userName: String!): User
   login(password: String!, userName: String!): LogUser
   UpdateEditTask(name: String!, taskId: String!, total: Int!): Task
@@ -407,6 +407,7 @@ type Task {
   id: String!
   name: String!
   priority: Int!
+  serverId: String
   status: TaskStatus!
   total: Int!
   updatedAt: DateTime!

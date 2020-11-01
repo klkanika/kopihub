@@ -78,9 +78,10 @@ schema.mutationType({
         finishTime: dateTimeArg({type:'DateTime'}),
         countTime: intArg({ nullable: false }),
         userId : stringArg({ nullable: false }),
+        serverId: stringArg()
       },
       nullable: true,
-      resolve: async (_parent, { name, total, finishTime, countTime, userId }, ctx) => {
+      resolve: async (_parent, { name, total, finishTime, countTime, userId, serverId }, ctx) => {
         
         const count = await ctx.db.task.count()
         return ctx.db.task.create({
@@ -92,7 +93,8 @@ schema.mutationType({
             status : 'PENDING',
             total : total,
             updatedBy : userId,
-            user: { connect: { id: userId } }
+            user: { connect: { id: userId } },
+            serverId: serverId
           },
         }).finally(
           () => {

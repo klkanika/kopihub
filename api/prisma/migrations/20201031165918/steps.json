@@ -31,6 +31,14 @@
       ]
     },
     {
+      "tag": "CreateEnum",
+      "enum": "SteamerStatus",
+      "values": [
+        "AVAILABLE",
+        "UNAVAILABLE"
+      ]
+    },
+    {
       "tag": "CreateSource",
       "source": "db"
     },
@@ -543,6 +551,20 @@
       "arity": "Required"
     },
     {
+      "tag": "CreateField",
+      "model": "Task",
+      "field": "Steamer",
+      "type": "Steamer",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Task",
+      "field": "serverId",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
       "tag": "CreateDirective",
       "location": {
         "path": {
@@ -557,6 +579,177 @@
         },
         "directive": "index"
       }
+    },
+    {
+      "tag": "CreateModel",
+      "model": "Steamer"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Steamer",
+      "field": "id",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Steamer",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Steamer",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "uuid()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Steamer",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "Steamer",
+      "field": "steamerNo",
+      "type": "Int",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Steamer",
+      "field": "machineNo",
+      "type": "Int",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Steamer",
+      "field": "status",
+      "type": "SteamerStatus",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Steamer",
+      "field": "updatedAt",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Steamer",
+          "field": "updatedAt"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Steamer",
+          "field": "updatedAt"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Steamer",
+          "field": "updatedAt"
+        },
+        "directive": "updatedAt"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "Steamer",
+      "field": "updatedBy",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Steamer",
+      "field": "Task",
+      "type": "Task",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Steamer",
+          "field": "Task"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Steamer",
+          "field": "Task"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[taskId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Steamer",
+          "field": "Task"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Steamer",
+      "field": "taskId",
+      "type": "String",
+      "arity": "Optional"
     }
   ]
 }
