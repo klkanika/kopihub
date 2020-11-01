@@ -34,8 +34,8 @@ options:
   substitutionOption: ALLOW_LOOSE
 substitutions:
   _DEPLOY_REGION: asia-southeast1
-  _LABELS: gcb-trigger-id=4c5c7d2e-b665-475c-ba51-c3095e422d08
-  _TRIGGER_ID: 4c5c7d2e-b665-475c-ba51-c3095e422d08
+  _LABELS: gcb-trigger-id=9a8b603d-e308-480f-bc69-2381b44f2141
+  _TRIGGER_ID: 9a8b603d-e308-480f-bc69-2381b44f2141
   _GCR_HOSTNAME: asia.gcr.io
   _PLATFORM: managed
   _SERVICE_NAME: kopihub-service
