@@ -22,7 +22,6 @@ interface ISteamerProps {
   taskStatus : string
 }
 
-
 function Steamer (props : ISteamerProps) { 
   const [selected, setSelected] = useState(false);
     var click = function handleClick  (){
@@ -35,28 +34,28 @@ function Steamer (props : ISteamerProps) {
   return (
       <div>
         {!selected && !props.unavailable && !props.taskId
-         && <div className="rounded-full h-12 w-12 flex items-center justify-center"
-                    style={{backgroundColor:'green'}} onClick={click} >
+         && <div className="rounded-full h-10 w-10 flex items-center justify-center border-solid  border-2 border-orange-800"
+                    style={{backgroundColor:'white'}} onClick={click} >
         </div>
         }
         {selected && !props.unavailable && !props.taskId && props.taskStatus !== "TIMEUP"
-         && <div className="rounded-full h-12 w-12 flex items-center justify-center"
-                    style={{backgroundColor:'orange'}} onClick={click} >
+         && <div className="rounded-full h-10 w-10 flex items-center justify-center"
+                    style={{backgroundColor:'	#FFE4B5'}} onClick={click} >
         </div>
         }
-        {props.unavailable && <div className="rounded-full h-12 w-12 flex items-center justify-center"
-                    style={{backgroundColor:'gray'}}>
+        {props.unavailable && <div className="rounded-full h-10 w-10 flex items-center justify-center"
+                    style={{backgroundColor:'#D3D3D3'}}>
         </div>
         }
         {props.taskId && props.ownedTaskId === props.taskId && props.taskStatus !== "TIMEUP"
-           && <div className="rounded-full h-12 w-12 flex items-center justify-center"
-                    style={{backgroundColor:'orange'}}>
+           && <div className="rounded-full h-10 w-10 flex items-center justify-center"
+                    style={{backgroundColor:'	#FFE4B5'}}>
         
         </div>
         }      
         {props.taskId && props.ownedTaskId === props.taskId && props.taskStatus === "TIMEUP"
-           && <div className="rounded-full h-12 w-12 flex items-center justify-center"
-                    style={{backgroundColor:'red'}}>
+           && <div className="rounded-full h-10 w-10 flex items-center justify-center"
+                    style={{backgroundColor:'#FF4500'}}>
         
         </div>
         }      

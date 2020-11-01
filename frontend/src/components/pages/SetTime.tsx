@@ -85,9 +85,9 @@ function SetTime (props : ITimeProps) {
           defaultValue={this.state.time}
           onChange={(e) => this.setTime(Number(e.target.value))}
         /> */}
-        <table style={{width:'99%'}}>
+        <table className="table-fixed">
           <tr>
-            <td style={{width:'70%'}}>
+            <td className="w-3/4 px-4 py-2">
               <div  className="grid grid-flow-col grid-cols-4 grid-rows-3 gap-4">
               {
                 props.steamer.map( (item: any) => (
@@ -109,19 +109,19 @@ function SetTime (props : ITimeProps) {
               }
               </div>
             </td>
-            <td style={{width:'30%'}}>
+            <td className="w-1/4 px-4 py-2">
               <div className="flex flex-wrap">
-                <div className="px-5 py-2 m-1 bg-yellow-600 font-bold text-lg rounded-md"
-                  onClick={() => {verifyData(props.taskId, 1);props.closePopup("")}}>1</div>
-                <div className="px-5 py-2 m-1 bg-yellow-600 font-bold text-lg rounded-md" 
-                  onClick={() => {verifyData(props.taskId, 3);props.closePopup("")}}>3</div>
-                <div className="px-5 py-2 m-1 bg-yellow-600 font-bold text-lg rounded-md"
-                  onClick={() => {verifyData(props.taskId, 5);props.closePopup("")}}>5</div>
-                <div className="px-5 py-2 m-1 bg-yellow-600 font-bold text-lg rounded-md" 
-                  onClick={() => {verifyData(props.taskId, 7);props.closePopup("")}}>7</div>
-                <div className="px-5 py-2 m-1 bg-yellow-600 font-bold text-lg rounded-md"
-                  onClick={() => {verifyData(props.taskId, 10);props.closePopup("")}}>10</div>
-                <div className="px-5 py-2 m-1 bg-orange-600 font-bold text-lg rounded-md" 
+                <div className="px-2 py-2 m-1 bg-yellow-600 font-bold text-base rounded-md w-full block text-center"
+                  onClick={() => {verifyData(props.taskId, 1);props.closePopup("")}}>1 min</div>
+                <div className="px-2 py-2 m-1 bg-yellow-600 font-bold text-base rounded-md w-full block text-center" 
+                  onClick={() => {verifyData(props.taskId, 3);props.closePopup("")}}>3 min</div>
+                <div className="px-2 py-2 m-1 bg-yellow-600 font-bold text-base rounded-md w-full block text-center"
+                  onClick={() => {verifyData(props.taskId, 5);props.closePopup("")}}>5 min</div>
+                <div className="px-2 py-2 m-1 bg-yellow-600 font-bold text-base rounded-md w-full block text-center" 
+                  onClick={() => {verifyData(props.taskId, 7);props.closePopup("")}}>7 min</div>
+                <div className="px-2 py-2 m-1 bg-yellow-600 font-bold text-base rounded-md w-full block text-center"
+                  onClick={() => {verifyData(props.taskId, 10);props.closePopup("")}}>10 min</div>
+                <div className="px-2 py-2 m-1 bg-orange-600 font-bold text-base rounded-md w-full block text-center" 
                   style={{display: props.status === "ONGOING" || props.status === "TIMEUP" ? "" : "none"}}
                   onClick={() => {verifyData(props.taskId, -1);props.closePopup("")}}>STOP</div>
               </div>
