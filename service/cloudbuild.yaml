@@ -45,9 +45,9 @@ substitutions:
   _PLATFORM: managed
   _SERVICE_NAME: kopihub-service
   _AUTHEN: TGS eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJjYWxsZXIiOiJsb2dpYy1jbGllbnQiLCJhZGRyZXNzIjowLCJzaG9wX2lkIjo5MjU3LCJhcHBfdHlwZSI6MiwidWlkIjoyMTA2OSwiY2xpZW50X3R5cGUiOjUxMiwiZXhwIjoxNjAzODY3ODcxLCJkZXZpY2VfaWQiOjIzNTAzfQ.DleG1DA4iYC7YKrfsHmYVyKrU_WoT-gtRC6vj49a8neCj-HzvSUd0Nk08oVe7DHiOrDmBIlJ_lRcCAQ_HeBD0HNQyMfJRgMqmZo5-quZlOsJbpH_cDJD_KCOHRqwzdZvaKzSnkRg-9hWh0p-kNV_4dGRWAKD8tawy9rBEdx15CP_aEXy03TBxgOBChSyBSs0pdY37LuDgOXMPo_hKJ8nlxVWnS8lNNxP0IoWxmfgxieebem-0mM6nIP8vlpiaauqrMebN7cDdTIefRcXnsFwNTMtFYHNfDwT_smj1RQeM-ciRiptteSMozH0MENFrrG6eOukEq7PIKMttxnaqJOv-w
-  _COOKIE: __utmz=21896485.1603714235.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); _ga=GA1.3.1512896287.1603714235; _gid=GA1.3.2068667633.1603714236; _fbp=fb.2.1603714236655.547720720; __utma=21896485.1512896287.1603714235.1603714235.1603723331.2; posocha=MTYwMzcyMzM1M3xOd3dBTkZoRlRUWlhObGRaTkZSRE5VNURVRWhLTWtsRFZVRlNValpWUVZnMVJFSkxWVVpSVmpSWU1sTlNRMVUxUnpWQ1FrRlJTMUU9fHoGigwf5NwyPxPyDxFm_8OPWYaPeies5neex2bEDJWS; _gat_gtag_UA_91617479_7=1
-  _API: http://localhost:4000/graphql
-  _USER: 099f7b04-6487-4ec7-a585-73ccfdd9cefd
+  _COOKIE: "__utmz=21896485.1603714235.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); _ga=GA1.3.1512896287.1603714235; _gid=GA1.3.2068667633.1603714236; _fbp=fb.2.1603714236655.547720720; __utma=21896485.1512896287.1603714235.1603714235.1603723331.2; posocha=MTYwMzcyMzM1M3xOd3dBTkZoRlRUWlhObGRaTkZSRE5VNURVRWhLTWtsRFZVRlNValpWUVZnMVJFSkxWVVpSVmpSWU1sTlNRMVUxUnpWQ1FrRlJTMUU9fHoGigwf5NwyPxPyDxFm_8OPWYaPeies5neex2bEDJWS; _gat_gtag_UA_91617479_7=1"
+  _API: "http://localhost:4000/graphql"
+  _USER: "099f7b04-6487-4ec7-a585-73ccfdd9cefd"
 tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
