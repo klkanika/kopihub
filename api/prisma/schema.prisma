@@ -27,11 +27,6 @@ enum TaskStatus {
   COMPLETED
 }
 
-enum SteamerStatus {
-  AVAILABLE
-  UNAVAILABLE
-}
-
 model User {
   id        String    @default(uuid()) @id
   createdAt DateTime  @default(now())
@@ -73,7 +68,6 @@ model Steamer {
   id             String           @default(uuid()) @id
   steamerNo      Int
   machineNo      Int
-  status         SteamerStatus
   updatedAt      DateTime         @default(now()) @updatedAt
   updatedBy      String
   Task           Task?             @relation(fields: [taskId], references: [id])

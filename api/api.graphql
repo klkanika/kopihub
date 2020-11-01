@@ -156,14 +156,18 @@ input LogUserWhereUniqueInput {
 
 type Mutation {
   createOneLogUser(data: LogUserCreateInput!): LogUser!
+  createOneSteamer(data: SteamerCreateInput!): Steamer!
   createOneTask(data: TaskCreateInput!): Task!
   createOneUser(data: UserCreateInput!): User!
   createTask(countTime: Int!, finishTime: DateTime, name: String!, total: Int!, userId: String!): Task
   createUser(name: String!, password: String!, userName: String!): User
   login(password: String!, userName: String!): LogUser
+  UpdateEditTask(name: String!, taskId: String!, total: Int!): Task
   updateOneLogUser(data: LogUserUpdateInput!, where: LogUserWhereUniqueInput!): LogUser
+  updateOneSteamer(data: SteamerUpdateInput!, where: SteamerWhereUniqueInput!): Steamer
   updateOneTask(data: TaskUpdateInput!, where: TaskWhereUniqueInput!): Task
   updateOneUser(data: UserUpdateInput!, where: UserWhereUniqueInput!): User
+  updateSteamerComplete(taskId: String!): Boolean
   updateTaskCancel(taskId: String!): Task
   updateTaskComplete(taskId: String!): Task
   updateTaskOngoing(countTime: Int!, finishTime: DateTime, taskId: String!): Task
@@ -226,6 +230,7 @@ input NullableStringFieldUpdateOperationsInput {
 }
 
 type Query {
+  steamers(after: SteamerWhereUniqueInput, before: SteamerWhereUniqueInput, first: Int, last: Int, orderBy: [SteamerOrderByInput!], where: SteamerWhereInput): [Steamer!]!
   tasks(after: TaskWhereUniqueInput, before: TaskWhereUniqueInput, first: Int, last: Int, orderBy: [TaskOrderByInput!], where: TaskWhereInput): [Task!]!
   users(after: UserWhereUniqueInput, before: UserWhereUniqueInput, first: Int, last: Int, where: UserWhereInput): [User!]!
 }
@@ -233,6 +238,135 @@ type Query {
 enum SortOrder {
   asc
   desc
+}
+
+type Steamer {
+  id: String!
+  machineNo: Int!
+  steamerNo: Int!
+  Task: Task
+  taskId: String
+  updatedAt: DateTime!
+  updatedBy: String!
+}
+
+input SteamerCreateInput {
+  id: String
+  machineNo: Int!
+  steamerNo: Int!
+  Task: TaskCreateOneWithoutSteamerInput
+  updatedAt: DateTime
+  updatedBy: String!
+}
+
+input SteamerCreateManyWithoutTaskInput {
+  connect: [SteamerWhereUniqueInput!]
+  create: [SteamerCreateWithoutTaskInput!]
+}
+
+input SteamerCreateWithoutTaskInput {
+  id: String
+  machineNo: Int!
+  steamerNo: Int!
+  updatedAt: DateTime
+  updatedBy: String!
+}
+
+input SteamerListRelationFilter {
+  every: SteamerWhereInput
+  none: SteamerWhereInput
+  some: SteamerWhereInput
+}
+
+input SteamerOrderByInput {
+  id: SortOrder
+  machineNo: SortOrder
+  steamerNo: SortOrder
+  taskId: SortOrder
+  updatedAt: SortOrder
+  updatedBy: SortOrder
+}
+
+input SteamerScalarWhereInput {
+  AND: [SteamerScalarWhereInput!]
+  id: StringFilter
+  machineNo: IntFilter
+  NOT: [SteamerScalarWhereInput!]
+  OR: [SteamerScalarWhereInput!]
+  steamerNo: IntFilter
+  taskId: StringNullableFilter
+  updatedAt: DateTimeFilter
+  updatedBy: StringFilter
+}
+
+input SteamerUpdateInput {
+  id: StringFieldUpdateOperationsInput
+  machineNo: IntFieldUpdateOperationsInput
+  steamerNo: IntFieldUpdateOperationsInput
+  Task: TaskUpdateOneWithoutSteamerInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  updatedBy: StringFieldUpdateOperationsInput
+}
+
+input SteamerUpdateManyDataInput {
+  id: StringFieldUpdateOperationsInput
+  machineNo: IntFieldUpdateOperationsInput
+  steamerNo: IntFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  updatedBy: StringFieldUpdateOperationsInput
+}
+
+input SteamerUpdateManyWithoutTaskInput {
+  connect: [SteamerWhereUniqueInput!]
+  create: [SteamerCreateWithoutTaskInput!]
+  delete: [SteamerWhereUniqueInput!]
+  deleteMany: [SteamerScalarWhereInput!]
+  disconnect: [SteamerWhereUniqueInput!]
+  set: [SteamerWhereUniqueInput!]
+  update: [SteamerUpdateWithWhereUniqueWithoutTaskInput!]
+  updateMany: [SteamerUpdateManyWithWhereNestedInput!]
+  upsert: [SteamerUpsertWithWhereUniqueWithoutTaskInput!]
+}
+
+input SteamerUpdateManyWithWhereNestedInput {
+  data: SteamerUpdateManyDataInput!
+  where: SteamerScalarWhereInput!
+}
+
+input SteamerUpdateWithoutTaskDataInput {
+  id: StringFieldUpdateOperationsInput
+  machineNo: IntFieldUpdateOperationsInput
+  steamerNo: IntFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  updatedBy: StringFieldUpdateOperationsInput
+}
+
+input SteamerUpdateWithWhereUniqueWithoutTaskInput {
+  data: SteamerUpdateWithoutTaskDataInput!
+  where: SteamerWhereUniqueInput!
+}
+
+input SteamerUpsertWithWhereUniqueWithoutTaskInput {
+  create: SteamerCreateWithoutTaskInput!
+  update: SteamerUpdateWithoutTaskDataInput!
+  where: SteamerWhereUniqueInput!
+}
+
+input SteamerWhereInput {
+  AND: [SteamerWhereInput!]
+  id: StringFilter
+  machineNo: IntFilter
+  NOT: [SteamerWhereInput!]
+  OR: [SteamerWhereInput!]
+  steamerNo: IntFilter
+  Task: TaskWhereInput
+  taskId: StringNullableFilter
+  updatedAt: DateTimeFilter
+  updatedBy: StringFilter
+}
+
+input SteamerWhereUniqueInput {
+  id: String
 }
 
 input StringFieldUpdateOperationsInput {
@@ -285,7 +419,9 @@ input TaskCreateInput {
   id: String
   name: String!
   priority: Int!
+  serverId: String
   status: TaskStatus!
+  Steamer: SteamerCreateManyWithoutTaskInput
   total: Int!
   updatedAt: DateTime
   updatedBy: String!
@@ -297,6 +433,26 @@ input TaskCreateManyWithoutUserInput {
   create: [TaskCreateWithoutUserInput!]
 }
 
+input TaskCreateOneWithoutSteamerInput {
+  connect: TaskWhereUniqueInput
+  create: TaskCreateWithoutSteamerInput
+}
+
+input TaskCreateWithoutSteamerInput {
+  countTime: Int!
+  createdAt: DateTime
+  finishTime: DateTime!
+  id: String
+  name: String!
+  priority: Int!
+  serverId: String
+  status: TaskStatus!
+  total: Int!
+  updatedAt: DateTime
+  updatedBy: String!
+  user: UserCreateOneWithoutTaskInput!
+}
+
 input TaskCreateWithoutUserInput {
   countTime: Int!
   createdAt: DateTime
@@ -304,7 +460,9 @@ input TaskCreateWithoutUserInput {
   id: String
   name: String!
   priority: Int!
+  serverId: String
   status: TaskStatus!
+  Steamer: SteamerCreateManyWithoutTaskInput
   total: Int!
   updatedAt: DateTime
   updatedBy: String!
@@ -324,6 +482,7 @@ input TaskOrderByInput {
   id: SortOrder
   name: SortOrder
   priority: SortOrder
+  serverId: SortOrder
   status: SortOrder
   total: SortOrder
   updatedAt: SortOrder
@@ -341,6 +500,7 @@ input TaskScalarWhereInput {
   NOT: [TaskScalarWhereInput!]
   OR: [TaskScalarWhereInput!]
   priority: IntFilter
+  serverId: StringNullableFilter
   status: TaskStatus
   total: IntFilter
   updatedAt: DateTimeFilter
@@ -362,7 +522,9 @@ input TaskUpdateInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   priority: IntFieldUpdateOperationsInput
+  serverId: NullableStringFieldUpdateOperationsInput
   status: TaskStatus
+  Steamer: SteamerUpdateManyWithoutTaskInput
   total: IntFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   updatedBy: StringFieldUpdateOperationsInput
@@ -376,6 +538,7 @@ input TaskUpdateManyDataInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   priority: IntFieldUpdateOperationsInput
+  serverId: NullableStringFieldUpdateOperationsInput
   status: TaskStatus
   total: IntFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -399,6 +562,30 @@ input TaskUpdateManyWithWhereNestedInput {
   where: TaskScalarWhereInput!
 }
 
+input TaskUpdateOneWithoutSteamerInput {
+  connect: TaskWhereUniqueInput
+  create: TaskCreateWithoutSteamerInput
+  delete: Boolean
+  disconnect: Boolean
+  update: TaskUpdateWithoutSteamerDataInput
+  upsert: TaskUpsertWithoutSteamerInput
+}
+
+input TaskUpdateWithoutSteamerDataInput {
+  countTime: IntFieldUpdateOperationsInput
+  createdAt: DateTimeFieldUpdateOperationsInput
+  finishTime: DateTimeFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  priority: IntFieldUpdateOperationsInput
+  serverId: NullableStringFieldUpdateOperationsInput
+  status: TaskStatus
+  total: IntFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  updatedBy: StringFieldUpdateOperationsInput
+  user: UserUpdateOneRequiredWithoutTaskInput
+}
+
 input TaskUpdateWithoutUserDataInput {
   countTime: IntFieldUpdateOperationsInput
   createdAt: DateTimeFieldUpdateOperationsInput
@@ -406,7 +593,9 @@ input TaskUpdateWithoutUserDataInput {
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   priority: IntFieldUpdateOperationsInput
+  serverId: NullableStringFieldUpdateOperationsInput
   status: TaskStatus
+  Steamer: SteamerUpdateManyWithoutTaskInput
   total: IntFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   updatedBy: StringFieldUpdateOperationsInput
@@ -415,6 +604,11 @@ input TaskUpdateWithoutUserDataInput {
 input TaskUpdateWithWhereUniqueWithoutUserInput {
   data: TaskUpdateWithoutUserDataInput!
   where: TaskWhereUniqueInput!
+}
+
+input TaskUpsertWithoutSteamerInput {
+  create: TaskCreateWithoutSteamerInput!
+  update: TaskUpdateWithoutSteamerDataInput!
 }
 
 input TaskUpsertWithWhereUniqueWithoutUserInput {
@@ -434,7 +628,9 @@ input TaskWhereInput {
   NOT: [TaskWhereInput!]
   OR: [TaskWhereInput!]
   priority: IntFilter
+  serverId: StringNullableFilter
   status: TaskStatus
+  Steamer: SteamerListRelationFilter
   total: IntFilter
   updatedAt: DateTimeFilter
   updatedBy: StringFilter

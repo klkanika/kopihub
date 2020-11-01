@@ -16,6 +16,8 @@ schema.mutationType({
     t.crud.updateOneUser(),
     t.crud.updateOneLogUser(),
     t.crud.updateOneTask(),
+    t.crud.createOneSteamer(),
+    t.crud.updateOneSteamer(),
 
     t.field('createUser', {
       type: 'User',
@@ -243,6 +245,35 @@ schema.mutationType({
         }).finally(
           // () => io.emit('taskUpdate','update')
         )
+      },
+    })
+
+    t.field('updateSteamerComplete', {
+      type: "Boolean",
+      args: {
+        taskId : stringArg({ nullable: false }),
+      },
+      nullable: true,
+      resolve: async (_parent, { taskId }, ctx) => {
+        const steamer = await ctx.db.steamer.findMany({
+          where : {
+            taskId : taskId
+          }
+        })
+
+        if(steamer){
+          for (let stm of steamer) {
+            await ctx.db.steamer.update({
+              data :{
+                Task : {disconnect : true}
+              },
+              where : {
+                id : stm.id
+              }
+            })
+          }
+        }
+        return true;
       },
     })
   },
