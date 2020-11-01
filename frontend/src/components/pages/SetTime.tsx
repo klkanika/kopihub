@@ -87,7 +87,7 @@ function SetTime (props : ITimeProps) {
         /> */}
         <table className="table-fixed">
           <tr>
-            <td className="w-3/4 px-4 py-2">
+            <td className="w-3/4 px-4 py-2" style={{borderRight : '1px solid #ddd'}}>
               <div  className="grid grid-flow-col grid-cols-4 grid-rows-3 gap-4">
               {
                 props.steamer.map( (item: any) => (
@@ -109,20 +109,28 @@ function SetTime (props : ITimeProps) {
               }
               </div>
             </td>
-            <td className="w-1/4 px-4 py-2">
+            <td className="w-1/4 px-2 py-0" >
               <div className="flex flex-wrap">
-                <div className="px-2 py-2 m-1 border-solid  border-2 border-orange-800 font-bold text-base rounded-md w-full block text-center"
+                <div className="px-2 py-2 m-1 font-bold text-base rounded-md w-full block text-center"
+                  style={{border : '1px solid #683830',color: '#683830'}}           
                   onClick={() => {verifyData(props.taskId, 1);props.closePopup("")}}>1 min</div>
-                <div className="px-2 py-2 m-1 border-solid  border-2 border-orange-800 font-bold text-base rounded-md w-full block text-center" 
+                <div className="px-2 py-2 m-1 font-bold text-base rounded-md w-full block text-center" 
+                  style={{border : '1px solid #683830',color: '#683830'}}   
                   onClick={() => {verifyData(props.taskId, 3);props.closePopup("")}}>3 min</div>
-                <div className="px-2 py-2 m-1 border-solid  border-2 border-orange-800 font-bold text-base rounded-md w-full block text-center"
+                <div className="px-2 py-2 m-1 font-bold text-base rounded-md w-full block text-center"
+                  style={{border : '1px solid #683830',color: '#683830'}}   
                   onClick={() => {verifyData(props.taskId, 5);props.closePopup("")}}>5 min</div>
-                <div className="px-2 py-2 m-1 border-solid  border-2 border-orange-800 font-bold text-base rounded-md w-full block text-center" 
+                <div className="px-2 py-2 m-1 font-bold text-base rounded-md w-full block text-center" 
+                  style={{border : '1px solid #683830',color: '#683830'}}   
                   onClick={() => {verifyData(props.taskId, 7);props.closePopup("")}}>7 min</div>
-                <div className="px-2 py-2 m-1 border-solid  border-2 border-orange-800 font-bold text-base rounded-md w-full block text-center"
+                <div className="px-2 py-2 m-1 font-bold text-base rounded-md w-full block text-center"
+                  style={{border : '1px solid #683830',color: '#683830'}}   
                   onClick={() => {verifyData(props.taskId, 10);props.closePopup("")}}>10 min</div>
-                <div className="px-2 py-2 m-1 bg-orange-600 text-white font-bold text-base rounded-md w-full block text-center" 
-                  style={{display: props.status === "ONGOING" || props.status === "TIMEUP" ? "" : "none"}}
+                <div className="px-2 py-2 m-1 text-white font-bold text-base rounded-md w-full block text-center" 
+                  style={{
+                    display: props.status === "ONGOING" || props.status === "TIMEUP" ? "" : "none",
+                    backgroundColor: '#DF2809'
+                  }}
                   onClick={() => {verifyData(props.taskId, -1);props.closePopup("")}}>STOP</div>
               </div>
             </td>

@@ -36,31 +36,45 @@ function Steamer (props : ISteamerProps) {
   return (
       <div>
         {!selected && !props.unavailable && !props.taskId
-         && <div className="rounded-full h-10 w-10 flex items-center justify-center border-solid  border-2 border-orange-800"
-                    style={{backgroundColor:'white'}} onClick={click} >
+         && <div className="rounded-full h-12  w-12 flex items-center justify-center"
+                    style={{
+                      backgroundColor: 'white',             
+                      border:'1px solid #683830',   
+                      filter: 'drop-shadow(0px 1px 2px rgba(104, 56, 48, 0.6))'
+                    }}
+                    onClick={click} >
         </div>
         }
         {selected && !props.unavailable && !props.taskId && props.taskStatus !== "TIMEUP"
-         && <div className="rounded-full h-10 w-10 flex items-center justify-center" 
-                    style={{backgroundColor:'	#FFE4B5'}} onClick={click} > 
-                    <img src={icon_steamer_1} className="h-8 w-8" />  
+         && <div className="rounded-full h-12  w-12 flex items-center justify-center" 
+                    style={{
+                      backgroundColor:'#EBD2B6',
+                      filter: 'drop-shadow(0px 1px 2px rgba(196, 196, 196, 0.72))'
+                    }} onClick={click} > 
+                    <img src={icon_steamer_1} className="h-10 w-10" />  
         </div>
         }
-        {props.unavailable && <div className="rounded-full h-10 w-10 flex items-center justify-center"
-                    style={{backgroundColor:'#D3D3D3'}}>
+        {props.unavailable && <div className="rounded-full h-12 w-12 flex items-center justify-center"
+                    style={{backgroundColor:'#E5E5E5'}}>
         </div>
         }
         {props.taskId && props.ownedTaskId === props.taskId && props.taskStatus !== "TIMEUP"
-           && <div className="rounded-full h-10 w-10 flex items-center justify-center"
-                    style={{backgroundColor:'	#FFE4B5'}}>
-                    <img src={icon_steamer_1} className="h-8 w-8" />  
+           && <div className="rounded-full h-12 w-12  flex items-center justify-center"
+                    style={{
+                      backgroundColor:'#EBD2B6',
+                      filter: 'drop-shadow(0px 1px 2px rgba(196, 196, 196, 0.72))'
+                    }} onClick={click} > 
+                    <img src={icon_steamer_1} className="h-10 w-10" />  
         
         </div>
         }      
         {props.taskId && props.ownedTaskId === props.taskId && props.taskStatus === "TIMEUP"
-           && <div className="rounded-full h-10 w-10 flex items-center justify-center"
-                    style={{backgroundColor:'#FF4500'}}>
-                    <img src={icon_steamer_2} className="h-8 w-8" />        
+           && <div className="rounded-full h-12 w-12 flex items-center justify-center"
+                    style={{
+                      backgroundColor:'#FF5639',
+                      filter: 'drop-shadow(0px 1px 2px rgba(196, 196, 196, 0.72))'
+                    }}>
+                    <img src={icon_steamer_2} className="h-10 w-10" />        
         
         </div>
         }      
