@@ -6,12 +6,13 @@ const PrivateRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={(props) => {
-        console.log("Render")
-        return sessionStorage.getItem("loggedUserId") ? (
+        //console.log("Render")
+        //console.log("props", props.location.pathname)
+        return sessionStorage.getItem("loggedUserId") || props.location.pathname === "/Register" ? (
           <Component {...props} />
-      ) : (
-          <Redirect to="/?from=PrivateRoute" />
-      )
+        ) : (
+            <Redirect to="/?from=PrivateRoute" />
+        )
       }
         
       }

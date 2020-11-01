@@ -8,6 +8,7 @@ import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   CREATE_TASK, UPDATE_LOG_USER, GET_TASKS, UPDATE_TASK_ONGOING, UPDATE_TASK_TIMEUP,UPDATE_TASK_COMPLETE
+  ,GET_STEAMER, UPDATE_STEAMER, UPDATE_STEAMER_COMPLETE
 } from '../../utils/graphql';
 import {
   useMutation, useQuery,useLazyQuery
@@ -106,6 +107,7 @@ function TaskView() {
   }
 
   const toggleSetTimePopup = (taskId: string) => {
+    getSteamer()
     setCurTaskId(taskId)
     setSetTime(!setTime)
   }
@@ -124,13 +126,14 @@ function TaskView() {
   const [UpdateTaskTimeUp] = useMutation(UPDATE_TASK_TIMEUP)
   const [UpdateTaskComplete] = useMutation(UPDATE_TASK_COMPLETE)
 
-  const updateFinishDate = (dbTaskId : string, time : number) => {
+  const updateFinishDate = (dbTaskId : string, time : number, selected : string[]) => {
     var setFinishDate = new Date(); // get current 
     if(status == "ONGOING"){
       setFinishDate = finishDate;
     }
     setFinishDate.setHours(setFinishDate.getHours() ,setFinishDate.getMinutes() + time,setFinishDate.getSeconds() ,setFinishDate.getMilliseconds());
     setSetTime(!setTime)
+    updateSteamer(dbTaskId, selected)
     UpdateTaskOngoing({variables : {
       countTime : time,
       finishTime : setFinishDate,
@@ -141,6 +144,21 @@ function TaskView() {
           console.log("Update task failed")
         }
       );
+  }
+
+  const updateSteamer = (dbTaskId : string, selected : string[]) => {
+    selected.map((t:string)=>{
+      UpdateSteamer({variables : {
+        id : t,
+        taskId : dbTaskId
+      }}).then(
+        res => {
+        }
+        ,err => {
+          console.log("Update steamer failed")
+        }
+      );
+    })
   }
 
   const updateTimeUp = (dbTaskId : string) => {
@@ -164,6 +182,15 @@ function TaskView() {
           console.log("Update task completed failed")
         }
       )      ;
+
+      UpdateSteamerComplete({variables : {
+        taskId : dbTaskId}}).then(
+          res => {
+          }
+          ,err => {
+            console.log("Update steamer completed failed")
+          }
+        )      ;
   }
 
   const toggleRole = () => {
@@ -196,6 +223,19 @@ function TaskView() {
     
   }
 
+  const [getSteamer , {called, loading : steamerLoading, data : steamerData}] = useLazyQuery(GET_STEAMER,{
+    fetchPolicy: 'network-only',
+    onCompleted: (sre) => {     
+    },
+    onError: (err) => {
+      window.alert(err)
+    }
+  });
+  const steamer = (steamerData && steamerData.steamers)||[]
+
+  const [UpdateSteamer] = useMutation(UPDATE_STEAMER)
+  const [UpdateSteamerComplete] = useMutation(UPDATE_STEAMER_COMPLETE)
+
   return (
     <>
       {
@@ -207,7 +247,7 @@ function TaskView() {
           <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="" toggleRole={toggleRole}/>
           {setTime && userRole === "CHEF" && <SetTime taskId={curTaskId} closePopup={toggleSetTimePopup} 
             saveTime={updateFinishDate} visible={setTime} status={status}
-            updateComplete={updateComplete}/>}
+            updateComplete={updateComplete} steamer={steamer}/>}
 
           {timeUp && userRole === "CHEF" && <TimeUp taskId={curTaskId} closePopup={toggleSetTimeupPopup} 
             updateComplete={updateComplete} visible={timeUp}/>}

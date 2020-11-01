@@ -257,4 +257,42 @@ query GetPendingTask{
 }
 `
 
+export const GET_STEAMER = gql`
+query GetSteamer{
+  steamers(orderBy: [{steamerNo:asc}]){
+    id
+    steamerNo
+    machineNo
+    updatedAt
+    updatedBy
+    Task{
+      id
+    }
+    taskId
+  }
+}
+`
+
+export const UPDATE_STEAMER = gql`
+mutation updateOneSteamer($id: String!,$taskId: String!){
+  updateOneSteamer(
+    data : {
+      Task : { connect : {id : $taskId}}
+    }
+    where : {
+      id : $id
+    }
+  )
+  {
+      id
+  }
+} 
+`
+
+export const UPDATE_STEAMER_COMPLETE = gql`
+mutation updateSteamerComplete($taskId: String!){
+  updateSteamerComplete(taskId : $taskId)
+} 
+`
+
 
