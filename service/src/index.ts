@@ -6,18 +6,33 @@ import fetch from 'node-fetch'
 const { AUTHEN, COOKIE, API, USER } = process.env
 const app = express();
 
+app.post("/sync-order",async (req,res)=>{
+  
+  try{
+    if(AUTHEN &&  COOKIE){
+      const orders = await getOrders(AUTHEN, COOKIE);
+      await AddTask(orders);
+      console.log("fetched")
+    }
+  }catch(ex){
+    console.log(ex)
+  }
+  
+  res.send("ok")
+})
 app.listen(5000, () => {
   console.log(`server started at http://localhost:${5000}`);
   if (!AUTHEN || !COOKIE) return;
-
-  const interval = 10
-  setInterval(async () => {
-    const orders = await getOrders(AUTHEN, COOKIE);
-    await AddTask(orders);
-    console.log("fetched")
-  }, interval * 1000)
+  console.log("vvv")
+  // const interval = 10
+  // setInterval(async () => {
+  //   const orders = await getOrders(AUTHEN, COOKIE);
+  //   await AddTask(orders);
+  //   console.log("fetched")
+  // }, interval * 1000)
 
 });
+
 
 const AddTask = async (orders) => {
   if (orders === []) return;

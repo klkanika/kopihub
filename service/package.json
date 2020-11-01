@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node dist/index.js",
     "watch": "tsc -w",
+    "build": "tsc",
     "dev": "nodemon dist/index.js"
   },
   "author": "",
