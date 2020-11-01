@@ -111,17 +111,17 @@ function SetTime (props : ITimeProps) {
             </td>
             <td className="w-1/4 px-4 py-2">
               <div className="flex flex-wrap">
-                <div className="px-2 py-2 m-1 bg-yellow-600 font-bold text-base rounded-md w-full block text-center"
+                <div className="px-2 py-2 m-1 border-solid  border-2 border-orange-800 font-bold text-base rounded-md w-full block text-center"
                   onClick={() => {verifyData(props.taskId, 1);props.closePopup("")}}>1 min</div>
-                <div className="px-2 py-2 m-1 bg-yellow-600 font-bold text-base rounded-md w-full block text-center" 
+                <div className="px-2 py-2 m-1 border-solid  border-2 border-orange-800 font-bold text-base rounded-md w-full block text-center" 
                   onClick={() => {verifyData(props.taskId, 3);props.closePopup("")}}>3 min</div>
-                <div className="px-2 py-2 m-1 bg-yellow-600 font-bold text-base rounded-md w-full block text-center"
+                <div className="px-2 py-2 m-1 border-solid  border-2 border-orange-800 font-bold text-base rounded-md w-full block text-center"
                   onClick={() => {verifyData(props.taskId, 5);props.closePopup("")}}>5 min</div>
-                <div className="px-2 py-2 m-1 bg-yellow-600 font-bold text-base rounded-md w-full block text-center" 
+                <div className="px-2 py-2 m-1 border-solid  border-2 border-orange-800 font-bold text-base rounded-md w-full block text-center" 
                   onClick={() => {verifyData(props.taskId, 7);props.closePopup("")}}>7 min</div>
-                <div className="px-2 py-2 m-1 bg-yellow-600 font-bold text-base rounded-md w-full block text-center"
+                <div className="px-2 py-2 m-1 border-solid  border-2 border-orange-800 font-bold text-base rounded-md w-full block text-center"
                   onClick={() => {verifyData(props.taskId, 10);props.closePopup("")}}>10 min</div>
-                <div className="px-2 py-2 m-1 bg-orange-600 font-bold text-base rounded-md w-full block text-center" 
+                <div className="px-2 py-2 m-1 bg-orange-600 text-white font-bold text-base rounded-md w-full block text-center" 
                   style={{display: props.status === "ONGOING" || props.status === "TIMEUP" ? "" : "none"}}
                   onClick={() => {verifyData(props.taskId, -1);props.closePopup("")}}>STOP</div>
               </div>
