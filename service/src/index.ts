@@ -3,9 +3,9 @@ import express from "express";
 import { getOrders } from './ocha-api'
 import fetch from 'node-fetch'
 
-const { AUTHEN, COOKIE, API, USER } = process.env
+const { AUTHEN, COOKIE, API, USER,PORT } = process.env
 const app = express();
-
+console.log(AUTHEN,COOKIE,API,PORT)
 app.post("/sync-order",async (req,res)=>{
   
   try{
@@ -21,7 +21,7 @@ app.post("/sync-order",async (req,res)=>{
   res.send("ok")
 })
 app.listen(5000, () => {
-  console.log(`server started at http://localhost:${5000}`);
+  console.log(`server started at http://localhost:${PORT||5000}`);
   if (!AUTHEN || !COOKIE) return;
   console.log("vvv")
   // const interval = 10
