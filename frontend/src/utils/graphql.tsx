@@ -102,7 +102,7 @@ mutation UpdateTaskStatus($id: String!,$status: TaskStatus!,$countTime: Int!, $f
 } 
 `
 
-export const  CREATE_TASK = gql`
+export const CREATE_TASK = gql`
   mutation CreateTask($name: String!,$total: Int!,$finishTime:DateTime!,$countTime:Int!,$userId:String!){
     createTask(
       name : $name
@@ -122,7 +122,7 @@ export const  CREATE_TASK = gql`
 } 
 `
 
-export const  UPDATE_TASK_ONGOING = gql`
+export const UPDATE_TASK_ONGOING = gql`
   mutation UpdateTaskOngoing($finishTime:DateTime!,$countTime:Int!,$taskId:String!){
     updateTaskOngoing(
       finishTime : $finishTime
@@ -140,7 +140,7 @@ export const  UPDATE_TASK_ONGOING = gql`
 } 
 `
 
-export const  UPDATE_TASK_TIMEUP = gql`
+export const UPDATE_TASK_TIMEUP = gql`
   mutation UpdateTaskTimeup($taskId:String!){
     updateTaskTimeup(
       taskId : $taskId
@@ -156,7 +156,7 @@ export const  UPDATE_TASK_TIMEUP = gql`
 } 
 `
 
-export const  UPDATE_TASK_COMPLETE = gql`
+export const UPDATE_TASK_COMPLETE = gql`
   mutation UpdateTaskComplete($taskId:String!){
     updateTaskComplete(
       taskId : $taskId
@@ -172,7 +172,7 @@ export const  UPDATE_TASK_COMPLETE = gql`
 } 
 `
 
-export const  UPDATE_TASK_CANCEL = gql`
+export const UPDATE_TASK_CANCEL = gql`
   mutation UpdateTaskCancel($taskId:String!){
     updateTaskCancel(
       taskId : $taskId
@@ -188,7 +188,7 @@ export const  UPDATE_TASK_CANCEL = gql`
 } 
 `
 
-export const  UPDATE_EDIT_TASK = gql`
+export const UPDATE_EDIT_TASK = gql`
   mutation UpdateEditTask($taskId:String!,$name:String!,$total:Int!){
     UpdateEditTask(
       taskId : $taskId
@@ -207,7 +207,7 @@ export const  UPDATE_EDIT_TASK = gql`
 } 
 `
 
-export const  UPDATE_TASK_PRIORITY = gql`
+export const UPDATE_TASK_PRIORITY = gql`
   mutation UpdateTaskPriority($taskId:String!,$priority:Int!){
     updateTaskPriority(
       taskId : $taskId
@@ -295,4 +295,59 @@ mutation updateSteamerComplete($taskId: String!){
 } 
 `
 
+export const GET_QUEUES = gql`
+query getQueues{
+  getQueues{
+    recentQueue{
+      id
+      queueNo
+      status
+      ordered
+      userId
+      seat
+      name
+      pictureUrl
+    }
+    activeQueues{
+      id
+      queueNo
+      status
+      ordered
+      userId
+      seat
+      name
+      pictureUrl
+    }
+  }
+}
+`
 
+export const GET_MY_QUEUE = gql`
+query getMyQueue ($userId: String!){
+    getMyQueue (userId:$userId)
+}
+`
+
+export const CANCEL_QUEUE = gql`
+mutation cancelQueue($id: Int!){
+  cancelQueue(id: $id)
+}
+`
+
+export const FETCH_QUEUE = gql`
+mutation fetchQueue($id : Int!){
+  fetchQueue(id: $id)
+}
+`
+
+export const ORDER_FOOD = gql`
+mutation orderFood($id : Int!){
+  orderFood(id: $id)
+}
+`
+
+export const BOOK_QUEUE = gql`
+mutation bookQueue($userId: String, $seat: Int!, $name: String, $pictureUrl: String){
+  bookQueue(userId: $userId, seat: $seat, name: $name, pictureUrl: $pictureUrl)
+}
+`

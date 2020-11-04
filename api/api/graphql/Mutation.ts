@@ -1,8 +1,31 @@
 import { schema } from 'nexus'
-import { intArg, stringArg, arg, core } from '@nexus/schema'
+import { intArg, stringArg, arg, core, booleanArg } from '@nexus/schema'
 // import { compare, hash } from 'bcryptjs'
-import { compare ,hash } from 'bcrypt'
+import { compare, hash } from 'bcrypt'
 // import { io } from '../app'
+import moment from "moment"
+import 'moment/locale/th'
+
+moment.locale("th");
+
+const line = require("@line/bot-sdk");
+
+const client = new line.Client({
+  channelAccessToken: 'h7+lLICufFajGFVAyPVGHszfoMgmCuhrANvkgeqXREEmCgsVUUb/tEa6WxRZm1ofl+NERQYq4hdahQBlZeIybFXw1Ro6wIfB0xYTf6uKGTIv1OZ6m2er+nUrJVGp9FoHggTBAiLSrpoWh5kQq8mSVQdB04t89/1O/w1cDnyilFU=',
+});
+
+const sendMessageToClient = (toUser: String, message: any) => {
+  return client
+    .pushMessage(toUser, message)
+    .then(() => {
+      console.log("pushMessage success!");
+      return true;
+    })
+    .catch(() => {
+      console.log("pushMessage error!");
+      return false;
+    });
+};
 
 const dateTimeArg = (
   opts: core.NexusArgConfig<'DateTime'>
@@ -11,34 +34,34 @@ const dateTimeArg = (
 schema.mutationType({
   definition(t) {
     t.crud.createOneUser(),
-    t.crud.createOneLogUser(),
-    t.crud.createOneTask(),
-    t.crud.updateOneUser(),
-    t.crud.updateOneLogUser(),
-    t.crud.updateOneTask(),
-    t.crud.createOneSteamer(),
-    t.crud.updateOneSteamer(),
+      t.crud.createOneLogUser(),
+      t.crud.createOneTask(),
+      t.crud.updateOneUser(),
+      t.crud.updateOneLogUser(),
+      t.crud.updateOneTask(),
+      t.crud.createOneSteamer(),
+      t.crud.updateOneSteamer(),
 
-    t.field('createUser', {
-      type: 'User',
-      args: {
-        name: stringArg({ nullable: false }),
-        userName: stringArg({ nullable: false }),
-        password: stringArg({ nullable: false }),
-      },
-      nullable: true,
-      resolve: async (_parent, { name, userName, password }, ctx) => {
-        const hashedPassword = await hash(password, 10)
-        return ctx.db.user.create({
-          data: {
-            name : name,
-            userName : userName,
-            password : hashedPassword,
-            enableStatus : "SHOW"
-          },
-        })
-      },
-    })
+      t.field('createUser', {
+        type: 'User',
+        args: {
+          name: stringArg({ nullable: false }),
+          userName: stringArg({ nullable: false }),
+          password: stringArg({ nullable: false }),
+        },
+        nullable: true,
+        resolve: async (_parent, { name, userName, password }, ctx) => {
+          const hashedPassword = await hash(password, 10)
+          return ctx.db.user.create({
+            data: {
+              name: name,
+              userName: userName,
+              password: hashedPassword,
+              enableStatus: "SHOW"
+            },
+          })
+        },
+      })
 
     t.field('login', {
       type: 'LogUser',
@@ -63,7 +86,7 @@ schema.mutationType({
         // io.emit('hello','hello');
         return ctx.db.logUser.create({
           data: {
-            role : 'NONE',
+            role: 'NONE',
             user: { connect: { id: user.id } }
           },
         })
@@ -75,24 +98,24 @@ schema.mutationType({
       args: {
         name: stringArg({ nullable: false }),
         total: intArg({ nullable: false }),
-        finishTime: dateTimeArg({type:'DateTime'}),
+        finishTime: dateTimeArg({ type: 'DateTime' }),
         countTime: intArg({ nullable: false }),
-        userId : stringArg({ nullable: false }),
+        userId: stringArg({ nullable: false }),
         serverId: stringArg()
       },
       nullable: true,
       resolve: async (_parent, { name, total, finishTime, countTime, userId, serverId }, ctx) => {
-        
+
         const count = await ctx.db.task.count()
         return ctx.db.task.create({
           data: {
-            countTime : countTime,
-            finishTime : finishTime,
-            name : name,
-            priority : count + 1,
-            status : 'PENDING',
-            total : total,
-            updatedBy : userId,
+            countTime: countTime,
+            finishTime: finishTime,
+            name: name,
+            priority: count + 1,
+            status: 'PENDING',
+            total: total,
+            updatedBy: userId,
             user: { connect: { id: userId } },
             serverId: serverId
           },
@@ -101,7 +124,7 @@ schema.mutationType({
             // io.emit('taskUpdate','update')
             // io.emit('pendingTaskUpdate','update')
           }
-          
+
         )
       },
     })
@@ -109,22 +132,22 @@ schema.mutationType({
     t.field('updateTaskOngoing', {
       type: 'Task',
       args: {
-        finishTime: dateTimeArg({type:'DateTime'}),
+        finishTime: dateTimeArg({ type: 'DateTime' }),
         countTime: intArg({ nullable: false }),
-        taskId : stringArg({ nullable: false }),
+        taskId: stringArg({ nullable: false }),
       },
       nullable: true,
       resolve: async (_parent, { finishTime, countTime, taskId }, ctx) => {
-        
+
         return ctx.db.task.update({
           where: {
-            id : taskId
+            id: taskId
           },
           data: {
-            countTime : countTime,
-            finishTime : finishTime,
-            status : 'ONGOING',
-            priority : 0
+            countTime: countTime,
+            finishTime: finishTime,
+            status: 'ONGOING',
+            priority: 0
           },
         }).finally(
           () => {
@@ -138,17 +161,17 @@ schema.mutationType({
     t.field('updateTaskTimeup', {
       type: 'Task',
       args: {
-        taskId : stringArg({ nullable: false }),
+        taskId: stringArg({ nullable: false }),
       },
       nullable: true,
       resolve: async (_parent, { taskId }, ctx) => {
-        
+
         return ctx.db.task.update({
           where: {
-            id : taskId
+            id: taskId
           },
           data: {
-            status : 'TIMEUP'
+            status: 'TIMEUP'
           },
         }).finally(
           // () => io.emit('taskUpdate','update')
@@ -159,17 +182,17 @@ schema.mutationType({
     t.field('updateTaskComplete', {
       type: 'Task',
       args: {
-        taskId : stringArg({ nullable: false }),
+        taskId: stringArg({ nullable: false }),
       },
       nullable: true,
       resolve: async (_parent, { taskId }, ctx) => {
-        
+
         return ctx.db.task.update({
           where: {
-            id : taskId
+            id: taskId
           },
           data: {
-            status : 'COMPLETED'
+            status: 'COMPLETED'
           },
         }).finally(
           // () => io.emit('taskUpdate','update')
@@ -180,23 +203,23 @@ schema.mutationType({
     t.field('updateTaskCancel', {
       type: 'Task',
       args: {
-        taskId : stringArg({ nullable: false }),
+        taskId: stringArg({ nullable: false }),
       },
       nullable: true,
       resolve: async (_parent, { taskId }, ctx) => {
-        
+
         return ctx.db.task.update({
           where: {
-            id : taskId
+            id: taskId
           },
           data: {
-            status : 'CANCELED'
+            status: 'CANCELED'
           },
         }).finally(
-          () =>{
+          () => {
             // io.emit('taskUpdate','update')
             // io.emit('pendingTaskUpdate','update')
-          } 
+          }
         )
       },
     })
@@ -204,26 +227,26 @@ schema.mutationType({
     t.field('UpdateEditTask', {
       type: 'Task',
       args: {
-        taskId : stringArg({ nullable: false }),
-        name : stringArg({ nullable: false }),
-        total : intArg({ nullable: false }),
+        taskId: stringArg({ nullable: false }),
+        name: stringArg({ nullable: false }),
+        total: intArg({ nullable: false }),
       },
       nullable: true,
-      resolve: async (_parent, { taskId, name , total}, ctx) => {
-        
+      resolve: async (_parent, { taskId, name, total }, ctx) => {
+
         return ctx.db.task.update({
           where: {
-            id : taskId
+            id: taskId
           },
           data: {
-            name : name,
-            total : total
+            name: name,
+            total: total
           },
         }).finally(
-          () =>{
+          () => {
             // io.emit('taskUpdate','update')
             // io.emit('pendingTaskUpdate','update')
-          } 
+          }
         )
       },
     })
@@ -231,18 +254,18 @@ schema.mutationType({
     t.field('updateTaskPriority', {
       type: 'Task',
       args: {
-        taskId : stringArg({ nullable: false }),
-        priority : intArg({ nullable: false }),
+        taskId: stringArg({ nullable: false }),
+        priority: intArg({ nullable: false }),
       },
       nullable: true,
       resolve: async (_parent, { taskId, priority }, ctx) => {
-        
+
         return ctx.db.task.update({
           where: {
-            id : taskId
+            id: taskId
           },
           data: {
-            priority : priority
+            priority: priority
           },
         }).finally(
           // () => io.emit('taskUpdate','update')
@@ -253,29 +276,158 @@ schema.mutationType({
     t.field('updateSteamerComplete', {
       type: "Boolean",
       args: {
-        taskId : stringArg({ nullable: false }),
+        taskId: stringArg({ nullable: false }),
       },
       nullable: true,
       resolve: async (_parent, { taskId }, ctx) => {
         const steamer = await ctx.db.steamer.findMany({
-          where : {
-            taskId : taskId
+          where: {
+            taskId: taskId
           }
         })
 
-        if(steamer){
+        if (steamer) {
           for (let stm of steamer) {
             await ctx.db.steamer.update({
-              data :{
-                Task : {disconnect : true}
+              data: {
+                Task: { disconnect: true }
               },
-              where : {
-                id : stm.id
+              where: {
+                id: stm.id
               }
             })
           }
         }
         return true;
+      },
+    })
+
+    t.field('cancelQueue', {
+      type: 'Boolean',
+      args: {
+        id: intArg({ required: true }),
+      },
+      resolve: async (_parent, { id }, ctx) => {
+        const updateCancelQueue = await ctx.db.queue.update({
+          where: {
+            id: id
+          },
+          data: {
+            status: 'CANCELLED'
+          },
+        })
+
+        return updateCancelQueue ? true : false
+      },
+    })
+
+    t.field('fetchQueue', {
+      type: 'Boolean',
+      args: {
+        id: intArg({ required: true }),
+      },
+      resolve: async (_parent, { id }, ctx) => {
+        const updateFetchQueue = await ctx.db.queue.update({
+          where: {
+            id: id
+          },
+          data: {
+            status: 'SUCCESS'
+          },
+        })
+
+        return updateFetchQueue ? true : false
+      },
+    })
+
+    t.field('orderFood', {
+      type: 'Boolean',
+      args: {
+        id: intArg({ required: true }),
+      },
+      resolve: async (_parent, { id }, ctx) => {
+        const updateOrderFood = await ctx.db.queue.update({
+          where: {
+            id: id
+          },
+          data: {
+            ordered: true
+          },
+        })
+
+        return updateOrderFood ? true : false
+      },
+    })
+
+    t.field('bookQueue', {
+      type: 'Boolean',
+      args: {
+        userId: stringArg({ required: false }),
+        seat: intArg({ required: true }),
+        name: stringArg({ required: false }),
+        pictureUrl: stringArg({ required: false })
+      },
+      resolve: async (_parent, { userId, seat, name, pictureUrl }, ctx) => {
+        let queueString = 'A'
+        let maxQueueDigit = 3
+        const lastQueues = await ctx.db.queue.findMany({
+          where: {
+            AND: [
+              {
+                createdAt: {
+                  gt: moment().startOf('day').toDate()
+                }
+              },
+              {
+                createdAt: {
+                  lt: moment().endOf('day').toDate()
+                }
+              }
+            ]
+          },
+          orderBy: {
+            id: 'desc'
+          }
+        })
+
+        let lastQueue
+        if (lastQueues && lastQueues.length > 0) {
+          lastQueue = lastQueues[0]
+        }
+
+        let queueNo
+        if (lastQueue) {
+          queueNo = parseInt(lastQueue.queueNo.substr(queueString.length)) + 1 + ''
+        } else {
+          queueNo = '1'
+        }
+
+        while (queueNo.length < maxQueueDigit) {
+          queueNo = '0' + queueNo
+        }
+
+        queueNo = queueString + queueNo
+
+        const createBookQueue = await ctx.db.queue.create({
+          data: {
+            queueNo: queueNo,
+            status: 'ACTIVE',
+            ordered: false,
+            userId: userId,
+            seat: seat,
+            name: name,
+            pictureUrl: pictureUrl
+          },
+        })
+
+        if (createBookQueue && userId) {
+          // await sendMessageToClient(userId, {
+          //   type: "text",
+          //   text: `คิวของคุณ ${createBookQueue.queueNo}`,
+          // });
+        }
+
+        return createBookQueue ? true : false
       },
     })
   },

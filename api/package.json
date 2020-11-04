@@ -19,11 +19,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    
+    "@line/liff": "^2.5.0",
     "@types/bcrypt": "^3.0.0",
     "@types/socket.io": "^2.1.11",
     "apollo-boost": "^0.4.9",
     "bcrypt": "^5.0.0",
+    "moment": "^2.27.0",
     "nexus": "^0.26.1",
     "nexus-plugin-prisma": "^0.18.1",
     "pg": "^8.3.3",
