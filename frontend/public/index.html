@@ -73,6 +73,9 @@
         console.log("muted")        
         document.getElementById('audio').muted = true
       }
+      if(window.location.pathname.toLowerCase().indexOf('queue') != -1){
+        document.getElementById('audio').style.display = 'none'
+      }
     </script>
     <script
       src="https://browser.sentry-cdn.com/5.27.1/bundle.min.js"

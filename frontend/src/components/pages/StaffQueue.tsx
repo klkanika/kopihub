@@ -12,6 +12,7 @@ import CustomModal from './CustomModal';
 import { AlertOutlined } from '@ant-design/icons';
 import { Global, css } from '@emotion/core';
 import kopihub from '../../imgs/queue_kopihub.jpg'
+import { Redirect } from 'react-router-dom';
 
 const StaffQueue = () => {
 
@@ -43,6 +44,9 @@ const StaffQueue = () => {
     const [bookQueueName, setBookQueueName]: any = useState();
     const [bookQueueSeat, setBookQueueSeat]: any = useState(2);
 
+    if (!sessionStorage.getItem("loggedUserId")) {
+        return <Redirect to={'/'} />
+    }
     return (
         <div style={{ touchAction: 'manipulation' }}>
             <Global
@@ -67,7 +71,7 @@ const StaffQueue = () => {
                     font-size: 7em;
                 }
                 .common-queue-no-font-size {
-                    font-size: 10em;
+                    font-size: 7em;
                 }
             }
             `}
@@ -215,7 +219,7 @@ const StaffQueue = () => {
                         {
                             activeQueues && activeQueues.map((item: any, index: any) => {
                                 return (
-                                    <div className="mb-4" style={index % 2 === 0 ? { borderRadius: '0.5rem', backgroundColor: 'rgb(255,255,255,0.8)', width: '48%', marginRight: '2%' } : { borderRadius: '0.5rem', backgroundColor: 'rgb(255,255,255,0.8)', width: '48%', marginLeft: '2%' }}>
+                                    <div key={index} className="mb-4" style={index % 2 === 0 ? { borderRadius: '0.5rem', backgroundColor: 'rgb(255,255,255,0.8)', width: '48%', marginRight: '2%' } : { borderRadius: '0.5rem', backgroundColor: 'rgb(255,255,255,0.8)', width: '48%', marginLeft: '2%' }}>
                                         <div className="w-full" style={{ borderBottom: '1px solid rgb(23,23,23,0.1)' }}>
                                             <div className="flex items-center justify-between w-full p-4">
                                                 <div className="flex items-center">

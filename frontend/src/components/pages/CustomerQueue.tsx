@@ -74,9 +74,6 @@ const CustomerQueue = () => {
             .bg-transparent{
                 background-color: rgb(255,255,255,0.8)
             }
-            .popup-width{
-                width: 90vw
-            }
 
             @media (min-width:768px) {
                 .recent-queue-profile-img {
@@ -88,9 +85,6 @@ const CustomerQueue = () => {
                 }
                 .common-queue-no-font-size {
                     font-size: 10em;
-                }
-                .popup-width{
-                    width: 70vw
                 }
             }
             `}
@@ -196,7 +190,7 @@ const CustomerQueue = () => {
                         {
                             activeQueues && activeQueues.map((item: any, index: any) => {
                                 return (
-                                    <div className={`mb-4 ${userId && userId === item.userId ? 'my-queue' : 'bg-transparent'}`} style={index % 2 === 0 ? { borderRadius: '0.5rem', width: '48%', marginRight: '2%' } : { borderRadius: '0.5rem', backgroundColor: 'rgb(255,255,255,0.8)', width: '48%', marginLeft: '2%' }}>
+                                    <div key={index} className={`mb-4 ${userId && userId === item.userId ? 'my-queue' : 'bg-transparent'}`} style={index % 2 === 0 ? { borderRadius: '0.5rem', width: '48%', marginRight: '2%' } : { borderRadius: '0.5rem', backgroundColor: 'rgb(255,255,255,0.8)', width: '48%', marginLeft: '2%' }}>
                                         <div className="w-full" style={{ borderBottom: '1px solid rgb(23,23,23,0.1)' }}>
                                             <div className="flex items-center justify-between w-full p-4">
                                                 <div className="flex items-center">

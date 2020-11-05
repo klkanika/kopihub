@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import { Button } from 'antd';
 import {
+  Redirect,
   useHistory
 } from "react-router-dom";
 import {
@@ -11,6 +12,7 @@ import {
 } from '@apollo/react-hooks'
 import icon_chef from '../../imgs/icon_chef.svg'
 import icon_counter from '../../imgs/icon_counter.svg'
+import icon_queue from '../../imgs/icon_queue.svg'
 
 declare global {
   interface Window {
@@ -63,6 +65,13 @@ function SelectRole() {
         >
           <img src={icon_chef} style={{height:'150px',margin:'0 auto 30px'}}/>
           ครัว
+        </Button>
+        <Button onClick={() => window.location.href = "/staffqueue"} name="STAFFQUEUE" value="STAFFQUEUE"
+          className="shadow"
+          style={{width: '300px',margin:'20px',borderRadius:'5px',padding:'20px',height:'auto', fontSize:'22px', fontWeight:'bold',color:'#683830',boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'}}
+        >
+          <img src={icon_queue} style={{height:'150px',margin:'0 auto 30px'}}/>
+          คิว
         </Button>  
     </div>
    </div>
