@@ -24,12 +24,12 @@ const StaffQueue = () => {
         }
     });
 
+    const [fetchQueue, { loading: fetchQueueLoading }] = useMutation(FETCH_QUEUE);
+
     const recentQueue = (queuesData && queuesData.getQueues && queuesData.getQueues.recentQueue)
     const activeQueues = (queuesData && queuesData.getQueues && queuesData.getQueues.activeQueues)
 
-    const [userId, setUserId]: any = useState();
     const [fetchQueueVisible, setFetchQueueVisible]: any = useState(false);
-    const [recentQueueNo, setRecentQueueNo]: any = useState();
 
     const [cancelQueueVisible, setCancelQueueVisible]: any = useState(false);
     const [cancelQueueId, setCancelQueueId]: any = useState();
@@ -47,6 +47,18 @@ const StaffQueue = () => {
     if (!sessionStorage.getItem("loggedUserId")) {
         return <Redirect to={'/'} />
     }
+
+    let countA = 0, countB = 0, countC = 0
+    let firstA = activeQueues && activeQueues.filter((q: any) => {
+        return q.seat < 4
+    })[0]
+    let firstB = activeQueues && activeQueues.filter((q: any) => {
+        return q.seat > 3 && q.seat < 7
+    })[0]
+    let firstC = activeQueues && activeQueues.filter((q: any) => {
+        return q.seat >= 7
+    })[0]
+
     return (
         <div style={{ touchAction: 'manipulation' }}>
             <Global
@@ -81,12 +93,44 @@ const StaffQueue = () => {
 
             <CustomModal
                 buttonColor="#088C0D"
-                buttonText="ได้โต๊ะแล้ว"
+                buttonText="เรียกคิว"
                 content={
                     <div>
-                        <div className="pt-12 pb-12">
-                            <div className="text-4xl" style={{ color: '#585568' }}>หมายเลขคิว</div>
-                            <div className="leading-none common-queue-no-font-size" style={{ color: '#683830' }}>{recentQueueNo}</div>
+                        <div className="pt-12 pb-12 pr-12 pl-12">
+                            <div className="md:text-6xl text-3xl pb-6">เรียกคิว</div>
+                            <div className="flex items-center justify-between mb-4">
+                                <button onClick={() => { if (firstA) { fetchQueue({ variables: { id: firstA.id } }); setFetchQueueVisible(false); } }} className="leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}>1-3 คน</button>
+                                <div className="text-base md:text-5xl flex" style={{ color: '#585568' }}>
+                                    {firstA ? (
+                                        <>
+                                            <div className="mr-4">{firstA && firstA.queueNo}</div>
+                                            <img onClick={() => { setCancelQueueId(firstA && firstA.id); setCancelQueueNo(firstA && firstA.queueNo); setCancelQueueOrderFoodStatus(firstA && firstA.ordered); setCancelQueueVisible(true) }} className="mt-1 md:w-10 w-6" src={queue_bin} />
+                                        </>
+                                    ) : ''}
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between mb-4">
+                                <button onClick={() => { if (firstB) { fetchQueue({ variables: { id: firstB.id } }); setFetchQueueVisible(false); } }} className="leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}>4-6 คน</button>
+                                <div className="text-base md:text-5xl flex" style={{ color: '#585568' }}>
+                                    {firstB ? (
+                                        <>
+                                            <div className="mr-4">{firstB && firstB.queueNo}</div>
+                                            <img onClick={() => { setCancelQueueId(firstB && firstB.id); setCancelQueueNo(firstB && firstB.queueNo); setCancelQueueOrderFoodStatus(firstB && firstB.ordered); setCancelQueueVisible(true) }} className="mt-1 md:w-10 w-6" src={queue_bin} />
+                                        </>
+                                    ) : ''}
+                                </div>
+                            </div>
+                            <div className="flex items-center justify-between mb-4">
+                                <button onClick={() => { if (firstC) { fetchQueue({ variables: { id: firstC.id } }); setFetchQueueVisible(false); } }} className="leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}>7+ คน</button>
+                                <div className="text-base md:text-5xl flex" style={{ color: '#585568' }}>
+                                    {firstC ? (
+                                        <>
+                                            <div className="mr-4">{firstC && firstC.queueNo}</div>
+                                            <img onClick={() => { setCancelQueueId(firstC && firstC.id); setCancelQueueNo(firstC && firstC.queueNo); setCancelQueueOrderFoodStatus(firstC && firstC.ordered); setCancelQueueVisible(true) }} className="mt-1 md:w-10 w-6" src={queue_bin} />
+                                        </>
+                                    ) : ''}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
@@ -94,6 +138,7 @@ const StaffQueue = () => {
                 setVisible={setFetchQueueVisible}
                 id={activeQueues && activeQueues[0] ? activeQueues[0].id : ''}
                 type='fetch'
+                disabled={true}
             />
 
             <CustomModal
@@ -124,7 +169,7 @@ const StaffQueue = () => {
 
             <CustomModal
                 buttonColor="#683830"
-                buttonText="สั่งอาหารแล้ว"
+                buttonText="สั่งแล้ว"
                 content={
                     <div>
                         <div className="pt-12 pb-12">
@@ -169,6 +214,7 @@ const StaffQueue = () => {
                 seat={bookQueueSeat}
                 name={bookQueueName}
                 setBookQueueSeat={setBookQueueSeat}
+                setBookQueueName={setBookQueueName}
             />
 
             <div
@@ -198,8 +244,8 @@ const StaffQueue = () => {
                                     <div className="text-right">
                                         <div className="flex items-center justify-end">
                                             {recentQueue.ordered ?
-                                                <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งอาหารแล้ว</div> :
-                                                <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" onClick={() => { setOrderFoodId(recentQueue && recentQueue.id); setOrderFoodNo(recentQueue && recentQueue.queueNo); setOrderFoodVisible(true) }} style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่งอาหาร</div>
+                                                <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
+                                                <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" onClick={() => { setOrderFoodId(recentQueue && recentQueue.id); setOrderFoodNo(recentQueue && recentQueue.queueNo); setOrderFoodVisible(true) }} style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
                                             }
                                             <p className="mb-0 md:text-xl text-xs md:ml-4 ml-2 whitespace-no-wrap" style={{ color: '#585568' }}>หมายเลขคิว</p>
                                         </div>
@@ -210,7 +256,7 @@ const StaffQueue = () => {
                     }
 
                     <div className="flex justify-center">
-                        <button style={{ backgroundColor: '#683830', borderRadius: '1rem' }} className="text-white text-3xl pt-4 pb-4 pr-8 pl-8 mt-8 mb-8 flex items-center" disabled={activeQueues && activeQueues[0] ? false : true} onClick={() => { setRecentQueueNo(activeQueues && activeQueues[0] ? activeQueues[0].queueNo : ''); setFetchQueueVisible(true); }}>
+                        <button style={{ backgroundColor: '#683830', borderRadius: '1rem' }} className="text-white text-3xl pt-4 pb-4 pr-8 pl-8 mt-8 mb-8 flex items-center" disabled={activeQueues && activeQueues[0] ? false : true} onClick={() => { setFetchQueueVisible(true); }}>
                             <AlertOutlined className="mr-6" /> เรียกคิว
                         </button>
                     </div>
@@ -239,8 +285,8 @@ const StaffQueue = () => {
                                                 <div className="md:flex items-center hidden">
                                                     <div className="pr-4">
                                                         {item.ordered ?
-                                                            <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งอาหารแล้ว</div> :
-                                                            <div className="p-1 md:text-xs whitespace-no-wrap" onClick={() => { setOrderFoodId(item && item.id); setOrderFoodNo(item && item.queueNo); setOrderFoodVisible(true) }} style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่งอาหาร</div>
+                                                            <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
+                                                            <div className="p-1 md:text-xs whitespace-no-wrap" onClick={() => { setOrderFoodId(item && item.id); setOrderFoodNo(item && item.queueNo); setOrderFoodVisible(true) }} style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
                                                         }
                                                     </div>
                                                     <img onClick={() => { setCancelQueueId(item && item.id); setCancelQueueNo(item && item.queueNo); setCancelQueueOrderFoodStatus(item && item.ordered); setCancelQueueVisible(true) }} className="object-cover" style={{ width: '2em' }} src={queue_bin} />
@@ -250,7 +296,7 @@ const StaffQueue = () => {
                                         <div className="flex pt-4 pb-4">
                                             <div className="text-center w-2/5 pb-2" style={{ borderRight: '2px solid rgb(41,22,19,0.3)' }}>
                                                 <p className="mb-0 md:text-base text-xs whitespace-no-wrap" style={{ color: '#585568' }}>รออีก (คิว)</p>
-                                                <p className="mb-0 leading-none md:text-6xl text-2xl" style={{ color: '#683830' }}>{index + 1}</p>
+                                                <p className="mb-0 leading-none md:text-6xl text-2xl" style={{ color: '#683830' }}>{item.seat < 4 ? ++countA : item.seat < 7 ? ++countB : ++countC}</p>
                                             </div>
                                             <div className="text-center w-3/5 pb-2">
                                                 <p className="mb-0 md:text-base text-xs whitespace-no-wrap" style={{ color: '#585568' }}>หมายเลขคิว</p>

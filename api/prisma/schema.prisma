@@ -87,6 +87,7 @@ model Steamer {
 model Queue {
   id         Int         @id @default(autoincrement())
   createdAt  DateTime    @default(now())
+  updateAt   DateTime    @updatedAt
   queueNo    String
   status     QueueStatus
   ordered    Boolean

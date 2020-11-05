@@ -61,7 +61,7 @@ schema.queryType({
             ]
           },
           orderBy: {
-            createdAt: 'desc'
+            updateAt: 'desc'
           },
         })
 

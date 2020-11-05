@@ -368,7 +368,7 @@ schema.mutationType({
         pictureUrl: stringArg({ required: false })
       },
       resolve: async (_parent, { userId, seat, name, pictureUrl }, ctx) => {
-        let queueString = 'A'
+        let queueString = seat < 4 ? 'A' : seat < 7 ? 'B' : 'C'
         let maxQueueDigit = 3
         const lastQueues = await ctx.db.queue.findMany({
           where: {
@@ -381,6 +381,11 @@ schema.mutationType({
               {
                 createdAt: {
                   lt: moment().endOf('day').toDate()
+                }
+              },
+              {
+                queueNo: {
+                  startsWith: queueString
                 }
               }
             ]
@@ -421,6 +426,7 @@ schema.mutationType({
         })
 
         if (createBookQueue && userId) {
+          // liff#1
           // await sendMessageToClient(userId, {
           //   type: "text",
           //   text: `คิวของคุณ ${createBookQueue.queueNo}`,

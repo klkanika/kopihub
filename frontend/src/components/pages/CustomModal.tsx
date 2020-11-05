@@ -3,25 +3,34 @@ import { useMutation } from '@apollo/react-hooks';
 import { BOOK_QUEUE, CANCEL_QUEUE, FETCH_QUEUE, ORDER_FOOD } from '../../utils/graphql';
 import { CloseOutlined } from '@ant-design/icons';
 import { css, Global } from '@emotion/core';
+import liffHelper from '../../utils/liffHelper';
 
 const CustomModal = (props: any) => {
 
-    const [fetchQueue, { loading: fetchQueueLoading }] = useMutation(FETCH_QUEUE);
+    // const [fetchQueue, { loading: fetchQueueLoading }] = useMutation(FETCH_QUEUE);
     const [cancelQueue, { loading: cancelQueueLoading }] = useMutation(CANCEL_QUEUE);
     const [orderFood, { loading: orderFoodLoading }] = useMutation(ORDER_FOOD);
     const [bookQueue, { loading: bookQueueLoading }] = useMutation(BOOK_QUEUE);
 
-    const insistEvent = () => {
+    const insistEvent = async () => {
         if (props && props.type === 'fetch') {
-            fetchQueue({ variables: { id: props.id } })
+            // await fetchQueue({ variables: { id: props.id } })
         } else if (props && props.type === 'cancel') {
-            cancelQueue({ variables: { id: props.id } })
+            await cancelQueue({ variables: { id: props.id } })
         } else if (props && props.type === 'order') {
-            orderFood({ variables: { id: props.id } })
+            await orderFood({ variables: { id: props.id } })
         } else {
-            bookQueue({ variables: { seat: props.seat, name: props.name, userId: props.userId, pictureUrl: props.pictureUrl } })
+            // await liffHelper.sendMessages([
+            //     {
+            //         type: "text",
+            //         text: `ฉันขอจองคิวสำหรับ ${props.seat} คน`
+            //     },
+            // ]);
+            await bookQueue({ variables: { seat: props.seat, name: props.name, userId: props.userId, pictureUrl: props.pictureUrl } })
+            
             if (props.setBookQueueSeat) {
                 props.setBookQueueSeat(2)
+                props.setBookQueueName('')
             }
         }
         props.setVisible(false)

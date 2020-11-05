@@ -28,6 +28,7 @@ const CustomerQueue = () => {
     liffHelper.getProfile().then((profile) => {
         setUserId(profile.userId);
         setPictureUrl(profile.pictureUrl)
+        setBookQueueName(profile.displayName)
     });
 
     const { data: queuesData, loading: queuesLoading } = useQuery(GET_QUEUES, {
@@ -53,7 +54,8 @@ const CustomerQueue = () => {
     const recentQueue = (queuesData && queuesData.getQueues && queuesData.getQueues.recentQueue)
     const activeQueues = (queuesData && queuesData.getQueues && queuesData.getQueues.activeQueues)
 
-    if (!userId) {
+    let countA = 0, countB = 0, countC = 0
+    if (false) {
         return null
     } else {
         return (
@@ -130,7 +132,7 @@ const CustomerQueue = () => {
                                 <div className="md:text-4xl text-base md:pl-16 md:pr-16 pl-4 pr-4 pt-4 pb-4 text-left">
                                     <div className="flex items-center justify-between md:mb-12 mb-4 w-full">
                                         <p className="mb-0 whitespace-no-wrap">ชื่อ : </p>
-                                        <input className="md:pl-6 pl-1 md:ml-4 ml-2 w-full md:h-20 h-8" type="input" placeholder="สมชาย" onChange={(e) => { setBookQueueName(e.target.value) }} style={{ border: '1px solid #585568', borderRadius: '0.25rem' }} />
+                                        <input className="md:pl-6 pl-1 md:ml-4 ml-2 w-full md:h-20 h-8" type="input" placeholder="สมชาย" defaultValue={bookQueueName} onChange={(e) => { setBookQueueName(e.target.value) }} style={{ border: '1px solid #585568', borderRadius: '0.25rem' }} />
                                     </div>
                                     <div>
                                         จำนวน (ท่าน)*
@@ -152,6 +154,7 @@ const CustomerQueue = () => {
                     userId={userId}
                     pictureUrl={pictureUrl}
                     setBookQueueSeat={setBookQueueSeat}
+                    setBookQueueName={setBookQueueName}
                     permanent={true}
                 />
 
@@ -214,8 +217,8 @@ const CustomerQueue = () => {
                                                     <div className="md:flex items-center hidden">
                                                         <div className="pr-4">
                                                             {item.ordered ?
-                                                                <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งอาหารแล้ว</div> :
-                                                                <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่งอาหาร</div>
+                                                                <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
+                                                                <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
                                                             }
                                                         </div>
                                                         <img onClick={() => { setCancelQueueId(item && item.id); setCancelQueueNo(item && item.queueNo); setCancelQueueOrderFoodStatus(item && item.ordered); setCancelQueueVisible(true) }} className="object-cover" style={{ width: '2em' }} src={queue_bin} />
@@ -225,7 +228,7 @@ const CustomerQueue = () => {
                                             <div className="flex pt-4 pb-4">
                                                 <div className="text-center w-2/5 pb-2" style={{ borderRight: '2px solid rgb(41,22,19,0.3)' }}>
                                                     <p className="mb-0 md:text-base text-xs whitespace-no-wrap" style={{ color: '#585568' }}>รออีก (คิว)</p>
-                                                    <p className="mb-0 leading-none md:text-6xl text-2xl" style={{ color: '#683830' }}>{index + 1}</p>
+                                                    <p className="mb-0 leading-none md:text-6xl text-2xl" style={{ color: '#683830' }}>{item.seat < 4 ? ++countA : item.seat < 7 ? ++countB : ++countC}</p>
                                                 </div>
                                                 <div className="text-center w-3/5 pb-2">
                                                     <p className="mb-0 md:text-base text-xs whitespace-no-wrap" style={{ color: '#585568' }}>หมายเลขคิว</p>
