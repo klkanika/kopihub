@@ -15,6 +15,7 @@ const CustomerQueue = () => {
 
     const [userId, setUserId]: any = useState();
     const [pictureUrl, setPictureUrl]: any = useState();
+    const [displayName, setDisplayName]: any = useState();
 
     const [cancelQueueVisible, setCancelQueueVisible]: any = useState(false);
     const [cancelQueueId, setCancelQueueId]: any = useState();
@@ -28,7 +29,7 @@ const CustomerQueue = () => {
     liffHelper.getProfile().then((profile) => {
         setUserId(profile.userId);
         setPictureUrl(profile.pictureUrl)
-        setBookQueueName(profile.displayName)
+        setDisplayName(profile.displayName)
     });
 
     const { data: queuesData, loading: queuesLoading } = useQuery(GET_QUEUES, {
@@ -55,7 +56,7 @@ const CustomerQueue = () => {
     const activeQueues = (queuesData && queuesData.getQueues && queuesData.getQueues.activeQueues)
 
     let countA = 0, countB = 0, countC = 0
-    if (false) {
+    if (!userId) {
         return null
     } else {
         return (
@@ -132,7 +133,7 @@ const CustomerQueue = () => {
                                 <div className="md:text-4xl text-base md:pl-16 md:pr-16 pl-4 pr-4 pt-4 pb-4 text-left">
                                     <div className="flex items-center justify-between md:mb-12 mb-4 w-full">
                                         <p className="mb-0 whitespace-no-wrap">ชื่อ : </p>
-                                        <input className="md:pl-6 pl-1 md:ml-4 ml-2 w-full md:h-20 h-8" type="input" placeholder="สมชาย" defaultValue={bookQueueName} onChange={(e) => { setBookQueueName(e.target.value) }} style={{ border: '1px solid #585568', borderRadius: '0.25rem' }} />
+                                        <input className="md:pl-6 pl-1 md:ml-4 ml-2 w-full md:h-20 h-8" type="input" placeholder="สมชาย" defaultValue={displayName} onChange={(e) => { setBookQueueName(e.target.value) }} style={{ border: '1px solid #585568', borderRadius: '0.25rem' }} />
                                     </div>
                                     <div>
                                         จำนวน (ท่าน)*
