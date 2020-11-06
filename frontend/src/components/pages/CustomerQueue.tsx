@@ -164,6 +164,14 @@ const CustomerQueue = () => {
                     setBookQueueSeat={setBookQueueSeat}
                     setBookQueueName={setBookQueueName}
                     permanent={true}
+                    meSendText={async () => {
+                        await liffHelper.sendMessages([
+                            {
+                                type: "text",
+                                text: `ฉันขอจองคิวสำหรับ ${bookQueueSeat} คน`
+                            },
+                        ]);
+                    }}
                 />
 
                 <div

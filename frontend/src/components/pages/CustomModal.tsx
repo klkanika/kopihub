@@ -25,12 +25,7 @@ const CustomModal = (props: any) => {
             }
         } else {
             if (!bookQueueLoading) {
-                await liffHelper.sendMessages([
-                    {
-                        type: "text",
-                        text: `ฉันขอจองคิวสำหรับ ${props.seat} คน`
-                    },
-                ]);
+                props.meSendTxt()
                 await bookQueue({ variables: { seat: props.seat, name: props.name, userId: props.userId, pictureUrl: props.pictureUrl } })
 
                 if (props.setBookQueueSeat) {
