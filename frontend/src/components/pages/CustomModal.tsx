@@ -25,7 +25,7 @@ const CustomModal = (props: any) => {
             }
         } else {
             if (!bookQueueLoading) {
-                props.meSendTxt()
+                props.meSendText()
                 await bookQueue({ variables: { seat: props.seat, name: props.name, userId: props.userId, pictureUrl: props.pictureUrl } })
 
                 if (props.setBookQueueSeat) {
