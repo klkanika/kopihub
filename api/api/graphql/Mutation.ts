@@ -400,6 +400,33 @@ schema.mutationType({
 
         let createBookQueue
         if (myQueue && myQueue.length > 0) { } else {
+          const queues = await ctx.db.queue.findMany({
+            where: {
+              AND: [
+                {
+                  createdAt: {
+                    gt: moment().startOf('day').toDate()
+                  }
+                },
+                {
+                  createdAt: {
+                    lt: moment().endOf('day').toDate()
+                  }
+                },
+                {
+                  queueNo: {
+                    startsWith: queueString
+                  }
+                },
+                {
+                  status: {
+                    equals: 'ACTIVE'
+                  }
+                }
+              ]
+            }
+          })
+
           const lastQueues = await ctx.db.queue.findMany({
             where: {
               AND: [
@@ -421,7 +448,7 @@ schema.mutationType({
               ]
             },
             orderBy: {
-              id: 'desc'
+              queueNo: 'desc'
             }
           })
 
@@ -457,8 +484,151 @@ schema.mutationType({
 
           if (createBookQueue && userId) {
             await sendMessageToClient(userId, {
-              type: "text",
-              text: `คิวของคุณคือ ${createBookQueue.queueNo}`,
+              type: "flex",
+              altText: `คุณจองคิว ${createBookQueue.queueNo} สำหรับ ${createBookQueue.seat} คน`,
+              contents: {
+                "type": "bubble",
+                "body": {
+                  "type": "box",
+                  "layout": "vertical",
+                  "contents": [
+                    {
+                      "type": "text",
+                      "text": `${createBookQueue.name ? `คุณ${createBookQueue.name}` : 'คุณลูกค้า'}`,
+                      "weight": "bold",
+                      "size": "xxl",
+                      "margin": "md",
+                      "color": "#683830"
+                    },
+                    {
+                      "type": "text",
+                      "text": `จำนวน ${createBookQueue.seat} ท่าน`,
+                      "color": "#585568",
+                      "wrap": true,
+                      "margin": "6px",
+                      "size": "md"
+                    },
+                    {
+                      "type": "separator",
+                      "margin": "xxl"
+                    },
+                    {
+                      "type": "box",
+                      "layout": "horizontal",
+                      "margin": "xxl",
+                      "spacing": "sm",
+                      "contents": [
+                        {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "text",
+                              "text": "รออีก (คิว)",
+                              "size": "md",
+                              "color": "#585568",
+                              "align": "center",
+                              "offsetEnd": "none"
+                            },
+                            {
+                              "type": "text",
+                              "text": `${queues.length + 1}`,
+                              "size": "4xl",
+                              "color": "#683830",
+                              "align": "center"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "text",
+                              "text": "หมายเลขคิว",
+                              "size": "md",
+                              "color": "#585568",
+                              "align": "center"
+                            },
+                            {
+                              "type": "text",
+                              "text": `${createBookQueue.queueNo}`,
+                              "size": "4xl",
+                              "color": "#683830",
+                              "align": "center"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "box",
+                      "layout": "horizontal",
+                      "contents": [
+                        {
+                          "type": "box",
+                          "layout": "baseline",
+                          "contents": [
+                            {
+                              "type": "filler"
+                            },
+                            {
+                              "type": "text",
+                              "color": "#ffffff",
+                              "flex": 0,
+                              "text": "ดูคิวของคุณ"
+                            },
+                            {
+                              "type": "filler"
+                            }
+                          ],
+                          "backgroundColor": "#683830",
+                          "cornerRadius": "4px",
+                          "spacing": "md",
+                          "paddingAll": "16px",
+                          "action": {
+                            "type": "uri",
+                            "label": "action",
+                            "uri": "https://liff.line.me/1655216608-Gl3yPZWv/customerqueue"
+                          }
+                        }
+                      ],
+                      "alignItems": "center",
+                      "margin": "lg"
+                    },
+                    // {
+                    //   "type": "separator",
+                    //   "margin": "xxl"
+                    // },
+                    // {
+                    //   "type": "box",
+                    //   "layout": "horizontal",
+                    //   "contents": [
+                    //     {
+                    //       "type": "text",
+                    //       "text": "ยกเลิกคิว",
+                    //       "color": "#FD0F0F",
+                    //       "flex": 0,
+                    //       "size": "md",
+                    //       "action": {
+                    //         "type": "uri",
+                    //         "label": "action",
+                    //         "uri": `https://liff.line.me/1655216608-Gl3yPZWv/cancelqueue&id=${createBookQueue.id}`
+                    //       }
+                    //     }
+                    //   ],
+                    //   "justifyContent": "center",
+                    //   "margin": "xl"
+                    // }
+                  ],
+                  "position": "relative"
+                },
+                "styles": {
+                  "footer": {
+                    "separator": true
+                  }
+                }
+              }
             });
           }
         }

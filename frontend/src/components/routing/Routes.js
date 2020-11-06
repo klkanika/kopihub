@@ -45,6 +45,7 @@ export default () => (
         <PrivateRoute exact path="/EditTask" component={EditTask} />
         <Route exact path="/staffqueue" component={StaffQueue} />
         <Route exact path="/customerqueue" component={CustomerQueue} />
+        {/* <Route exact path="/cancelqueue" component={} /> */}
         {/* <Route exact path="*" component={Home} /> */}
       </Switch>
     </Fragment>
