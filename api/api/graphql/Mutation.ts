@@ -11,7 +11,7 @@ moment.locale("th");
 const line = require("@line/bot-sdk");
 
 const client = new line.Client({
-  channelAccessToken: 'h7+lLICufFajGFVAyPVGHszfoMgmCuhrANvkgeqXREEmCgsVUUb/tEa6WxRZm1ofl+NERQYq4hdahQBlZeIybFXw1Ro6wIfB0xYTf6uKGTIv1OZ6m2er+nUrJVGp9FoHggTBAiLSrpoWh5kQq8mSVQdB04t89/1O/w1cDnyilFU=',
+  channelAccessToken: '4kuOFDDMvTDhPcv5wyYekEs7TS5xXphUooS4L43vHAOGGW8QxuQOCez6gnBIAprscTjKIERPiRxLuke6tTaQ0ZE9ibd8EgPjxR/9nIR91FwjGFG6JxWD5E8y2xrtcH0zZ4ShbwGORKxWk0Ae6cZNWQdB04t89/1O/w1cDnyilFU=',
 });
 
 const sendMessageToClient = (toUser: String, message: any) => {
@@ -308,9 +308,10 @@ schema.mutationType({
         id: intArg({ required: true }),
       },
       resolve: async (_parent, { id }, ctx) => {
-        const updateCancelQueue = await ctx.db.queue.update({
+        const updateCancelQueue = await ctx.db.queue.updateMany({
           where: {
-            id: id
+            id: id,
+            status: 'ACTIVE'
           },
           data: {
             status: 'CANCELLED'
@@ -327,9 +328,10 @@ schema.mutationType({
         id: intArg({ required: true }),
       },
       resolve: async (_parent, { id }, ctx) => {
-        const updateFetchQueue = await ctx.db.queue.update({
+        const updateFetchQueue = await ctx.db.queue.updateMany({
           where: {
-            id: id
+            id: id,
+            status: 'ACTIVE'
           },
           data: {
             status: 'SUCCESS'
@@ -370,67 +372,90 @@ schema.mutationType({
       resolve: async (_parent, { userId, seat, name, pictureUrl }, ctx) => {
         let queueString = seat < 4 ? 'A' : seat < 7 ? 'B' : 'C'
         let maxQueueDigit = 3
-        const lastQueues = await ctx.db.queue.findMany({
+
+        const myQueue = await ctx.db.queue.findMany({
           where: {
-            AND: [
-              {
-                createdAt: {
-                  gt: moment().startOf('day').toDate()
+            AND: {
+              OR: [
+                { status: 'ACTIVE' },
+                {
+                  AND: {
+                    status: 'SUCCESS',
+                    createdAt: {
+                      gte: moment().subtract(1, "hour").toDate()
+                    }
+                  }
                 }
-              },
-              {
-                createdAt: {
-                  lt: moment().endOf('day').toDate()
-                }
-              },
-              {
-                queueNo: {
-                  startsWith: queueString
-                }
-              }
-            ]
-          },
-          orderBy: {
-            id: 'desc'
+              ]
+            },
+            userId: { equals: userId }
           }
         })
 
-        let lastQueue
-        if (lastQueues && lastQueues.length > 0) {
-          lastQueue = lastQueues[0]
-        }
+        let createBookQueue
+        if (myQueue && myQueue.length > 0) { } else {
+          const lastQueues = await ctx.db.queue.findMany({
+            where: {
+              AND: [
+                {
+                  createdAt: {
+                    gt: moment().startOf('day').toDate()
+                  }
+                },
+                {
+                  createdAt: {
+                    lt: moment().endOf('day').toDate()
+                  }
+                },
+                {
+                  queueNo: {
+                    startsWith: queueString
+                  }
+                }
+              ]
+            },
+            orderBy: {
+              id: 'desc'
+            }
+          })
 
-        let queueNo
-        if (lastQueue) {
-          queueNo = parseInt(lastQueue.queueNo.substr(queueString.length)) + 1 + ''
-        } else {
-          queueNo = '1'
-        }
+          let lastQueue
+          if (lastQueues && lastQueues.length > 0) {
+            lastQueue = lastQueues[0]
+          }
 
-        while (queueNo.length < maxQueueDigit) {
-          queueNo = '0' + queueNo
-        }
+          let queueNo
+          if (lastQueue) {
+            queueNo = parseInt(lastQueue.queueNo.substr(queueString.length)) + 1 + ''
+          } else {
+            queueNo = '1'
+          }
 
-        queueNo = queueString + queueNo
+          while (queueNo.length < maxQueueDigit) {
+            queueNo = '0' + queueNo
+          }
 
-        const createBookQueue = await ctx.db.queue.create({
-          data: {
-            queueNo: queueNo,
-            status: 'ACTIVE',
-            ordered: false,
-            userId: userId,
-            seat: seat,
-            name: name,
-            pictureUrl: pictureUrl
-          },
-        })
+          queueNo = queueString + queueNo
 
-        if (createBookQueue && userId) {
-          // liff#1
-          // await sendMessageToClient(userId, {
-          //   type: "text",
-          //   text: `คิวของคุณ ${createBookQueue.queueNo}`,
-          // });
+          createBookQueue = await ctx.db.queue.create({
+            data: {
+              queueNo: queueNo,
+              status: 'ACTIVE',
+              ordered: false,
+              userId: userId,
+              seat: seat,
+              name: name,
+              pictureUrl: pictureUrl
+            },
+          })
+
+          if (createBookQueue && userId) {
+            // liff#1
+            // await sendMessageToClient(userId, {
+            //   type: "text",
+            //   text: `คิวของคุณคือ ${createBookQueue.queueNo}`,
+            // });
+          }
         }
 
         return createBookQueue ? true : false

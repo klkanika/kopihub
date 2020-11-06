@@ -16,21 +16,27 @@ const CustomModal = (props: any) => {
         if (props && props.type === 'fetch') {
             // await fetchQueue({ variables: { id: props.id } })
         } else if (props && props.type === 'cancel') {
-            await cancelQueue({ variables: { id: props.id } })
+            if (!cancelQueueLoading) {
+                await cancelQueue({ variables: { id: props.id } })
+            }
         } else if (props && props.type === 'order') {
-            await orderFood({ variables: { id: props.id } })
+            if (!orderFoodLoading) {
+                await orderFood({ variables: { id: props.id } })
+            }
         } else {
-            // await liffHelper.sendMessages([
-            //     {
-            //         type: "text",
-            //         text: `ฉันขอจองคิวสำหรับ ${props.seat} คน`
-            //     },
-            // ]);
-            await bookQueue({ variables: { seat: props.seat, name: props.name, userId: props.userId, pictureUrl: props.pictureUrl } })
-            
-            if (props.setBookQueueSeat) {
-                props.setBookQueueSeat(2)
-                props.setBookQueueName('')
+            if (!bookQueueLoading) {
+                await liffHelper.sendMessages([
+                    {
+                        type: "text",
+                        text: `ฉันขอจองคิวสำหรับ ${props.seat} คน`
+                    },
+                ]);
+                await bookQueue({ variables: { seat: props.seat, name: props.name, userId: props.userId, pictureUrl: props.pictureUrl } })
+
+                if (props.setBookQueueSeat) {
+                    props.setBookQueueSeat(2)
+                    props.setBookQueueName('')
+                }
             }
         }
         props.setVisible(false)
