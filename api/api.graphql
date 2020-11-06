@@ -278,6 +278,7 @@ type Queue {
   queueNo: String!
   seat: Int!
   status: QueueStatus!
+  updateAt: DateTime!
   userId: String
 }
 
@@ -290,6 +291,7 @@ input QueueOrderByInput {
   queueNo: SortOrder
   seat: SortOrder
   status: SortOrder
+  updateAt: SortOrder
   userId: SortOrder
 }
 
@@ -311,6 +313,7 @@ input QueueWhereInput {
   queueNo: StringFilter
   seat: IntFilter
   status: QueueStatus
+  updateAt: DateTimeFilter
   userId: StringNullableFilter
 }
 
