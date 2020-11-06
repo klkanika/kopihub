@@ -11,8 +11,7 @@ import queue_seat_increase from '../../imgs/queue_seat_increase.svg'
 import CustomModal from './CustomModal';
 import { Global, css } from '@emotion/core';
 
-let search = window.location.search;
-let params = new URLSearchParams(search);
+let params = new URLSearchParams(decodeURIComponent(window.location.search));
 let booked = params.get("booked");
 
 const CustomerQueue = () => {
@@ -51,7 +50,7 @@ const CustomerQueue = () => {
         onCompleted: (sre) => {
             if (booked) {
                 setBookQueueVisible(!sre.getMyQueue)
-            }else{
+            } else {
                 setBookQueueVisible(false)
             }
         },

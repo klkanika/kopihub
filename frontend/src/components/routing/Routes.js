@@ -11,8 +11,7 @@ import StaffQueue from '../pages/StaffQueue'
 import CustomerQueue from '../pages/CustomerQueue'
 
 
-let search = window.location.search;
-let params = new URLSearchParams(search);
+let params = new URLSearchParams(decodeURIComponent(window.location.search));
 let liffPath = params.get("liff.state");
 
 export default () => (
@@ -32,7 +31,7 @@ export default () => (
                   return <Home />
                 }
               } else {
-                return <Redirect to={liffPath} />
+                return <Redirect preserveQueryString to={liffPath} />
               }
             } else {
               return <Home />
