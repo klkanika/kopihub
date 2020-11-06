@@ -11,6 +11,10 @@ import queue_seat_increase from '../../imgs/queue_seat_increase.svg'
 import CustomModal from './CustomModal';
 import { Global, css } from '@emotion/core';
 
+let search = window.location.search;
+let params = new URLSearchParams(search);
+let booked = params.get("booked");
+
 const CustomerQueue = () => {
 
     const [userId, setUserId]: any = useState();
@@ -45,7 +49,11 @@ const CustomerQueue = () => {
             userId: userId ? userId : '',
         },
         onCompleted: (sre) => {
-            setBookQueueVisible(!sre.getMyQueue)
+            if (booked) {
+                setBookQueueVisible(!sre.getMyQueue)
+            }else{
+                setBookQueueVisible(false)
+            }
         },
         onError: (err) => {
             window.alert(err)
@@ -151,7 +159,7 @@ const CustomerQueue = () => {
                     setVisible={setBookQueueVisible}
                     type='book'
                     seat={bookQueueSeat}
-                    name={bookQueueName}
+                    name={bookQueueName ? bookQueueName : displayName}
                     userId={userId}
                     pictureUrl={pictureUrl}
                     setBookQueueSeat={setBookQueueSeat}

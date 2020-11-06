@@ -13,6 +13,8 @@ import { AlertOutlined } from '@ant-design/icons';
 import { Global, css } from '@emotion/core';
 import kopihub from '../../imgs/queue_kopihub.jpg'
 import { Redirect } from 'react-router-dom';
+import { Dropdown, Menu } from 'antd';
+import Header from './Header';
 
 const StaffQueue = () => {
 
@@ -44,6 +46,8 @@ const StaffQueue = () => {
     const [bookQueueName, setBookQueueName]: any = useState();
     const [bookQueueSeat, setBookQueueSeat]: any = useState(2);
 
+    const userName = sessionStorage.getItem("loggedUserName");
+
     if (!sessionStorage.getItem("loggedUserId")) {
         return <Redirect to={'/'} />
     }
@@ -73,6 +77,18 @@ const StaffQueue = () => {
             .common-queue-no-font-size {
                 font-size: 5em;
             }
+            .queue-box {
+                border-radius: 0.5rem;
+                background-color: rgb(255,255,255,0.8);
+            }
+            .gap-left {
+                width: 48%;
+                margin-right : 2%;
+            }
+            .gap-right {
+                width: 48%;
+                margin-left : 2%;
+            }
 
             @media (min-width:768px) {
                 .recent-queue-profile-img {
@@ -88,8 +104,8 @@ const StaffQueue = () => {
             }
             `}
             />
-            <img src={queue_add} alt="addbtn" className="fixed right-0 bottom-0 w-1/6" onClick={() => { setBookQueueVisible(true) }} />
-            <img src={queue_qr_code} alt="qrcode" className="w-full" />
+            <img src={queue_add} alt="addbtn" className="fixed right-0 bottom-0 mr-8 mb-8" style={{ width: '12%' }} onClick={() => { setBookQueueVisible(true) }} />
+            {/* <img src={queue_add} alt="addbtn" className="fixed left-0 top-0 w-1/6" onClick={() => { setBookQueueVisible(true) }} /> */}
 
             <CustomModal
                 buttonColor="#088C0D"
@@ -99,34 +115,34 @@ const StaffQueue = () => {
                         <div className="pt-12 pb-12 pr-12 pl-12">
                             <div className="md:text-6xl text-3xl pb-6">เรียกคิว</div>
                             <div className="flex items-center justify-between mb-4">
-                                <button onClick={() => { if (firstA) { fetchQueue({ variables: { id: firstA.id } }); setFetchQueueVisible(false); } }} className="leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}>1-3 คน</button>
+                                <button onClick={() => { if (firstA) { fetchQueue({ variables: { id: firstA.id } }); setFetchQueueVisible(false); } }} className="flex justify-between leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2 pl-3 pr-3 md:pl-4 md:pr-4" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}><div>A</div><div>1-3 คน</div></button>
                                 <div className="text-base md:text-5xl flex" style={{ color: '#585568' }}>
                                     {firstA ? (
                                         <>
-                                            <div className="mr-4">{firstA && firstA.queueNo}</div>
-                                            <img onClick={() => { setCancelQueueId(firstA && firstA.id); setCancelQueueNo(firstA && firstA.queueNo); setCancelQueueOrderFoodStatus(firstA && firstA.ordered); setCancelQueueVisible(true) }} className="mt-1 md:w-10 w-6" src={queue_bin} />
+                                            <div className="mr-6">{firstA && firstA.queueNo}</div>
+                                            <img onClick={() => { setCancelQueueId(firstA && firstA.id); setCancelQueueNo(firstA && firstA.queueNo); setCancelQueueOrderFoodStatus(firstA && firstA.ordered); setCancelQueueVisible(true) }} className="mt-1 md:w-5 w-3" src={queue_bin} />
                                         </>
                                     ) : ''}
                                 </div>
                             </div>
                             <div className="flex items-center justify-between mb-4">
-                                <button onClick={() => { if (firstB) { fetchQueue({ variables: { id: firstB.id } }); setFetchQueueVisible(false); } }} className="leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}>4-6 คน</button>
+                                <button onClick={() => { if (firstB) { fetchQueue({ variables: { id: firstB.id } }); setFetchQueueVisible(false); } }} className="flex justify-between leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2 pl-3 pr-3 md:pl-4 md:pr-4" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}><div>B</div><div>4-6 คน</div></button>
                                 <div className="text-base md:text-5xl flex" style={{ color: '#585568' }}>
                                     {firstB ? (
                                         <>
-                                            <div className="mr-4">{firstB && firstB.queueNo}</div>
-                                            <img onClick={() => { setCancelQueueId(firstB && firstB.id); setCancelQueueNo(firstB && firstB.queueNo); setCancelQueueOrderFoodStatus(firstB && firstB.ordered); setCancelQueueVisible(true) }} className="mt-1 md:w-10 w-6" src={queue_bin} />
+                                            <div className="mr-6">{firstB && firstB.queueNo}</div>
+                                            <img onClick={() => { setCancelQueueId(firstB && firstB.id); setCancelQueueNo(firstB && firstB.queueNo); setCancelQueueOrderFoodStatus(firstB && firstB.ordered); setCancelQueueVisible(true) }} className="mt-1 md:w-5 w-3" src={queue_bin} />
                                         </>
                                     ) : ''}
                                 </div>
                             </div>
                             <div className="flex items-center justify-between mb-4">
-                                <button onClick={() => { if (firstC) { fetchQueue({ variables: { id: firstC.id } }); setFetchQueueVisible(false); } }} className="leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}>7+ คน</button>
+                                <button onClick={() => { if (firstC) { fetchQueue({ variables: { id: firstC.id } }); setFetchQueueVisible(false); } }} className="flex justify-between leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2 pl-3 pr-3 md:pl-4 md:pr-4" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}><div>C</div><div>7+ คน</div></button>
                                 <div className="text-base md:text-5xl flex" style={{ color: '#585568' }}>
                                     {firstC ? (
                                         <>
-                                            <div className="mr-4">{firstC && firstC.queueNo}</div>
-                                            <img onClick={() => { setCancelQueueId(firstC && firstC.id); setCancelQueueNo(firstC && firstC.queueNo); setCancelQueueOrderFoodStatus(firstC && firstC.ordered); setCancelQueueVisible(true) }} className="mt-1 md:w-10 w-6" src={queue_bin} />
+                                            <div className="mr-6">{firstC && firstC.queueNo}</div>
+                                            <img onClick={() => { setCancelQueueId(firstC && firstC.id); setCancelQueueNo(firstC && firstC.queueNo); setCancelQueueOrderFoodStatus(firstC && firstC.ordered); setCancelQueueVisible(true) }} className="mt-1 md:w-5 w-3" src={queue_bin} />
                                         </>
                                     ) : ''}
                                 </div>
@@ -169,7 +185,7 @@ const StaffQueue = () => {
 
             <CustomModal
                 buttonColor="#683830"
-                buttonText="สั่งแล้ว"
+                buttonText="สั่งอาหารแล้ว"
                 content={
                     <div>
                         <div className="pt-12 pb-12">
@@ -218,7 +234,7 @@ const StaffQueue = () => {
             />
 
             <div
-                className="pt-8 pb-64"
+                className="pb-64"
                 style={
                     {
                         backgroundColor: '#f8f6f1',
@@ -229,10 +245,14 @@ const StaffQueue = () => {
                         minHeight: '100vh'
                     }
                 }>
+                <Header className="mt-8 ml-8" username={userName ? userName : ''} userRole={"QUEUE"} page="edit" toggleRole={() => { }}></Header>
+                <div className="flex justify-center pb-12 md:pt-18 pt-8">
+                    <img src={queue_qr_code} alt="qrcode" className="md:w-1/2 w-full" />
+                </div>
                 <div className="md:ml-12 md:mr-12 ml-4 mr-4">
                     {
                         recentQueue ?
-                            (<div className="w-full bg-white md:p-8 p-4" style={{ borderRadius: '0.5rem' }}>
+                            (<div className="w-full bg-white md:p-8 p-4" style={{ borderRadius: '0.5rem' }} onClick={() => { if (recentQueue && recentQueue.ordered === false) { setOrderFoodId(recentQueue && recentQueue.id); setOrderFoodNo(recentQueue && recentQueue.queueNo); setOrderFoodVisible(true) } }}>
                                 <div className="flex justify-between">
                                     <div className="flex items-center">
                                         <img className="object-cover rounded-full recent-queue-profile-img" src={`${recentQueue.pictureUrl ? recentQueue.pictureUrl : kopihub}`} />
@@ -245,7 +265,7 @@ const StaffQueue = () => {
                                         <div className="flex items-center justify-end">
                                             {recentQueue.ordered ?
                                                 <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
-                                                <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" onClick={() => { setOrderFoodId(recentQueue && recentQueue.id); setOrderFoodNo(recentQueue && recentQueue.queueNo); setOrderFoodVisible(true) }} style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
+                                                <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
                                             }
                                             <p className="mb-0 md:text-xl text-xs md:ml-4 ml-2 whitespace-no-wrap" style={{ color: '#585568' }}>หมายเลขคิว</p>
                                         </div>
@@ -256,8 +276,9 @@ const StaffQueue = () => {
                     }
 
                     <div className="flex justify-center">
-                        <button style={{ backgroundColor: '#683830', borderRadius: '1rem' }} className="text-white text-3xl pt-4 pb-4 pr-8 pl-8 mt-8 mb-8 flex items-center" disabled={activeQueues && activeQueues[0] ? false : true} onClick={() => { setFetchQueueVisible(true); }}>
-                            <AlertOutlined className="mr-6" /> เรียกคิว
+                        <button style={{ backgroundColor: '#683830', borderRadius: '1rem' }} className="text-white text-xl pt-3 pb-3 pr-6 pl-6 mt-8 mb-8 flex items-center" disabled={activeQueues && activeQueues[0] ? false : true} onClick={() => { setFetchQueueVisible(true); }}>
+                            <AlertOutlined className="mr-4" />
+                            <p className="mb-0">เรียกคิว</p>
                         </button>
                     </div>
 
@@ -265,7 +286,7 @@ const StaffQueue = () => {
                         {
                             activeQueues && activeQueues.map((item: any, index: any) => {
                                 return (
-                                    <div key={index} className="mb-4" style={index % 2 === 0 ? { borderRadius: '0.5rem', backgroundColor: 'rgb(255,255,255,0.8)', width: '48%', marginRight: '2%' } : { borderRadius: '0.5rem', backgroundColor: 'rgb(255,255,255,0.8)', width: '48%', marginLeft: '2%' }}>
+                                    <div key={index} className={`mb-4 queue-box ${index % 2 === 0 ? 'gap-left' : 'gap-right'}`} onClick={() => { if (item && item.ordered === false) { setOrderFoodId(item && item.id); setOrderFoodNo(item && item.queueNo); setOrderFoodVisible(true) } }} >
                                         <div className="w-full" style={{ borderBottom: '1px solid rgb(23,23,23,0.1)' }}>
                                             <div className="flex items-center justify-between w-full p-4">
                                                 <div className="flex items-center">
@@ -276,9 +297,9 @@ const StaffQueue = () => {
                                                         <div className="pr-4 block md:hidden text-center mt-1">
                                                             {item.ordered ?
                                                                 <div className="p-1 text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
-                                                                <div className="p-1 text-xs whitespace-no-wrap" onClick={() => { setOrderFoodId(item && item.id); setOrderFoodNo(item && item.queueNo); setOrderFoodVisible(true) }} style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
+                                                                <div className="p-1 text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
                                                             }
-                                                            <img onClick={() => { setCancelQueueId(item && item.id); setCancelQueueNo(item && item.queueNo); setCancelQueueOrderFoodStatus(item && item.ordered); setCancelQueueVisible(true) }} className="object-cover mt-1" style={{ width: '2em' }} src={queue_bin} />
+                                                            <img onClick={(e) => { e.stopPropagation(); setCancelQueueId(item && item.id); setCancelQueueNo(item && item.queueNo); setCancelQueueOrderFoodStatus(item && item.ordered); setCancelQueueVisible(true) }} className="object-cover mt-1" style={{ width: '1.5em' }} src={queue_bin} />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -286,10 +307,10 @@ const StaffQueue = () => {
                                                     <div className="pr-4">
                                                         {item.ordered ?
                                                             <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
-                                                            <div className="p-1 md:text-xs whitespace-no-wrap" onClick={() => { setOrderFoodId(item && item.id); setOrderFoodNo(item && item.queueNo); setOrderFoodVisible(true) }} style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
+                                                            <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
                                                         }
                                                     </div>
-                                                    <img onClick={() => { setCancelQueueId(item && item.id); setCancelQueueNo(item && item.queueNo); setCancelQueueOrderFoodStatus(item && item.ordered); setCancelQueueVisible(true) }} className="object-cover" style={{ width: '2em' }} src={queue_bin} />
+                                                    <img onClick={(e) => { e.stopPropagation(); setCancelQueueId(item && item.id); setCancelQueueNo(item && item.queueNo); setCancelQueueOrderFoodStatus(item && item.ordered); setCancelQueueVisible(true) }} className="object-cover" style={{ width: '1.5em' }} src={queue_bin} />
                                                 </div>
                                             </div>
                                         </div>

@@ -7,20 +7,20 @@ import Header from './Header';
 import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import {
-  CREATE_TASK, UPDATE_LOG_USER, GET_TASKS, UPDATE_TASK_ONGOING, UPDATE_TASK_TIMEUP,UPDATE_TASK_COMPLETE
-  ,GET_STEAMER, UPDATE_STEAMER, UPDATE_STEAMER_COMPLETE
+  CREATE_TASK, UPDATE_LOG_USER, GET_TASKS, UPDATE_TASK_ONGOING, UPDATE_TASK_TIMEUP, UPDATE_TASK_COMPLETE
+  , GET_STEAMER, UPDATE_STEAMER, UPDATE_STEAMER_COMPLETE
 } from '../../utils/graphql';
 import {
-  useMutation, useQuery,useLazyQuery
+  useMutation, useQuery, useLazyQuery
 } from '@apollo/react-hooks'
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useSocket } from 'use-socketio';
 import Loadding from '../layout/loadding'
 
 declare global {
   interface Window {
-      playSound:any;
-      pauseSound:any;
+    playSound: any;
+    pauseSound: any;
   }
 }
 
@@ -28,14 +28,18 @@ function TaskView() {
   window.pauseSound()
   const history = useHistory()
   const userName = sessionStorage.getItem("loggedUserName");
-  const [ insertTask, setInsertTask ] = useState(false)
-  const [ setTime, setSetTime ] = useState(false)
-  const [ timeUp, setTimeUp ] = useState(false)
-  const [ setTask, setSetTask ] = useState(false);
-  const [ status, setStatus ] = useState("");
-  const [ finishDate, setFinishDate] = useState(new Date)
-  
-  const [ userRole, setUserRole] = useState(sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
+  const [insertTask, setInsertTask] = useState(false)
+  const [setTime, setSetTime] = useState(false)
+  const [timeUp, setTimeUp] = useState(false)
+  const [setTask, setSetTask] = useState(false);
+  const [status, setStatus] = useState("");
+  const [finishDate, setFinishDate] = useState(new Date)
+
+  let search = window.location.search;
+  let params = new URLSearchParams(search);
+  let userRoleParam = params.get("userRole");
+
+  const [userRole, setUserRole] = useState(userRoleParam ? userRoleParam : sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
 
   // const { subscribe, unsubscribe } = useSocket("taskUpdate", (dataFromServer) =>
   //   getTaks()
@@ -47,17 +51,17 @@ function TaskView() {
   //     unsubscribe()
   //   }
   // },[])
-  
-  const [ curTaskId, setCurTaskId ] = useState("")
+
+  const [curTaskId, setCurTaskId] = useState("")
 
   function useInterval(callback: () => void, delay: number | null) {
     const savedCallback = useRef<() => void>();
-  
+
     // Remember the latest function.
     useEffect(() => {
       savedCallback.current = callback;
     }, [callback]);
-  
+
     // Set up the interval.
     useEffect(() => {
       function tick() {
@@ -70,16 +74,16 @@ function TaskView() {
     }, [delay]);
   }
 
-  
-  const {data: tasksData, loading: tasksLoading} = useQuery(GET_TASKS,{
+
+  const { data: tasksData, loading: tasksLoading } = useQuery(GET_TASKS, {
     fetchPolicy: 'no-cache',
     pollInterval: 1000,
-    variables: {},    
+    variables: {},
     onError: (err) => {
       window.alert(err)
     }
   });
-  const tasks = (tasksData && tasksData.tasks)||[]
+  const tasks = (tasksData && tasksData.tasks) || []
   console.log(tasks)
 
   const toggleInsertTaskPopup = () => {
@@ -90,20 +94,23 @@ function TaskView() {
 
   const [CreateTask, { error, loading, data }] = useMutation(CREATE_TASK)
 
-  const addTask = (taskName : string,total : number) => {
+  const addTask = (taskName: string, total: number) => {
     setInsertTask(!insertTask)
-    CreateTask({variables : {
-      name: taskName,
-      total: total,
-      finishTime: new Date(),
-      countTime: 0,
-      userId: sessionStorage.getItem("loggedUserId")}}).then(
-        res => {
-        }
-        ,err => {
-          console.log("add task failed")
-        }
-      );
+    CreateTask({
+      variables: {
+        name: taskName,
+        total: total,
+        finishTime: new Date(),
+        countTime: 0,
+        userId: sessionStorage.getItem("loggedUserId")
+      }
+    }).then(
+      res => {
+      }
+      , err => {
+        console.log("add task failed")
+      }
+    );
   }
 
   const toggleSetTimePopup = (taskId: string) => {
@@ -126,112 +133,134 @@ function TaskView() {
   const [UpdateTaskTimeUp] = useMutation(UPDATE_TASK_TIMEUP)
   const [UpdateTaskComplete] = useMutation(UPDATE_TASK_COMPLETE)
 
-  const updateFinishDate = (dbTaskId : string, time : number, selected : string[]) => {
+  const updateFinishDate = (dbTaskId: string, time: number, selected: string[]) => {
     var setFinishDate = new Date(); // get current 
-    if(status == "ONGOING"){
+    if (status == "ONGOING") {
       setFinishDate = finishDate;
     }
-    setFinishDate.setHours(setFinishDate.getHours() ,setFinishDate.getMinutes() + time,setFinishDate.getSeconds() ,setFinishDate.getMilliseconds());
+    setFinishDate.setHours(setFinishDate.getHours(), setFinishDate.getMinutes() + time, setFinishDate.getSeconds(), setFinishDate.getMilliseconds());
     setSetTime(!setTime)
     updateSteamer(dbTaskId, selected)
-    UpdateTaskOngoing({variables : {
-      countTime : time,
-      finishTime : setFinishDate,
-      taskId : dbTaskId}}).then(
-        res => {
-        }
-        ,err => {
-          console.log("Update task failed")
-        }
-      );
+    UpdateTaskOngoing({
+      variables: {
+        countTime: time,
+        finishTime: setFinishDate,
+        taskId: dbTaskId
+      }
+    }).then(
+      res => {
+      }
+      , err => {
+        console.log("Update task failed")
+      }
+    );
   }
 
-  const updateSteamer = (dbTaskId : string, selected : string[]) => {
-    selected.map((t:string)=>{
-      UpdateSteamer({variables : {
-        id : t,
-        taskId : dbTaskId
-      }}).then(
+  const updateSteamer = (dbTaskId: string, selected: string[]) => {
+    selected.map((t: string) => {
+      UpdateSteamer({
+        variables: {
+          id: t,
+          taskId: dbTaskId
+        }
+      }).then(
         res => {
         }
-        ,err => {
+        , err => {
           console.log("Update steamer failed")
         }
       );
     })
   }
 
-  const updateTimeUp = (dbTaskId : string) => {
-    UpdateTaskTimeUp({variables : {
-      taskId : dbTaskId}}).then(
-        res => {
-        }
-        ,err => {
-          console.log("Update task timeup failed")
-        }
-      )      ;
+  const updateTimeUp = (dbTaskId: string) => {
+    UpdateTaskTimeUp({
+      variables: {
+        taskId: dbTaskId
+      }
+    }).then(
+      res => {
+      }
+      , err => {
+        console.log("Update task timeup failed")
+      }
+    );
   }
-  
-  const updateComplete = (dbTaskId : string) => {
-    // setTimeUp(!timeUp)
-    UpdateTaskComplete({variables : {
-      taskId : dbTaskId}}).then(
-        res => {
-        }
-        ,err => {
-          console.log("Update task completed failed")
-        }
-      )      ;
 
-      UpdateSteamerComplete({variables : {
-        taskId : dbTaskId}}).then(
-          res => {
-          }
-          ,err => {
-            console.log("Update steamer completed failed")
-          }
-        )      ;
+  const updateComplete = (dbTaskId: string) => {
+    // setTimeUp(!timeUp)
+    UpdateTaskComplete({
+      variables: {
+        taskId: dbTaskId
+      }
+    }).then(
+      res => {
+      }
+      , err => {
+        console.log("Update task completed failed")
+      }
+    );
+
+    UpdateSteamerComplete({
+      variables: {
+        taskId: dbTaskId
+      }
+    }).then(
+      res => {
+      }
+      , err => {
+        console.log("Update steamer completed failed")
+      }
+    );
   }
 
   const toggleRole = () => {
-    if(userRole === "CASHIER"){
+    if (userRole === "CASHIER") {
       setUserRole("CHEF")
       setInsertTask(false)
-      UpdateLogUser({variables : 
-        {role: "CHEF"
-         ,id : sessionStorage.getItem("loggedId")}})
+      UpdateLogUser({
+        variables:
+        {
+          role: "CHEF"
+          , id: sessionStorage.getItem("loggedId")
+        }
+      })
         .then(
-            res => {
-              sessionStorage.setItem("loggedUserRole","CHEF")
-            },
-            err => console.log('change role error')
-            )  
+          res => {
+            sessionStorage.setItem("loggedUserRole", "CHEF")
+          },
+          err => console.log('change role error')
+        )
     }
     else {
       setUserRole("CASHIER")
-      UpdateLogUser({variables : 
-        {role: "CASHIER"
-         ,id : sessionStorage.getItem("loggedId")}})
+      UpdateLogUser({
+        variables:
+        {
+          role: "CASHIER"
+          , id: sessionStorage.getItem("loggedId")
+        }
+      })
         .then(
-            res => {
-            sessionStorage.setItem("loggedUserRole","CASHIER")
+          res => {
+            sessionStorage.setItem("loggedUserRole", "CASHIER")
           }
-            ,
-            err => console.log('change role error')
+          ,
+          err => console.log('change role error')
         )
-    } 
-    
+    }
+
   }
 
-  const [getSteamer , {called, loading : steamerLoading, data : steamerData}] = useLazyQuery(GET_STEAMER,{
+  const [getSteamer, { called, loading: steamerLoading, data: steamerData }] = useLazyQuery(GET_STEAMER, {
     fetchPolicy: 'network-only',
-    onCompleted: (sre) => {     
+    onCompleted: (sre) => {
     },
     onError: (err) => {
       window.alert(err)
     }
   });
-  const steamer = (steamerData && steamerData.steamers)||[]
+  const steamer = (steamerData && steamerData.steamers) || []
 
   const [UpdateSteamer] = useMutation(UPDATE_STEAMER)
   const [UpdateSteamerComplete] = useMutation(UPDATE_STEAMER_COMPLETE)
@@ -239,50 +268,50 @@ function TaskView() {
   return (
     <>
       {
-        !tasks ? 
-        <Loadding/>
-        :
-        <div className="w-11/12 m-auto mt-8 mb-8">
-          {/* {console.log('TV:'+sessionStorage.getItem("loggedUserRole"))} */}
-          <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="" toggleRole={toggleRole}/>
-          {setTime && userRole === "CHEF" && <SetTime taskId={curTaskId} closePopup={toggleSetTimePopup} 
-            saveTime={updateFinishDate} visible={setTime} status={status}
-            updateComplete={updateComplete} steamer={steamer}/>}
+        !tasks ?
+          <Loadding />
+          :
+          <div className="w-11/12 m-auto mt-8 mb-8">
+            {/* {console.log('TV:'+sessionStorage.getItem("loggedUserRole"))} */}
+            <Header username={userName ? userName : ""} userRole={userRole ? userRole : "CASHIER"} page="" toggleRole={toggleRole} className='' />
+            {setTime && userRole === "CHEF" && <SetTime taskId={curTaskId} closePopup={toggleSetTimePopup}
+              saveTime={updateFinishDate} visible={setTime} status={status}
+              updateComplete={updateComplete} steamer={steamer} />}
 
-          {timeUp && userRole === "CHEF" && <TimeUp taskId={curTaskId} closePopup={toggleSetTimeupPopup} 
-            updateComplete={updateComplete} visible={timeUp}/>}
-          {insertTask &&
-              <InsertTask closePopup={toggleInsertTaskPopup} addTask={addTask} visible={insertTask}/>
-          }
-        <div className="flex flex-wrap">
-        {
-          tasks.map( (item: any) => (
-            <div key={item.id} className="m-1">
-              <Task taskId={item.id} taskName={item.name} total={item.total} userRole={userRole ? userRole : "CASHIER"}
-                  status={item.status} finishDate={new Date(item.finishTime)} page="TaskView"
-                  setTime={toggleSetTimePopup} timeUp={updateTimeUp} toggleTimeUp={toggleSetTimeupPopup} 
-                  setTask={toggleEditTask} cancel={(value:boolean) => {}} setStatus={setStatus} setFinishDate={setFinishDate}/>
+            {timeUp && userRole === "CHEF" && <TimeUp taskId={curTaskId} closePopup={toggleSetTimeupPopup}
+              updateComplete={updateComplete} visible={timeUp} />}
+            {insertTask &&
+              <InsertTask closePopup={toggleInsertTaskPopup} addTask={addTask} visible={insertTask} />
+            }
+            <div className="flex flex-wrap">
+              {
+                tasks.map((item: any) => (
+                  <div key={item.id} className="m-1">
+                    <Task taskId={item.id} taskName={item.name} total={item.total} userRole={userRole ? userRole : "CASHIER"}
+                      status={item.status} finishDate={new Date(item.finishTime)} page="TaskView"
+                      setTime={toggleSetTimePopup} timeUp={updateTimeUp} toggleTimeUp={toggleSetTimeupPopup}
+                      setTask={toggleEditTask} cancel={(value: boolean) => { }} setStatus={setStatus} setFinishDate={setFinishDate} />
+                  </div>
+                ))
+              }
+              <div
+                id="btnAddTask"
+                onClick={toggleInsertTaskPopup}
+                className="w-48 m-1 flex items-center justify-center text-xl text-gray-600"
+                style={{
+                  display: userRole === "CASHIER" ? "" : "none",
+                  border: '1px dashed #ddd',
+                  borderRadius: '5px',
+                  flexFlow: 'column',
+                  minHeight: '150px'
+                }}
+              >
+                <PlusOutlined style={{ fontSize: '2em' }} />
+                <div className="mt-4">เพิ่มโต๊ะ</div>
+              </div>
             </div>
-          ))
-        }
-        <div 
-          id="btnAddTask" 
-          onClick={toggleInsertTaskPopup} 
-          className="w-48 m-1 flex items-center justify-center text-xl text-gray-600"
-          style={{
-            display: userRole === "CASHIER" ? "" : "none",
-            border:'1px dashed #ddd',
-            borderRadius:'5px',
-            flexFlow: 'column',
-            minHeight: '150px'
-          }}
-        >
-          <PlusOutlined style={{fontSize:'2em'}}/>
-          <div className="mt-4">เพิ่มโต๊ะ</div>
-        </div>
-        </div>
 
-        </div>
+          </div>
       }
     </>
   );

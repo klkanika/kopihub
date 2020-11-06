@@ -150,7 +150,7 @@ function EditTask() {
       ? <Loadding />
       :
       <div style={{margin:"2em"}} className="relative">
-        <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="edit" toggleRole={() => {}}></Header>
+        <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="edit" toggleRole={() => {}} className=''></Header>
         {setTask && userRole === "CASHIER" && <SetTask taskId={curTaskId} taskName={curTaskName} typeTaskName={curTypeTaskName} noTaskName={curNoTaskName} total={curTotal} 
         closePopup={toggleEditTask} saveEditTask={updateTask} visible={setTask}/>}
         <div className="flex justify-end items-center absolute top-0 right-0 z-10">
