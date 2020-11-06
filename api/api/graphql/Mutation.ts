@@ -328,15 +328,21 @@ schema.mutationType({
         id: intArg({ required: true }),
       },
       resolve: async (_parent, { id }, ctx) => {
-        const updateFetchQueue = await ctx.db.queue.updateMany({
+        const updateFetchQueue = await ctx.db.queue.update({
           where: {
             id: id,
-            status: 'ACTIVE'
           },
           data: {
             status: 'SUCCESS'
           },
         })
+
+        if (updateFetchQueue && updateFetchQueue.userId) {
+          await sendMessageToClient(updateFetchQueue.userId, {
+            type: "text",
+            text: `ขอบคุณสำหรับการรอค่ะ คุณ${updateFetchQueue.name ? updateFetchQueue.name : 'ลูกค้า'} ถึงคิว ${updateFetchQueue.queueNo} ของคุณแล้ว กรุณาแจ้งพนักงาน`,
+          });
+        }
 
         return updateFetchQueue ? true : false
       },
@@ -450,11 +456,10 @@ schema.mutationType({
           })
 
           if (createBookQueue && userId) {
-            // liff#1
-            // await sendMessageToClient(userId, {
-            //   type: "text",
-            //   text: `คิวของคุณคือ ${createBookQueue.queueNo}`,
-            // });
+            await sendMessageToClient(userId, {
+              type: "text",
+              text: `คิวของคุณคือ ${createBookQueue.queueNo}`,
+            });
           }
         }
 
