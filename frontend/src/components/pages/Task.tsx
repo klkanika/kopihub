@@ -41,11 +41,13 @@ function Task (props : ITaskProps) {
   const [ time, SetTime] = useState(0);
   
   useInterval(() => {
-    const difference = props.finishDate.valueOf() - Date.now().valueOf();
-    SetTime(difference > 0 ? difference : 0);
-    if (difference <= 0 && props.status === "ONGOING") 
-      props.timeUp(props.taskId)
-    if (props.userRole === "CHEF" && props.status === "TIMEUP"){
+    if (props.status === "ONGOING"){
+      const difference = props.finishDate.valueOf() - Date.now().valueOf();
+      SetTime(difference > 0 ? difference : 0);
+      if(difference <= 0)
+        props.timeUp(props.taskId)
+    }
+    else if (props.userRole === "CHEF" && props.status === "TIMEUP"){
       try {
         window.playSound()  
       } catch (error) {

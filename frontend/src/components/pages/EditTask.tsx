@@ -153,7 +153,8 @@ function EditTask() {
         <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="edit" toggleRole={() => {}} className=''></Header>
         {setTask && userRole === "CASHIER" && <SetTask taskId={curTaskId} taskName={curTaskName} typeTaskName={curTypeTaskName} noTaskName={curNoTaskName} total={curTotal} 
         closePopup={toggleEditTask} saveEditTask={updateTask} visible={setTask}/>}
-        <div className="flex justify-end items-center absolute top-0 right-0 z-10">
+        <div className="flex justify-end items-center absolute top-0 right-0 z-10
+          text-sm sm:text-lg md:text-lg lg:text-lg xl:text-lg">
           <a href="/TaskView" className="underline mr-4" style={{color:'#535050'}}>ยกเลิก</a>
           <div className="p-2 px-4 inline-block font-bold text-white" style={{background: '#683830',borderRadius:'5px'}} onClick={save}>บันทึก</div>
         </div>

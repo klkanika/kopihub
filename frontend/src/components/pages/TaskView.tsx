@@ -77,7 +77,7 @@ function TaskView() {
 
   const { data: tasksData, loading: tasksLoading } = useQuery(GET_TASKS, {
     fetchPolicy: 'no-cache',
-    pollInterval: 1000,
+    pollInterval: 5000,
     variables: {},
     onError: (err) => {
       window.alert(err)

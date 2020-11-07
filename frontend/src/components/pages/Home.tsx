@@ -29,10 +29,6 @@ const Home = () => {
     labelCol: { span: 4 },
     wrapperCol: { span: 12 },
   };
-
-  const tailLayout = {
-    wrapperCol: { offset: 4, span: 16 },
-  };
   
   const [loggedUser, { error, loading, data }] = useMutation(LOGIN,{
     onCompleted: ((res) => {
@@ -44,8 +40,7 @@ const Home = () => {
       history.push('/SelectRole')  
     }),
     onError: ((err)=>{
-      console.log("login failed",err)
-      message.error('error')
+      message.error(err.message)
       sessionStorage.clear()
     })
   })
@@ -107,23 +102,24 @@ const Home = () => {
           </a>
         </Form.Item> */}
 
-        <Form.Item {...tailLayout}>
+        <Form.Item 
+          className="fiex justify-center">
           <Button 
             type="primary" 
             htmlType="submit" 
-            className="flex"
+            className="flex justify-center"
             style={{borderRadius: '5px',fontSize: '20px',height: 'auto',padding: '0.5em 3em',background:'#683830',border:'none'}}
           >
             LOGIN
           </Button>
           <br/>
-          {/* <a 
+          <a 
             href="./Register"
             className="block underline mt-3"
             style={{color: '#535050'}}
           >
             REGISTER
-          </a> */}
+          </a>
         </Form.Item>
       </Form>
       </div>
