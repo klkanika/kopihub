@@ -9,6 +9,7 @@ import EditTask from '../pages/EditTask'
 import PrivateRoute from '../routing/PrivateRoute'
 import StaffQueue from '../pages/StaffQueue'
 import CustomerQueue from '../pages/CustomerQueue'
+import CustomerCancelQueue from '../pages/CustomerCancelQueue'
 
 
 let params = new URLSearchParams(decodeURIComponent(window.location.search));
@@ -45,7 +46,7 @@ export default () => (
         <PrivateRoute exact path="/EditTask" component={EditTask} />
         <Route exact path="/staffqueue" component={StaffQueue} />
         <Route exact path="/customerqueue" component={CustomerQueue} />
-        {/* <Route exact path="/cancelqueue" component={} /> */}
+        <Route exact path="/cancelqueue" component={CustomerCancelQueue} />
         {/* <Route exact path="*" component={Home} /> */}
       </Switch>
     </Fragment>

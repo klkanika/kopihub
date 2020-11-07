@@ -596,30 +596,30 @@ schema.mutationType({
                       "alignItems": "center",
                       "margin": "lg"
                     },
-                    // {
-                    //   "type": "separator",
-                    //   "margin": "xxl"
-                    // },
-                    // {
-                    //   "type": "box",
-                    //   "layout": "horizontal",
-                    //   "contents": [
-                    //     {
-                    //       "type": "text",
-                    //       "text": "ยกเลิกคิว",
-                    //       "color": "#FD0F0F",
-                    //       "flex": 0,
-                    //       "size": "md",
-                    //       "action": {
-                    //         "type": "uri",
-                    //         "label": "action",
-                    //         "uri": `https://liff.line.me/1655216608-Gl3yPZWv/cancelqueue&id=${createBookQueue.id}`
-                    //       }
-                    //     }
-                    //   ],
-                    //   "justifyContent": "center",
-                    //   "margin": "xl"
-                    // }
+                    {
+                      "type": "separator",
+                      "margin": "xxl"
+                    },
+                    {
+                      "type": "box",
+                      "layout": "horizontal",
+                      "contents": [
+                        {
+                          "type": "text",
+                          "text": "ยกเลิกคิว",
+                          "color": "#FD0F0F",
+                          "flex": 0,
+                          "size": "md",
+                          "action": {
+                            "type": "uri",
+                            "label": "action",
+                            "uri": `https://liff.line.me/1655216608-Gl3yPZWv/cancelqueue&id=${createBookQueue.id}`
+                          }
+                        }
+                      ],
+                      "justifyContent": "center",
+                      "margin": "xl"
+                    }
                   ],
                   "position": "relative"
                 },
