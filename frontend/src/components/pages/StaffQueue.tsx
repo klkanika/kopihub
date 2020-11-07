@@ -247,7 +247,7 @@ const StaffQueue = () => {
                 }>
                 <Header className="mt-8 ml-8" username={userName ? userName : ''} userRole={"QUEUE"} page="edit" toggleRole={() => { }}></Header>
                 <div className="flex justify-center pb-12 md:pt-18 pt-8">
-                    <img src={queue_qr_code} alt="qrcode" className="md:w-1/2 w-full" />
+                    <img src={queue_qr_code} alt="qrcode" className="md:w-1/4 w-full" />
                 </div>
                 <div className="md:ml-12 md:mr-12 ml-4 mr-4">
                     {

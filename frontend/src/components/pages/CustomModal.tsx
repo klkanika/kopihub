@@ -17,11 +17,11 @@ const CustomModal = (props: any) => {
             // await fetchQueue({ variables: { id: props.id } })
         } else if (props && props.type === 'cancel') {
             if (!cancelQueueLoading) {
-                await cancelQueue({ variables: { id: props.id } })
+                await cancelQueue({ variables: { id: parseInt(props.id) } })
             }
         } else if (props && props.type === 'order') {
             if (!orderFoodLoading) {
-                await orderFood({ variables: { id: props.id } })
+                await orderFood({ variables: { id: parseInt(props.id) } })
             }
         } else {
             if (!bookQueueLoading) {
