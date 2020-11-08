@@ -14,12 +14,16 @@ import SetTask from './SetTask';
 
 
 function EditTask() {
+  let search = window.location.search;
+  let params = new URLSearchParams(search);
+  let userRoleParam = params.get("userRole");
+
   const history = useHistory()
   const [ tasks, setTasks] = useState([])
   const [ newOrderingtasks, setNewOrderingtasks] = useState<string[]>([])
   const [ updatedAt, setUpdatedAt] = useState(new Date)
   const userName = sessionStorage.getItem("loggedUserName");
-  const userRole = sessionStorage.getItem("loggedUserRole");
+  const [userRole, setUserRole] = useState(userRoleParam ? userRoleParam : sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
   const [ setTask, setSetTask ] = useState(false);
   const [ curTaskId, setCurTaskId ] = useState("");
   const [ curTaskName, setCurTaskName ] = useState("");
@@ -155,7 +159,7 @@ function EditTask() {
         closePopup={toggleEditTask} saveEditTask={updateTask} visible={setTask}/>}
         <div className="flex justify-end items-center absolute top-0 right-0 z-10
           text-sm sm:text-lg md:text-lg lg:text-lg xl:text-lg">
-          <a href="/TaskView" className="underline mr-4" style={{color:'#535050'}}>ยกเลิก</a>
+          <a href="/TaskView?userRole=CASHIER" className="underline mr-4" style={{color:'#535050'}}>ยกเลิก</a>
           <div className="p-2 px-4 inline-block font-bold text-white" style={{background: '#683830',borderRadius:'5px'}} onClick={save}>บันทึก</div>
         </div>
         <ReactSortable

@@ -90,7 +90,7 @@ function Header(props: IHeaderProps) {
       {/* <div></div> */}
       <div style={{ display: (props.page == 'edit') ? 'none' : '' }}>
         <Link
-          to="/EditTask"
+          to="/EditTask?userRole=CASHIER"
           className="p-2 px-4 text-white font-bold flex 
             text-sm sm:text-lg md:text-lg lg:text-lg xl:text-lg"
           style={{

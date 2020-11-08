@@ -41,17 +41,6 @@ function TaskView() {
 
   const [userRole, setUserRole] = useState(userRoleParam ? userRoleParam : sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
 
-  // const { subscribe, unsubscribe } = useSocket("taskUpdate", (dataFromServer) =>
-  //   getTaks()
-  // );
-
-  // useEffect(()=>{
-  //   subscribe()
-  //   return () =>{
-  //     unsubscribe()
-  //   }
-  // },[])
-
   const [curTaskId, setCurTaskId] = useState("")
 
   function useInterval(callback: () => void, delay: number | null) {
@@ -84,7 +73,6 @@ function TaskView() {
     }
   });
   const tasks = (tasksData && tasksData.tasks) || []
-  console.log(tasks)
 
   const toggleInsertTaskPopup = () => {
     setInsertTask(!insertTask)

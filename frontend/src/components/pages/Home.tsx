@@ -108,7 +108,8 @@ const Home = () => {
             type="primary" 
             htmlType="submit" 
             className="flex justify-center"
-            style={{borderRadius: '5px',fontSize: '20px',height: 'auto',padding: '0.5em 3em',background:'#683830',border:'none'}}
+            style={{borderRadius: '5px',fontSize: '20px',height: 'auto',padding: '0.5em 3em',background:'#683830'
+              ,border:'none',width: '100%'}}
           >
             LOGIN
           </Button>
