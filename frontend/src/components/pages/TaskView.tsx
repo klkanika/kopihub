@@ -285,13 +285,12 @@ function TaskView() {
               <div
                 id="btnAddTask"
                 onClick={toggleInsertTaskPopup}
-                className="w-48 m-1 flex items-center justify-center text-xl text-gray-600"
+                className="w-56 h-48 m-1 flex items-center justify-center text-xl text-gray-600"
                 style={{
                   display: userRole === "CASHIER" ? "" : "none",
                   border: '1px dashed #ddd',
                   borderRadius: '5px',
                   flexFlow: 'column',
-                  minHeight: '150px'
                 }}
               >
                 <PlusOutlined style={{ fontSize: '2em' }} />
