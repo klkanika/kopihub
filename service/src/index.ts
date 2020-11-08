@@ -3,25 +3,29 @@ import express from "express";
 import { getOrders } from './ocha-api'
 import fetch from 'node-fetch'
 
-const { AUTHEN, COOKIE, API, USER,PORT } = process.env
+const { AUTHEN, COOKIE, API, USER, PORT } = process.env
 const app = express();
-console.log(AUTHEN,COOKIE,API,PORT)
-app.post("/sync-order",async (req,res)=>{
-  
-  try{
-    if(AUTHEN &&  COOKIE){
+console.log(AUTHEN, COOKIE, API, PORT)
+app.post("/sync-order", async (req, res) => {
+
+  try {
+    if (AUTHEN && COOKIE) {
       const orders = await getOrders(AUTHEN, COOKIE);
-      await AddTask(orders);
+      const tasks = await getTask();
+
+      await AddTask(tasks, orders);
+      await CancelTask(tasks, orders);
+
       console.log("fetched")
     }
-  }catch(ex){
+  } catch (ex) {
     console.log(ex)
   }
-  
+
   res.send("ok")
 })
-app.listen(PORT||5000, () => {
-  console.log(`server started at http://localhost:${PORT||5000}`);
+app.listen(PORT || 5000, () => {
+  console.log(`server started at http://localhost:${PORT || 5000}`);
   if (!AUTHEN || !COOKIE) return;
   console.log("vvv")
   // const interval = 10
@@ -33,10 +37,10 @@ app.listen(PORT||5000, () => {
 
 });
 
-
-const AddTask = async (orders) => {
-  if (orders === []) return;
-
+const getTask = async () => {
+  let today = new Date();
+  today.setHours(0, 0, 0, 0)
+  console.log(`get tasks from ${today} to ${new Date()}`)
   const taskRes = await (await fetch(API, {
     method: 'POST',
     headers: {
@@ -44,11 +48,19 @@ const AddTask = async (orders) => {
       'Accept': 'application/json',
     },
     body: JSON.stringify({
-      query: TASK_QUERY
+      query: TASK_QUERY,
+      variables: { today }
     })
   })).json();
-  const tasks = taskRes.data.tasks.map((t) => `${t.serverId}`)
-  
+  const tasks = taskRes.data.tasks
+  return tasks;
+}
+
+const AddTask = async (tasks, orders) => {
+  if (orders === []) return;
+
+  const serverIds = tasks.map((t) => `${t.serverId}`);
+
   orders
     .map((o) => {
       return {
@@ -60,7 +72,7 @@ const AddTask = async (orders) => {
       }
     })
     .filter(o => o.total > 0)
-    .filter((o) => !tasks.includes(o.serverId))
+    .filter((o) => !serverIds.includes(o.serverId))
     .forEach(async order => {
       const { serverId, total, name } = order;
 
@@ -87,10 +99,38 @@ const AddTask = async (orders) => {
     });
 }
 
+const CancelTask = async (tasks, orders) => {
+  const serverIds = orders.map(o => `${o.cart.server_id}`)
+  tasks
+    .filter(t => !serverIds.includes(t.serverId))
+    .filter(t => t.status === "PENDING")
+    .forEach(async t => {
+      console.log("to be cancel", t.id, t.serverId)
+      const res = await (await fetch(API, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          query: TASK_CANCEL,
+          variables: {
+            taskId: t.id,
+          }
+        })
+      })).json();
+      console.log("cancelled", JSON.stringify(res));
+    });
+}
+
 const TASK_QUERY = `
+query tasks($today: DateTime!)
 {
-  tasks{
+  tasks (where:{createdAt:{gte: $today}}){
+    id
+    name
     serverId
+    status
   }
 }
 `
@@ -125,4 +165,13 @@ mutation
       serverId
     }
   }
+`
+const TASK_CANCEL = `
+mutation updateTaskCancel($taskId: String!){
+  updateTaskCancel(taskId: $taskId){
+    id
+    serverId
+    name
+  }
+}
 `
