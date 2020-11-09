@@ -10,6 +10,7 @@ import PrivateRoute from '../routing/PrivateRoute'
 import StaffQueue from '../pages/StaffQueue'
 import CustomerQueue from '../pages/CustomerQueue'
 import CustomerCancelQueue from '../pages/CustomerCancelQueue'
+import SetTaskNew from '../pages/SetTaskNew'
 
 
 let params = new URLSearchParams(decodeURIComponent(window.location.search));
@@ -44,9 +45,11 @@ export default () => (
         <PrivateRoute exact path="/TaskView" component={TaskView} />
         <PrivateRoute exact path="/Register" component={Register} />
         <PrivateRoute exact path="/EditTask" component={EditTask} />
+        <PrivateRoute exact path="/SetTaskNew/:id/:taskName/:total/:type" component={SetTaskNew} />
         <Route exact path="/staffqueue" component={StaffQueue} />
         <Route exact path="/customerqueue" component={CustomerQueue} />
         <Route exact path="/cancelqueue" component={CustomerCancelQueue} />
+        
         {/* <Route exact path="*" component={Home} /> */}
       </Switch>
     </Fragment>

@@ -133,13 +133,15 @@ function EditTask() {
   }
 
   const toggleEditTask = (taskId: string, taskName: string, total : number) => {
-    setSetTask(!setTask)
-    setCurTaskId(taskId)
+    // setSetTask(!setTask)
+    // setCurTaskId(taskId)
     const taskNameArr = taskName.split(/([0-9]+)/)
-    setCurTaskName(taskName)
-    setCurTypeTaskName(taskNameArr[0])
-    setCurNoTaskName(taskNameArr[1])
-    setCurTotal(total)
+    // setCurTaskName(taskName)
+    // setCurTypeTaskName(taskNameArr[0])
+    // setCurNoTaskName(taskNameArr[1])
+    // setCurTotal(total)
+    const type = taskNameArr[0] && taskNameArr[0].trim() === "โต๊ะ" ? "T" : "Q"
+    history.push('/SetTaskNew/'+taskId+'/'+taskNameArr[1]+'/'+total+'/'+type)
   }
     
 
