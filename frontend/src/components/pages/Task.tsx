@@ -41,11 +41,13 @@ function Task (props : ITaskProps) {
   const [ time, SetTime] = useState(0);
   
   useInterval(() => {
-    const difference = props.finishDate.valueOf() - Date.now().valueOf();
-    SetTime(difference > 0 ? difference : 0);
-    if (difference <= 0 && props.status === "ONGOING") 
-      props.timeUp(props.taskId)
-    if (props.userRole === "CHEF" && props.status === "TIMEUP"){
+    if (props.status === "ONGOING"){
+      const difference = props.finishDate.valueOf() - Date.now().valueOf();
+      SetTime(difference > 0 ? difference : 0)
+      if(difference <= 0)
+        props.timeUp(props.taskId)
+    }
+    else if (props.userRole === "CHEF" && props.status === "TIMEUP"){
       try {
         window.playSound()  
       } catch (error) {
@@ -102,7 +104,7 @@ function Task (props : ITaskProps) {
       <CloseCircleOutlined 
         className="absolute bg-white"
         style={{
-          fontSize: '20px',
+          fontSize: '30px',
           color:'red',
           right: '-5px',
           top: '-5px',
@@ -112,12 +114,12 @@ function Task (props : ITaskProps) {
       </Popconfirm>
       <div 
         onClick={click}
-        className="pt-2 overflow-hidden w-48 flex flex-wrap items-center bg-white"
+        className="pt-2 overflow-hidden w-56 h-48 flex flex-wrap items-center bg-white"
         style={{border:'1px solid #ddd',borderRadius:'5px'}}
       >
-        <div className="w-1/2 pl-2 text-2xl">{props.taskName}</div>
-        <div className="w-1/2 text-right pr-2"><Timer time={time} /></div>
-        <div className="p-2 text-5xl font-bold w-full text-center">{props.total}</div>
+        <div className="w-1/2 pl-2 font-bold"> จำนวน {props.total} เข่ง</div>
+        <div className="w-1/2 text-right pr-2" style={{display: props.page === "EditTask" ? "none" : ""}}><Timer time={time} /></div>
+        <div className="p-2 text-2xl font-bold w-full text-center">{props.taskName}</div>
         <div className="text-white font-bold p-2 w-full"
         style={{
           textAlign:"center",

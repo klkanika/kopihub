@@ -51,24 +51,30 @@ function SelectRole() {
 
   return (
     <div className="flex items-center justify-center" style={{background: '#FFFCF9',width: '100vw',height: '100vh'}}>
-      <div className="w-3/4 max-w-screen-md text-center">
+      <div className="text-center
+        block sm:block md:flex lg:flex xl:flex
+        max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 
+        max-h-full sm:max-h-screen md:max-h-full lg:max-h-screen xl:max-h-full">
         <Button onClick={() => saveValue('CASHIER')} name="CASHIER" value="CASHIER"
           className="shadow"
-          style={{width: '300px',margin:'20px',borderRadius:'5px',padding:'20px',height:'auto', fontSize:'22px', fontWeight:'bold',color:'#683830',boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'}}
+          style={{width: '300px',margin:'20px',borderRadius:'5px',padding:'20px',height:'auto', fontSize:'22px', fontWeight:'bold',color:'#683830'
+          ,boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'}}
         >
           <img src={icon_counter} style={{height:'150px',margin:'0 auto 30px'}}/>
           เคาน์เตอร์
         </Button>
         <Button onClick={() => saveValue('CHEF')} name="CHEF" value="CHEF"
           className="shadow"
-          style={{width: '300px',margin:'20px',borderRadius:'5px',padding:'20px',height:'auto', fontSize:'22px', fontWeight:'bold',color:'#683830',boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'}}
+          style={{width: '300px',margin:'20px',borderRadius:'5px',padding:'20px',height:'auto', fontSize:'22px', fontWeight:'bold',color:'#683830'
+          ,boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'}}
         >
           <img src={icon_chef} style={{height:'150px',margin:'0 auto 30px'}}/>
           ครัว
         </Button>
         <Button onClick={() => window.location.href = "/staffqueue"} name="STAFFQUEUE" value="STAFFQUEUE"
           className="shadow"
-          style={{width: '300px',margin:'20px',borderRadius:'5px',padding:'20px',height:'auto', fontSize:'22px', fontWeight:'bold',color:'#683830',boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'}}
+          style={{width: '300px',margin:'20px',borderRadius:'5px',padding:'20px',height:'auto', fontSize:'22px', fontWeight:'bold',color:'#683830'
+            ,boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'}}
         >
           <img src={icon_queue} style={{height:'150px',margin:'0 auto 30px'}}/>
           คิว

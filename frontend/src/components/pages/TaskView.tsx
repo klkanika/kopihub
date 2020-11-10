@@ -41,17 +41,6 @@ function TaskView() {
 
   const [userRole, setUserRole] = useState(userRoleParam ? userRoleParam : sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
 
-  // const { subscribe, unsubscribe } = useSocket("taskUpdate", (dataFromServer) =>
-  //   getTaks()
-  // );
-
-  // useEffect(()=>{
-  //   subscribe()
-  //   return () =>{
-  //     unsubscribe()
-  //   }
-  // },[])
-
   const [curTaskId, setCurTaskId] = useState("")
 
   function useInterval(callback: () => void, delay: number | null) {
@@ -77,14 +66,13 @@ function TaskView() {
 
   const { data: tasksData, loading: tasksLoading } = useQuery(GET_TASKS, {
     fetchPolicy: 'no-cache',
-    pollInterval: 1000,
+    pollInterval: 5000,
     variables: {},
     onError: (err) => {
       window.alert(err)
     }
   });
   const tasks = (tasksData && tasksData.tasks) || []
-  console.log(tasks)
 
   const toggleInsertTaskPopup = () => {
     setInsertTask(!insertTask)
@@ -297,13 +285,12 @@ function TaskView() {
               <div
                 id="btnAddTask"
                 onClick={toggleInsertTaskPopup}
-                className="w-48 m-1 flex items-center justify-center text-xl text-gray-600"
+                className="w-56 h-48 m-1 flex items-center justify-center text-xl text-gray-600"
                 style={{
                   display: userRole === "CASHIER" ? "" : "none",
                   border: '1px dashed #ddd',
                   borderRadius: '5px',
                   flexFlow: 'column',
-                  minHeight: '150px'
                 }}
               >
                 <PlusOutlined style={{ fontSize: '2em' }} />

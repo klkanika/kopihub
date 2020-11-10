@@ -73,7 +73,8 @@ function Header(props: IHeaderProps) {
     <div className={`flex items-center justify-between mb-8 ${props.className}`}>
       <div className="flex items-center">
         <Dropdown overlay={menu} placement="bottomLeft" arrow className="z-50" trigger={['click']}>
-          <div className="inline-block p-4 shadow mr-4 bg-white"
+          <div className="inline-block p-4 shadow bg-white
+              mr-2 sm:mr-2 md:mr-4 lg:mr-4 xl:mr-4"
             style={{ border: '1px solid #ddd', borderRadius: '50%' }}
           >
             <img
@@ -82,15 +83,16 @@ function Header(props: IHeaderProps) {
             />
           </div>
         </Dropdown>
-        <div className="text-xl" style={{ color: '#535050' }}>
+        <div className="text-sm sm:text-lg md:text-lg lg:text-lg xl:text-lg" style={{ color: '#535050' }}>
           {props.userRole == 'CHEF' ? 'ครัว' : props.userRole === 'CASHIER' ? 'เคาน์เตอร์' : 'คิว'} : {props.username}
         </div>
       </div>
       {/* <div></div> */}
       <div style={{ display: (props.page == 'edit') ? 'none' : '' }}>
         <Link
-          to="/EditTask"
-          className="p-2 px-4 text-white font-bold text-lg"
+          to="/EditTask?userRole=CASHIER"
+          className="p-2 px-4 text-white font-bold flex 
+            text-sm sm:text-lg md:text-lg lg:text-lg xl:text-lg"
           style={{
             borderRadius: '5px',
             background: '#683830',

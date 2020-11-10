@@ -14,12 +14,16 @@ import SetTask from './SetTask';
 
 
 function EditTask() {
+  let search = window.location.search;
+  let params = new URLSearchParams(search);
+  let userRoleParam = params.get("userRole");
+
   const history = useHistory()
   const [ tasks, setTasks] = useState([])
   const [ newOrderingtasks, setNewOrderingtasks] = useState<string[]>([])
   const [ updatedAt, setUpdatedAt] = useState(new Date)
   const userName = sessionStorage.getItem("loggedUserName");
-  const userRole = sessionStorage.getItem("loggedUserRole");
+  const [userRole, setUserRole] = useState(userRoleParam ? userRoleParam : sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
   const [ setTask, setSetTask ] = useState(false);
   const [ curTaskId, setCurTaskId ] = useState("");
   const [ curTaskName, setCurTaskName ] = useState("");
@@ -129,13 +133,15 @@ function EditTask() {
   }
 
   const toggleEditTask = (taskId: string, taskName: string, total : number) => {
-    setSetTask(!setTask)
-    setCurTaskId(taskId)
+    // setSetTask(!setTask)
+    // setCurTaskId(taskId)
     const taskNameArr = taskName.split(/([0-9]+)/)
-    setCurTaskName(taskName)
-    setCurTypeTaskName(taskNameArr[0])
-    setCurNoTaskName(taskNameArr[1])
-    setCurTotal(total)
+    // setCurTaskName(taskName)
+    // setCurTypeTaskName(taskNameArr[0])
+    // setCurNoTaskName(taskNameArr[1])
+    // setCurTotal(total)
+    const type = taskNameArr[0] && taskNameArr[0].trim() === "โต๊ะ" ? "T" : "Q"
+    history.push('/SetTaskNew/'+taskId+'/'+taskNameArr[1]+'/'+total+'/'+type)
   }
     
 
@@ -153,8 +159,9 @@ function EditTask() {
         <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="edit" toggleRole={() => {}} className=''></Header>
         {setTask && userRole === "CASHIER" && <SetTask taskId={curTaskId} taskName={curTaskName} typeTaskName={curTypeTaskName} noTaskName={curNoTaskName} total={curTotal} 
         closePopup={toggleEditTask} saveEditTask={updateTask} visible={setTask}/>}
-        <div className="flex justify-end items-center absolute top-0 right-0 z-10">
-          <a href="/TaskView" className="underline mr-4" style={{color:'#535050'}}>ยกเลิก</a>
+        <div className="flex justify-end items-center absolute top-0 right-0 z-10
+          text-sm sm:text-lg md:text-lg lg:text-lg xl:text-lg">
+          <a href="/TaskView?userRole=CASHIER" className="underline mr-4" style={{color:'#535050'}}>ยกเลิก</a>
           <div className="p-2 px-4 inline-block font-bold text-white" style={{background: '#683830',borderRadius:'5px'}} onClick={save}>บันทึก</div>
         </div>
         <ReactSortable
