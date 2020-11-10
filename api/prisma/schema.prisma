@@ -94,5 +94,6 @@ model Queue {
   userId     String?
   name       String?
   pictureUrl String?
+  table      String?
   seat       Int
 }

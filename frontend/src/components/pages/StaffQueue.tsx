@@ -13,7 +13,7 @@ import { AlertOutlined } from '@ant-design/icons';
 import { Global, css } from '@emotion/core';
 import kopihub from '../../imgs/queue_kopihub.jpg'
 import { Redirect } from 'react-router-dom';
-import { Dropdown, Menu } from 'antd';
+import { Dropdown, Menu, Select } from 'antd';
 import Header from './Header';
 
 const StaffQueue = () => {
@@ -32,6 +32,9 @@ const StaffQueue = () => {
     const activeQueues = (queuesData && queuesData.getQueues && queuesData.getQueues.activeQueues)
 
     const [fetchQueueVisible, setFetchQueueVisible]: any = useState(false);
+    const [fetchQueueTableA, setFetchQueueTableA]: any = useState();
+    const [fetchQueueTableB, setFetchQueueTableB]: any = useState();
+    const [fetchQueueTableC, setFetchQueueTableC]: any = useState();
 
     const [cancelQueueVisible, setCancelQueueVisible]: any = useState(false);
     const [cancelQueueId, setCancelQueueId]: any = useState();
@@ -48,6 +51,8 @@ const StaffQueue = () => {
 
     const userName = sessionStorage.getItem("loggedUserName");
 
+    const maxTable = 14
+
     if (!sessionStorage.getItem("loggedUserId")) {
         return <Redirect to={'/'} />
     }
@@ -62,6 +67,46 @@ const StaffQueue = () => {
     let firstC = activeQueues && activeQueues.filter((q: any) => {
         return q.seat >= 7
     })[0]
+
+    const setFetchQueueBack = () => {
+        setFetchQueueTableA(null)
+        setFetchQueueTableB(null)
+        setFetchQueueTableC(null)
+    }
+
+    const tableDropdown = (tabletype: any) => {
+        return (
+            <Select virtual={false} className="md:w-32" placeholder="เลือกโต๊ะ" onSelect={(value: any) => {
+                if (tabletype === 'A') {
+                    setFetchQueueTableA(value)
+                } else if (tabletype === 'B') {
+                    setFetchQueueTableB(value)
+                } else {
+                    setFetchQueueTableC(value)
+                }
+            }}>
+                <Select.Option value="ชั้น 1 โต๊ะ 1">ชั้น 1 โต๊ะ 1</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 2">ชั้น 1 โต๊ะ 2</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 3">ชั้น 1 โต๊ะ 3</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 4">ชั้น 1 โต๊ะ 4</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 5">ชั้น 1 โต๊ะ 5</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 6">ชั้น 1 โต๊ะ 6</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 7">ชั้น 1 โต๊ะ 7</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 8">ชั้น 1 โต๊ะ 8</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 9">ชั้น 1 โต๊ะ 9</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 10">ชั้น 1 โต๊ะ 10</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 11">ชั้น 1 โต๊ะ 11</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 12">ชั้น 1 โต๊ะ 12</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 13">ชั้น 1 โต๊ะ 13</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 14">ชั้น 1 โต๊ะ 14</Select.Option>
+                <Select.Option value="ชั้น 1 โต๊ะ 15">ชั้น 1 โต๊ะ 15</Select.Option>
+                <Select.Option value="ชั้น 2 โต๊ะ 1">ชั้น 2 โต๊ะ 1</Select.Option>
+                <Select.Option value="ชั้น 2 โต๊ะ 2">ชั้น 2 โต๊ะ 2</Select.Option>
+                <Select.Option value="Bar โต๊ะ 1">Bar โต๊ะ 1</Select.Option>
+                <Select.Option value="Bar โต๊ะ 2">Bar โต๊ะ 2</Select.Option>
+            </Select>
+        )
+    }
 
     return (
         <div style={{ touchAction: 'manipulation' }}>
@@ -113,10 +158,13 @@ const StaffQueue = () => {
                 content={
                     <div>
                         <div className="pt-12 pb-12 pr-12 pl-12">
-                            <div className="md:text-6xl text-3xl pb-6">เรียกคิว</div>
+                            <div className="md:text-4xl text-3xl pb-6">เรียกคิว</div>
                             <div className="flex items-center justify-between mb-4">
-                                <button onClick={() => { if (firstA) { fetchQueue({ variables: { id: firstA.id } }); setFetchQueueVisible(false); } }} className="flex justify-between leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2 pl-3 pr-3 md:pl-4 md:pr-4" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}><div>A</div><div>1-3 คน</div></button>
-                                <div className="text-base md:text-5xl flex" style={{ color: '#585568' }}>
+                                <button onClick={() => { if (firstA && fetchQueueTableA) { fetchQueue({ variables: { id: firstA.id, table: fetchQueueTableA } }); setFetchQueueVisible(false); } }} className="flex justify-between leading-none md:text-2xl text-base md:w-40 w-24 md:pt-6 md:pb-6 pt-2 pb-2 pl-3 pr-3 md:pl-4 md:pr-4" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}><div>A</div><div>1-3 คน</div></button>
+                                <div className={`${firstA ? '' : 'hidden'}`}>
+                                    {tableDropdown('A')}
+                                </div>
+                                <div className="text-base md:text-2xl flex" style={{ color: '#585568' }}>
                                     {firstA ? (
                                         <>
                                             <div className="mr-6">{firstA && firstA.queueNo}</div>
@@ -126,8 +174,11 @@ const StaffQueue = () => {
                                 </div>
                             </div>
                             <div className="flex items-center justify-between mb-4">
-                                <button onClick={() => { if (firstB) { fetchQueue({ variables: { id: firstB.id } }); setFetchQueueVisible(false); } }} className="flex justify-between leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2 pl-3 pr-3 md:pl-4 md:pr-4" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}><div>B</div><div>4-6 คน</div></button>
-                                <div className="text-base md:text-5xl flex" style={{ color: '#585568' }}>
+                                <button onClick={() => { if (firstB && fetchQueueTableB) { fetchQueue({ variables: { id: firstB.id, table: fetchQueueTableB } }); setFetchQueueVisible(false); } }} className="flex justify-between leading-none md:text-2xl text-base md:w-40 w-24 md:pt-6 md:pb-6 pt-2 pb-2 pl-3 pr-3 md:pl-4 md:pr-4" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}><div>B</div><div>4-6 คน</div></button>
+                                <div className={`${firstB ? '' : 'hidden'}`}>
+                                    {tableDropdown('B')}
+                                </div>
+                                <div className="text-base md:text-2xl flex" style={{ color: '#585568' }}>
                                     {firstB ? (
                                         <>
                                             <div className="mr-6">{firstB && firstB.queueNo}</div>
@@ -137,8 +188,11 @@ const StaffQueue = () => {
                                 </div>
                             </div>
                             <div className="flex items-center justify-between mb-4">
-                                <button onClick={() => { if (firstC) { fetchQueue({ variables: { id: firstC.id } }); setFetchQueueVisible(false); } }} className="flex justify-between leading-none md:text-4xl text-base md:w-48 w-24 md:pt-6 md:pb-6 pt-2 pb-2 pl-3 pr-3 md:pl-4 md:pr-4" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}><div>C</div><div>7+ คน</div></button>
-                                <div className="text-base md:text-5xl flex" style={{ color: '#585568' }}>
+                                <button onClick={() => { if (firstC && fetchQueueTableC) { fetchQueue({ variables: { id: firstC.id, table: fetchQueueTableC } }); setFetchQueueVisible(false); } }} className="flex justify-between leading-none md:text-2xl text-base md:w-40 w-24 md:pt-6 md:pb-6 pt-2 pb-2 pl-3 pr-3 md:pl-4 md:pr-4" style={{ color: '#683830', border: '2px solid #683830', borderRadius: '0.5rem' }}><div>C</div><div>7+ คน</div></button>
+                                <div className={`${firstC ? '' : 'hidden'}`}>
+                                    {tableDropdown('C')}
+                                </div>
+                                <div className="text-base md:text-2xl flex" style={{ color: '#585568' }}>
                                     {firstC ? (
                                         <>
                                             <div className="mr-6">{firstC && firstC.queueNo}</div>
@@ -155,6 +209,7 @@ const StaffQueue = () => {
                 id={activeQueues && activeQueues[0] ? activeQueues[0].id : ''}
                 type='fetch'
                 disabled={true}
+                onCancel={setFetchQueueBack}
             />
 
             <CustomModal
@@ -259,6 +314,7 @@ const StaffQueue = () => {
                                         <div className="md:ml-6 ml-2">
                                             <b className="md:text-3xl text-base" style={{ color: '#683830' }}>คุณ{recentQueue && recentQueue.name ? recentQueue.name : 'ลูกค้า'}</b><br />
                                             <p className="md:text-xl text-xs mb-0 whitespace-no-wrap" style={{ color: '#585568' }}>จำนวน {recentQueue && recentQueue.seat} ท่าน</p>
+                                            <p className="md:text-xl text-xs mb-0 whitespace-no-wrap font-bold" style={{ color: '#585568' }}>{recentQueue && recentQueue.table}</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
