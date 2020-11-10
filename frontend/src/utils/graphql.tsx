@@ -307,6 +307,7 @@ query getQueues{
       seat
       name
       pictureUrl
+      table
     }
     activeQueues{
       id
@@ -346,8 +347,8 @@ mutation cancelQueue($id: Int!){
 `
 
 export const FETCH_QUEUE = gql`
-mutation fetchQueue($id : Int!){
-  fetchQueue(id: $id)
+mutation fetchQueue($id : Int!, $table : String!){
+  fetchQueue(id: $id, table: $table)
 }
 `
 

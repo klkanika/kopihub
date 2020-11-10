@@ -326,14 +326,16 @@ schema.mutationType({
       type: 'Boolean',
       args: {
         id: intArg({ required: true }),
+        table: stringArg({ required: true })
       },
-      resolve: async (_parent, { id }, ctx) => {
+      resolve: async (_parent, { id, table }, ctx) => {
         const updateFetchQueue = await ctx.db.queue.update({
           where: {
             id: id,
           },
           data: {
-            status: 'SUCCESS'
+            status: 'SUCCESS',
+            table: table
           },
         })
 
@@ -379,24 +381,27 @@ schema.mutationType({
         let queueString = seat < 4 ? 'A' : seat < 7 ? 'B' : 'C'
         let maxQueueDigit = 3
 
-        const myQueue = await ctx.db.queue.findMany({
-          where: {
-            AND: {
-              OR: [
-                { status: 'ACTIVE' },
-                {
-                  AND: {
-                    status: 'SUCCESS',
-                    createdAt: {
-                      gte: moment().subtract(1, "hour").toDate()
+        let myQueue
+        if (userId) {
+          myQueue = await ctx.db.queue.findMany({
+            where: {
+              AND: {
+                OR: [
+                  { status: 'ACTIVE' },
+                  {
+                    AND: {
+                      status: 'SUCCESS',
+                      createdAt: {
+                        gte: moment().subtract(1, "hour").toDate()
+                      }
                     }
                   }
-                }
-              ]
-            },
-            userId: { equals: userId }
-          }
-        })
+                ]
+              },
+              userId: { equals: userId }
+            }
+          })
+        }
 
         let createBookQueue
         if (myQueue && myQueue.length > 0) { } else {
@@ -440,15 +445,15 @@ schema.mutationType({
                     lt: moment().endOf('day').toDate()
                   }
                 },
-                {
-                  queueNo: {
-                    startsWith: queueString
-                  }
-                }
+                // {
+                //   queueNo: {
+                //     startsWith: queueString
+                //   }
+                // }
               ]
             },
             orderBy: {
-              queueNo: 'desc'
+              id: 'desc'
             }
           })
 
@@ -456,6 +461,8 @@ schema.mutationType({
           if (lastQueues && lastQueues.length > 0) {
             lastQueue = lastQueues[0]
           }
+
+          console.log('last queue', lastQueue)
 
           let queueNo
           if (lastQueue) {

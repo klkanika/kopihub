@@ -15,6 +15,7 @@ const CustomModal = (props: any) => {
     const insistEvent = async () => {
         if (props && props.type === 'fetch') {
             // await fetchQueue({ variables: { id: props.id } })
+            await props.onCancel()
         } else if (props && props.type === 'cancel') {
             if (!cancelQueueLoading) {
                 await cancelQueue({ variables: { id: parseInt(props.id) } })
