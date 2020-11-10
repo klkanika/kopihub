@@ -62,7 +62,7 @@ const SetTaskNew = () => {
       message.error('กรุณาเปลี่ยนแปลง เลขโต๊ะ, เลขคิว หรือ จำนวนเข่ง ให้ถูกต้อง')
     }else if(id && name && num){
       updateTask(id
-        , (nametype === "defaultNameType" ? type : nametype) +  (name === "defaultName" ? taskName : name)
+        , (nametype === "defaultNameType" ? type : nametype) === "T" ? "โต๊ะ" : "คิว" +  (name === "defaultName" ? taskName : name)
         , num === -1 ? parseInt(total) : num
         )
     }else{
