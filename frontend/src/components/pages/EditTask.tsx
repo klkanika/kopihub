@@ -4,14 +4,11 @@ import {
   GET_PENDING_TASKS, UPDATE_TASK_PRIORITY, UPDATE_EDIT_TASK
 } from '../../utils/graphql';
 import { ReactSortable } from "react-sortablejs";
-import Task from './Task';
-import { useSocket } from 'use-socketio';
-import { Button, Modal } from 'antd';
+import TaskNew from './TaskNew';
+import { Modal } from 'antd';
 import {useHistory} from "react-router-dom";
 import Header from './Header';
 import Loadding from '../layout/loadding'
-import SetTask from './SetTask';
-
 
 function EditTask() {
   let search = window.location.search;
@@ -20,20 +17,13 @@ function EditTask() {
 
   const history = useHistory()
   const [ tasks, setTasks] = useState([])
-  const [ newOrderingtasks, setNewOrderingtasks] = useState<string[]>([])
   const [ updatedAt, setUpdatedAt] = useState(new Date)
   const userName = sessionStorage.getItem("loggedUserName");
   const [userRole, setUserRole] = useState(userRoleParam ? userRoleParam : sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
   const [ setTask, setSetTask ] = useState(false);
-  const [ curTaskId, setCurTaskId ] = useState("");
-  const [ curTaskName, setCurTaskName ] = useState("");
-  const [ curTypeTaskName, setCurTypeTaskName ] = useState("");
-  const [ curNoTaskName, setCurNoTaskName ] = useState("");
-  const [ curTotal, setCurTotal ] = useState(0);
 
-
-  const [getTaksCompare , {called, loading : taskLazyLoading,data : taskLazyData}] = useLazyQuery(GET_PENDING_TASKS,{
-    fetchPolicy: 'network-only',
+  const [getTaksCompare , {called, loading : taskLazyLoading, data : taskLazyData}] = useLazyQuery(GET_PENDING_TASKS,{
+    // fetchPolicy: 'network-only',
     variables: {},
     onCompleted: (sre) => {
       var dates = sre.tasks.map((item:any) => { return new Date(item.updatedAt) })
@@ -51,7 +41,6 @@ function EditTask() {
       {
         info()
       }else{
-        console.log('newOrderingtasks',newOrderingtasks)
         tasks.map((t:any, index)=>{
           updateTaskPriority({variables : {
             taskId : t.id,
@@ -79,7 +68,7 @@ function EditTask() {
   });
 
   const {data: tasksData, loading: tasksLoading} = useQuery(GET_PENDING_TASKS,{
-    fetchPolicy: 'network-only',
+    // fetchPolicy: 'network-only',
     variables: {},
     onCompleted: (sre) => {
       setTasks(sre.tasks)
@@ -152,13 +141,11 @@ function EditTask() {
   return (
     <>
     {
-      tasksLoading
+      tasksLoading || taskLazyLoading
       ? <Loadding />
       :
       <div style={{margin:"2em"}} className="relative">
         <Header username={userName? userName : ""} userRole={userRole? userRole : "CASHIER"} page="edit" toggleRole={() => {}} className=''></Header>
-        {setTask && userRole === "CASHIER" && <SetTask taskId={curTaskId} taskName={curTaskName} typeTaskName={curTypeTaskName} noTaskName={curNoTaskName} total={curTotal} 
-        closePopup={toggleEditTask} saveEditTask={updateTask} visible={setTask}/>}
         <div className="flex justify-end items-center absolute top-0 right-0 z-10
           text-sm sm:text-lg md:text-lg lg:text-lg xl:text-lg">
           <a href="/TaskView?userRole=CASHIER" className="underline mr-4" style={{color:'#535050'}}>ยกเลิก</a>
@@ -169,27 +156,14 @@ function EditTask() {
           setList={setTasks}
           animation={200}
           className="flex flex-wrap"
-          // onChange={(order, sortable, evt) => {
-          //     // var sortArray = sortable?.toArray();
-          //     // var newArray = [""];
-          //     // sortArray?.map(i => 
-          //     //   newArray.push(i.toString())
-          //     // )
-          //     console.log('newArray',order)
-          //     // setNewOrderingtasks(newArray)
-          //   }
-          // }
         >
-          {/* <div className="flex flex-wrap"> */}
           {tasks.map((item:any) => (
           <div key={item.id} className="m-2">
-              <Task taskId={item.id} taskName={item.name} total={item.total} userRole={"CASHIER"}
+              <TaskNew taskId={item.id} taskName={item.name} total={item.total} userRole={"CASHIER"}
                 status={item.status} finishDate={new Date(item.finishTime)} page="EditTask"
-                setTime={(taskId: string) => {}} timeUp={(taskId: string) => {}} toggleTimeUp={(taskId: string) => {}}
-                cancel={onCancel} setTask={toggleEditTask} setStatus={(status:string) => {}} setFinishDate={(finishDate : Date) => {}}/>                
+                cancel={onCancel} setTask={toggleEditTask} />                
             </div>
           ))}
-          {/* </div> */}
         </ReactSortable>
       </div>
     }
