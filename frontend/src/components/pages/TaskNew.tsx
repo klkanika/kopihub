@@ -71,14 +71,14 @@ function TaskNew (props : ITaskProps) {
           color:'red',
           right: '-5px',
           top: '-5px',
-          display: props.page === "EditTask" ? "" : "none"
+          cursor:"pointer"
         }}
       />
       </Popconfirm>
       <div 
         onClick={click}
         className="pt-2 overflow-hidden w-56 h-48 flex flex-wrap items-center bg-white"
-        style={{border:'1px solid #ddd',borderRadius:'5px'}}
+        style={{border:'1px solid #ddd',borderRadius:'5px', cursor:"pointer"}}
       >
         <div className="w-1/2 pl-2 font-bold"> จำนวน {props.total} เข่ง</div>
         <div className="p-2 text-2xl font-bold w-full text-center">{props.taskName}</div>
