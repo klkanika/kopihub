@@ -151,20 +151,20 @@ function EditTask() {
           <a href="/TaskView?userRole=CASHIER" className="underline mr-4" style={{color:'#535050'}}>ยกเลิก</a>
           <div className="p-2 px-4 inline-block font-bold text-white" style={{background: '#683830',borderRadius:'5px'}} onClick={save}>บันทึก</div>
         </div>
-        <ReactSortable
+        {/* <ReactSortable
           list={tasks} 
           setList={setTasks}
           animation={200}
           className="flex flex-wrap"
-        >
+        > */}
           {tasks.map((item:any) => (
-          <div key={item.id} className="m-2">
+          <div key={item.id} className="m-2 flex flex-wrap">
               <TaskNew taskId={item.id} taskName={item.name} total={item.total} userRole={"CASHIER"}
                 status={item.status} finishDate={new Date(item.finishTime)} page="EditTask"
                 cancel={onCancel} setTask={toggleEditTask} />                
             </div>
           ))}
-        </ReactSortable>
+        {/* </ReactSortable> */}
       </div>
     }
     </>
