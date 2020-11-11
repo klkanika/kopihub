@@ -114,13 +114,13 @@ const Home = () => {
             LOGIN
           </Button>
           <br/>
-          <a 
+          {/* <a 
             href="./Register"
             className="block underline mt-3"
             style={{color: '#535050'}}
           >
             REGISTER
-          </a>
+          </a> */}
         </Form.Item>
       </Form>
       </div>
