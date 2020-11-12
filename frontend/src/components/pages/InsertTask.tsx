@@ -30,18 +30,6 @@ const InsertTask = () => {
   const [num, setNum] = useState(-1)
   const [name, setName] = useState("defaultName")
   const [nametype, setNameType] = useState("defaultNameType")
-  const [change, setChange] = useState(false)
-    
-  // verifyData(taskName : string, total: number){
-  //   console.log(taskName)
-  //   if(taskName === ""){
-  //     message.error('กรุณาระบุ เลขโต๊ะหรือเลขคิว')
-  //   }else if(total === 0){
-  //     message.error('กรุณาระบุ จำนวนเข่ง')
-  //   }else{
-  //     this.props.addTask(this.getTaskName(), total)
-  //   }
-  // }
 
   const [CreateTask, { error, loading, data }] = useMutation(CREATE_TASK)
 
@@ -66,13 +54,13 @@ const InsertTask = () => {
   
   const onFinish = () => {
     if((!name || name === "" || name === "defaultName")){
-      message.error('กรุณาระบุ เลขโต๊ะ, เลขคิว ให้ถูกต้อง')
+      window.alert('กรุณาระบุ เลขโต๊ะ, เลขคิว ให้ถูกต้อง')
     }
     else if((!num || num == 0 || num <= -1)){
-      message.error('กรุณาระบุ จำนวนเข่ง ให้ถูกต้อง')
+      window.alert('กรุณาระบุ จำนวนเข่ง ให้ถูกต้อง')
     }
     else if(!nametype || nametype === "" || nametype === "defaultNameType"){
-      message.error('กรุณาระบุ คิวหรือโต๊ะ')
+      window.alert('กรุณาระบุ คิวหรือโต๊ะ')
     }
     else if(name && num){
       var task = (nametype === "T" ? "โต๊ะ " : "คิว ") +  name
@@ -81,7 +69,7 @@ const InsertTask = () => {
         , num
         )
     }else{
-      message.error('ข้อมูลไม่ถูกต้อง')
+      window.alert('ข้อมูลไม่ถูกต้อง')
     }
   }
 

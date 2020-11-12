@@ -158,7 +158,7 @@ function TaskView() {
   return (
     <>
       {
-        !tasks ?
+        !tasks || tasksLoading ?
           <Loadding />
           :
           <div className="w-11/12 m-auto mt-8 mb-8">

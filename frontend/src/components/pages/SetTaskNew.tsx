@@ -50,13 +50,13 @@ const SetTaskNew = () => {
 
   const onFinish = () => {
     if((!name || name === "")){
-      message.error('กรุณาเปลี่ยนแปลง เลขโต๊ะ, เลขคิว ให้ถูกต้อง')
+      window.alert('กรุณาเปลี่ยนแปลง เลขโต๊ะ, เลขคิว ให้ถูกต้อง')
     }
     else if((!num || num == 0)){
-      message.error('กรุณาเปลี่ยนแปลง จำนวนเข่ง ให้ถูกต้อง')
+      window.alert('กรุณาเปลี่ยนแปลง จำนวนเข่ง ให้ถูกต้อง')
     }
     else if((name === "defaultName" || name === taskName) && (num <= -1 || num === parseInt(total))){
-      message.error('กรุณาเปลี่ยนแปลง เลขโต๊ะ, เลขคิว หรือ จำนวนเข่ง ให้ถูกต้อง')
+      window.alert('กรุณาเปลี่ยนแปลง เลขโต๊ะ, เลขคิว หรือ จำนวนเข่ง ให้ถูกต้อง')
     }else if(id && name && num){
       var task = ((nametype === "defaultNameType" ? type : nametype) === "T" ? "โต๊ะ " : "คิว ") +  (name === "defaultName" ? taskName : name)
       updateTask(id
@@ -64,7 +64,7 @@ const SetTaskNew = () => {
         , num === -1 ? parseInt(total) : num
         )
     }else{
-      message.error('ข้อมูลไม่ถูกต้อง')
+      window.alert('ข้อมูลไม่ถูกต้อง')
     }
   }
 

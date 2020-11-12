@@ -57,7 +57,7 @@ const SetTime = () => {
     }
 
     if(newSelectedArray.length == 0 && status === "PENDING"){
-      message.error("กรุณาระบุหลุม")
+      window.alert("กรุณาระบุหลุม")
     }
     else if(time == -1){
       updateComplete(taskId)
@@ -171,10 +171,10 @@ const SetTime = () => {
             <table className="table-fixed">
               <tr>
                 <td>
-                <div className="flex text-xl font-bold w-full text-center underline mt-3 ml-2"
-                  style={{ paddingBottom:'15px'}}>
-                  <div style={{textAlign:'left'}}>{status === "ONGOING" || status === "TIMEUP" ? "เสิร์ฟอาหารหรือเพิ่มเวลา" : "จับเวลา"}</div>
-                </div>
+                  <div className="flex text-xl font-bold w-full text-center underline mt-3 ml-2"
+                    style={{ paddingBottom:'15px'}}>
+                    <div style={{textAlign:'left'}}>{status === "ONGOING" || status === "TIMEUP" ? "เสิร์ฟอาหารหรือเพิ่มเวลา" : "จับเวลา"}</div>
+                  </div>
                 </td>
                 <td style={{textAlign:"right"}}>
                   <div className="font-thin text-base underline mr-4"><a 
