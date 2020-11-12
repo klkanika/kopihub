@@ -188,6 +188,7 @@ const CustomerQueue = () => {
                                             <div className="md:ml-6 ml-2">
                                                 <b className="md:text-3xl text-base" style={{ color: '#683830' }}>คุณ{recentQueue && recentQueue.name ? recentQueue.name : 'ลูกค้า'}</b><br />
                                                 <p className="md:text-xl text-xs mb-0 whitespace-no-wrap" style={{ color: '#585568' }}>จำนวน {recentQueue && recentQueue.seat} ท่าน</p>
+                                                <p className="md:text-xl text-xs mb-0 whitespace-no-wrap font-bold" style={{ color: '#585568' }}>{recentQueue && recentQueue.table.ochaTableName}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
