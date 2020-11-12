@@ -94,6 +94,14 @@ model Queue {
   userId     String?
   name       String?
   pictureUrl String?
-  table      String?
   seat       Int
+  table      Table?      @relation(fields: [tableId], references: [id])
+  tableId    Int?
+}
+
+model Table {
+  id            Int     @id @default(autoincrement())
+  ochaTableName String
+  tableName     String
+  Queue         Queue[]
 }

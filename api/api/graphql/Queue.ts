@@ -13,6 +13,7 @@ schema.objectType({
     t.model.name()
     t.model.seat()
     t.model.pictureUrl()
+    t.model.tableId()
     t.model.table()
   },
 })

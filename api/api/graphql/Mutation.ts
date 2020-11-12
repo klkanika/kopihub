@@ -326,27 +326,36 @@ schema.mutationType({
       type: 'Boolean',
       args: {
         id: intArg({ required: true }),
-        table: stringArg({ required: true })
+        tableId: intArg({ required: false })
       },
-      resolve: async (_parent, { id, table }, ctx) => {
-        const updateFetchQueue = await ctx.db.queue.update({
-          where: {
-            id: id,
-          },
-          data: {
-            status: 'SUCCESS',
-            table: table
-          },
-        })
+      resolve: async (_parent, { id, tableId }, ctx) => {
+        if (id && tableId) {
+          const updateFetchQueue = await ctx.db.queue.update({
+            where: {
+              id: id,
+            },
+            data: {
+              status: 'SUCCESS',
+              table: {
+                connect: {
+                  id: tableId,
+                },
+              },
+            },
+          })
 
-        if (updateFetchQueue && updateFetchQueue.userId) {
-          await sendMessageToClient(updateFetchQueue.userId, {
-            type: "text",
-            text: `ขอบคุณสำหรับการรอค่ะ คุณ${updateFetchQueue.name ? updateFetchQueue.name : 'ลูกค้า'} ถึงคิว ${updateFetchQueue.queueNo} ของคุณแล้ว กรุณาแจ้งพนักงาน`,
-          });
+
+          if (updateFetchQueue && updateFetchQueue.userId) {
+            await sendMessageToClient(updateFetchQueue.userId, {
+              type: "text",
+              text: `ขอบคุณสำหรับการรอค่ะ คุณ${updateFetchQueue.name ? updateFetchQueue.name : 'ลูกค้า'} ถึงคิว ${updateFetchQueue.queueNo} ของคุณแล้ว กรุณาแจ้งพนักงาน`,
+            });
+          }
+
+          return updateFetchQueue ? true : false
+        }else{
+          return false
         }
-
-        return updateFetchQueue ? true : false
       },
     })
 
@@ -461,8 +470,6 @@ schema.mutationType({
           if (lastQueues && lastQueues.length > 0) {
             lastQueue = lastQueues[0]
           }
-
-          console.log('last queue', lastQueue)
 
           let queueNo
           if (lastQueue) {

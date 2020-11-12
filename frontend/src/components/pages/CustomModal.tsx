@@ -36,6 +36,20 @@ const CustomModal = (props: any) => {
         }
         props.setVisible(false)
     }
+
+    const onCancel = () => {
+        if (props.allowOnCancel) {
+            props.onCancel()
+        }
+
+        if (!props.permanent) {
+            props.setVisible(false);
+            if (props.setBookQueueSeat) {
+                props.setBookQueueSeat(2);
+            }
+        }
+    }
+
     if (props.visible) {
         return (
             <>
@@ -47,14 +61,14 @@ const CustomModal = (props: any) => {
 
                         @media (min-width:768px) {
                             .popup-width{
-                                width: 70vw
+                                width: 90vw
                             }
                         }
             `}
                 />
-                <div className="fixed w-full h-full top-0 right-0 flex justify-center items-center" style={{ backgroundColor: 'rgb(0,0,0,0.3)' }} onClick={() => { if (!props.permanent) { props.setVisible(false); if (props.setBookQueueSeat) { props.setBookQueueSeat(2); } } }}>
+                <div className={`fixed w-full h-full top-0 right-0 flex justify-center items-center`} style={{ backgroundColor: 'rgb(0,0,0,0.3)' }} onClick={() => { onCancel() }}>
                     <div className="bg-white text-center relative popup-width" style={{ borderRadius: '0.5rem' }} onClick={(e) => { e.stopPropagation() }}>
-                        {props.permanent ? '' : <div className="absolute right-0 top-0 pt-2 pr-2"><CloseOutlined onClick={() => { props.setVisible(false); if (props.setBookQueueSeat) { props.setBookQueueSeat(2); } }} style={{ fontSize: '3em' }} /></div>}
+                        {props.permanent ? '' : <div className="absolute right-0 top-0 pt-2 pr-2"><CloseOutlined onClick={() => { onCancel() }} style={{ fontSize: '3em' }} /></div>}
                         {props.content}
                         <div className={`flex justify-center text-white text-4xl pt-6 pb-6 ${props.disabled ? 'hidden' : ''}`} onClick={() => { insistEvent() }} style={{ backgroundColor: `${props.buttonColor}`, borderBottomLeftRadius: '0.5rem', borderBottomRightRadius: '0.5rem' }}>
                             {props.buttonText}
