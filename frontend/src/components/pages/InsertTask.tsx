@@ -1,5 +1,12 @@
-import React, { Component } from 'react';
-import { Modal, Input, Radio, message } from 'antd';
+import React, { Component, useState } from 'react';
+import { Modal, Input, Radio, message, Form, Button } from 'antd';
+import {
+  CREATE_TASK
+} from '../../utils/graphql';
+import {
+  useMutation
+} from '@apollo/react-hooks'
+import { useHistory } from "react-router-dom";
 
 interface ITaskProps {
   closePopup: (() => void)
@@ -18,91 +25,140 @@ const options = [
   { label: 'โต๊ะ', value: 'T' }
 ];
 
-class InsertTask extends Component<ITaskProps, ITaskState> {
+const InsertTask = () => {
+  const history = useHistory()
+  const [num, setNum] = useState(-1)
+  const [name, setName] = useState("defaultName")
+  const [nametype, setNameType] = useState("defaultNameType")
+  const [change, setChange] = useState(false)
+    
+  // verifyData(taskName : string, total: number){
+  //   console.log(taskName)
+  //   if(taskName === ""){
+  //     message.error('กรุณาระบุ เลขโต๊ะหรือเลขคิว')
+  //   }else if(total === 0){
+  //     message.error('กรุณาระบุ จำนวนเข่ง')
+  //   }else{
+  //     this.props.addTask(this.getTaskName(), total)
+  //   }
+  // }
+
+  const [CreateTask, { error, loading, data }] = useMutation(CREATE_TASK)
+
+  const addTask = (taskName: string, total: number) => {
+    CreateTask({
+      variables: {
+        name: taskName,
+        total: total,
+        finishTime: new Date(),
+        countTime: 0,
+        userId: sessionStorage.getItem("loggedUserId")
+      }
+    }).then(
+      res => {
+        history.push('/TaskView?userRole=CASHIER')
+      }
+      , err => {
+        console.log("add task failed")
+      }
+    );
+  }
   
-  state: ITaskState = {
-    taskName: "",
-    total: 0,
-    taskType: "T"
-  };
-  
-  setTaskName(input : string){
-    this.setState({ taskName: input })
-  }
-
-  setTotal(input : number){
-    if(input > 0)
-      this.setState({ total: input })
-  }
-
-  setTaskType(input : string){
-    this.setState({ taskType: input })
-  }
-
-  getTaskName(){
-    if(this.state.taskType === "T")
-      return "โต๊ะ " + this.state.taskName
-    else
-      return "คิว " + this.state.taskName
-  }
-
-  verifyData(taskName : string, total: number){
-    console.log(taskName)
-    if(taskName === ""){
-      message.error('กรุณาระบุ เลขโต๊ะหรือเลขคิว')
-    }else if(total === 0){
-      message.error('กรุณาระบุ จำนวนเข่ง')
+  const onFinish = () => {
+    if((!name || name === "" || name === "defaultName")){
+      message.error('กรุณาระบุ เลขโต๊ะ, เลขคิว ให้ถูกต้อง')
+    }
+    else if((!num || num == 0 || num <= -1)){
+      message.error('กรุณาระบุ จำนวนเข่ง ให้ถูกต้อง')
+    }
+    else if(!nametype || nametype === "" || nametype === "defaultNameType"){
+      message.error('กรุณาระบุ คิวหรือโต๊ะ')
+    }
+    else if(name && num){
+      var task = (nametype === "T" ? "โต๊ะ " : "คิว ") +  name
+      addTask(
+        task
+        , num
+        )
     }else{
-      this.props.addTask(this.getTaskName(), total)
+      message.error('ข้อมูลไม่ถูกต้อง')
     }
   }
 
-  render(){
-    return (
-      <Modal
-      visible={this.props.visible}
-      title="เพิ่มออเดอร์"
-      okText="บันทึก"
-      cancelText="ยกเลิก"
-      onCancel={this.props.closePopup}
-      onOk={() => this.verifyData(this.state.taskName,this.state.total)}
-      >
-        <Input.Group compact style={{marginBottom:'15px'}}>
-          <Radio.Group
-            size="large"
-            options={options}
-            onChange={(e) => this.setTaskType(e.target.value)}
-            value={this.state.taskType}
-            optionType="button"
-            buttonStyle="solid"
-            style={{ width: '40%',textAlign:'right', paddingRight:'15px'}}
-          />
-          <Input 
-            size="large"
-            type="number"
-            pattern="[0-9]*"
-            style={{ width: '60%' }} 
-            placeholder="เลขโต๊ะหรือเลขคิว" 
-            inputMode="decimal"
-            onChange={(e) => this.setTaskName(e.target.value)}
-          />
-        </Input.Group>
-        <Input.Group compact style={{display:'flex',alignItems:'center'}}>
-          <div style={{ width: '40%', textAlign:'right', paddingRight:'15px', fontSize:'1.5em'}}>จำนวนเข่ง</div>
-          <Input
-            size="large"
-            type="number"
-            pattern="[0-9]*"
-            style={{ width: '60%' }} 
-            placeholder="จำนวนเข่ง" 
-            inputMode="decimal"
-            onChange={(e) => this.setTotal(parseInt(e.target.value))}
-          />
-        </Input.Group>
-      </Modal>
-    
-    )
-  }
+  return (
+    <div className="flex items-center justify-center " 
+    style={{background: '#FFFCF9',width: '100vw',height: '100vh'}}>
+      <div style={{border:'3px solid #683830',borderRadius:'10px'}}
+        className="m-2 flex items-center justify-center 
+          w-auto sm:w-auto md:w-1/2 lg:w-1/2 xl:w-1/2">
+        <div className="w-3/4 sm:w-auto md:w-auto lg:w-auto xl:w-auto max-w-screen-md text-center">
+          <div className="text-xl font-bold w-full text-center block underline mt-3"
+            style={{ textAlign:'left', paddingBottom:'15px'}}>เพิ่มออเดอร์</div>
+          <Form
+          onFinish={onFinish}
+          >      
+            <Form.Item>
+              <Input.Group compact>
+                <Radio.Group
+                  size="large"
+                  options={options}
+                  onChange={(e) => setNameType(e.target.value)}
+                  optionType="button"
+                  buttonStyle="solid"
+                  style={{ width: '50%',textAlign:'right', paddingRight:'15px'}}
+                />
+                <Input 
+                  size="large"
+                  type="number"
+                  pattern="[0-9]*"
+                  style={{ width: '50%' }} 
+                  placeholder="เลขโต๊ะหรือเลขคิว" 
+                  inputMode="decimal"
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </Input.Group>
+            </Form.Item>  
+            <Form.Item>
+              <Input.Group compact>
+              <div style={{ width: '50%',textAlign:'right', paddingRight:'15px'}}>จำนวนเข่ง</div>
+              <Input
+                size="large"
+                type="number"
+                pattern="[0-9]*"
+                style={{ width: '50%' }} 
+                placeholder="จำนวนเข่ง" 
+                inputMode="decimal"
+                onChange={(e) => setNum(parseInt(e.target.value))}
+              />
+            </Input.Group>
+          </Form.Item>
+          <Form.Item
+            className="fiex justify-center"
+            >
+            <Button
+                type="primary"
+                htmlType="submit"
+                className="flex justify-center"
+                style={{borderRadius: '5px',fontSize: '20px',height: 'auto',padding: '0.5em 3em',background:'#683830'
+                ,border:'none',width: '100%'}}
+              >
+                บันทึก
+            </Button>
+            <br/>
+            <a 
+              href="/TaskView?userRole=CASHIER"
+              className="block underline mt-3"
+              style={{color: '#535050'}}
+            >
+              ยกเลิก
+            </a>
+            </Form.Item>
+            </Form>
+        </div>
+      </div>
+    </div>
+  
+  );
 }
 
 export default InsertTask;

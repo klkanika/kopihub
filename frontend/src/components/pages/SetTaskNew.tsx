@@ -26,9 +26,6 @@ const SetTaskNew = () => {
   const [num,setNum] = useState(-1)
   const [name,setName] = useState("defaultName")
   const [nametype,setNameType] = useState("defaultNameType")
-  const [change,setChange] = useState(false)
-
-
 
   const options = [
     { label: 'คิว', value: 'Q' },
@@ -80,7 +77,7 @@ const SetTaskNew = () => {
           <div className="w-3/4 sm:w-auto md:w-auto lg:w-auto xl:w-auto max-w-screen-md text-center"
         >
         <div className="text-xl font-bold w-full text-center block underline mt-3"
-          style={{ textAlign:'left', paddingBottom:'15px'}}>เพิ่ม/แก้ไขออเดอร์</div>
+          style={{ textAlign:'left', paddingBottom:'15px'}}>แก้ไขออเดอร์</div>
         <Form
         onFinish={onFinish}
         >      

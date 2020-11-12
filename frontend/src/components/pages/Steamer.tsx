@@ -32,7 +32,7 @@ function Steamer (props : ISteamerProps) {
       setSelected(!selected)
     }
   }
-  
+  console.log("render steamer")
   return (
       <div>
         {!selected && !props.unavailable && !props.taskId

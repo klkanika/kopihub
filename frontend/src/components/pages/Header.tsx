@@ -1,13 +1,10 @@
-import React, { Component } from 'react';
-import { Button, Dropdown, Menu } from 'antd';
-import { useHistory, Link } from "react-router-dom";
+import React from 'react';
+import { Dropdown, Menu } from 'antd';
+import { Link } from "react-router-dom";
 import icon_chef from '../../imgs/icon_chef.svg'
 import icon_counter from '../../imgs/icon_counter.svg'
 import icon_queue from '../../imgs/icon_queue.svg';
-import { useState } from 'react';
-import { useMutation } from '@apollo/react-hooks';
-import { UPDATE_LOG_USER } from '../../utils/graphql';
-import { UserSwitchOutlined, LogoutOutlined } from '@ant-design/icons';
+import { LogoutOutlined } from '@ant-design/icons';
 
 interface IHeaderProps {
   username: string
@@ -18,10 +15,6 @@ interface IHeaderProps {
 }
 
 function Header(props: IHeaderProps) {
-  const history = useHistory()
-  const [insertTask, setInsertTask] = useState(false)
-  const [UpdateLogUser] = useMutation(UPDATE_LOG_USER);
-
   const menu = (
     <Menu>
       <Menu.Item className={props.userRole === "CASHIER" ? 'hidden' : ''}>
@@ -68,7 +61,33 @@ function Header(props: IHeaderProps) {
       </Menu.Item>
     </Menu>
   );
-  console.log("render")
+
+  const editMenu = (
+    <Menu>
+      <Menu.Item>
+        <a
+          href="/EditTask?userRole=CASHIER"
+          // onClick={props.toggleRole}
+          className="items-center"
+          style={{ borderBottom: '1px solid #ddd', padding: '1em 2em', fontSize: '16px', color: '#535050', display: 'flex' }}
+        >
+          แก้ไข/ยกเลิกรายการ
+        </a>
+      </Menu.Item>
+      <Menu.Item>
+        <a
+          href="/SortTask?userRole=CASHIER"
+          // onClick={props.toggleRole}
+          className="items-center"
+          style={{ borderBottom: '1px solid #ddd', padding: '1em 2em', fontSize: '16px', color: '#535050', display: 'flex' }}
+        >
+          เรียงลำดับรายการ
+        </a>
+      </Menu.Item>
+    </Menu>
+  );
+    
+  console.log("render header")
   return (
     <div className={`flex items-center justify-between mb-8 ${props.className}`}>
       <div className="flex items-center">
@@ -89,18 +108,22 @@ function Header(props: IHeaderProps) {
       </div>
       {/* <div></div> */}
       <div style={{ display: (props.page == 'edit') ? 'none' : '' }}>
-        <Link
-          to="/EditTask?userRole=CASHIER"
-          className="p-2 px-4 text-white font-bold flex 
-            text-sm sm:text-lg md:text-lg lg:text-lg xl:text-lg"
-          style={{
-            borderRadius: '5px',
-            background: '#683830',
-            // display: "none",
-            display: props.userRole === "CASHIER" ? "" : "none",
-          }}>
-          แก้ไขออเดอร์
-        </Link>
+        <Dropdown overlay={editMenu} placement="bottomLeft" arrow className="z-50" trigger={['click']}>
+          <div
+            style={{ border: '1px solid #ddd', borderRadius: '50%',
+            display: props.userRole === "CASHIER" ? "" : "none" }}
+          >
+            <div 
+              className="p-2 px-4 text-white font-bold flex 
+              text-sm sm:text-lg md:text-lg lg:text-lg xl:text-lg"
+              style={{
+              borderRadius: '5px',
+              background: '#683830',
+              }}
+            >
+            แก้ไขออเดอร์</div>
+          </div>
+        </Dropdown>
       </div>
     </div>
   )
