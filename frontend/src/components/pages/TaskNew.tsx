@@ -31,7 +31,7 @@ declare global {
 function TaskNew (props : ITaskProps) { 
 
   var click = function handleClick  (){
-    if(props.userRole === "CASHIER"){
+    if(props.userRole === "CASHIER" && props.page === "EditTask"){
       props.setTask(props.taskId,props.taskName,props.total)
     }
   }
@@ -71,7 +71,8 @@ function TaskNew (props : ITaskProps) {
           color:'red',
           right: '-5px',
           top: '-5px',
-          cursor:"pointer"
+          cursor:"pointer",
+          display: props.page == "EditTask" ? "" : "none"
         }}
       />
       </Popconfirm>

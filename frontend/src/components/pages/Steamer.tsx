@@ -1,15 +1,4 @@
 import React, { useState,useEffect,useRef } from 'react';
-import Timer from './Timer';
-import { CloseCircleOutlined } from '@ant-design/icons';
-import { Popconfirm } from 'antd';
-import {
-  UPDATE_TASK_CANCEL
-} from '../../utils/graphql';
-import {
-  useMutation
-} from '@apollo/react-hooks'
-import { OmitProps } from 'antd/lib/transfer/ListBody';
-import { responsePathAsArray } from 'graphql';
 import icon_steamer_1 from '../../imgs/icon_steamer_1.svg';
 import icon_steamer_2 from '../../imgs/icon_steamer_2.svg';
 
@@ -32,7 +21,7 @@ function Steamer (props : ISteamerProps) {
       setSelected(!selected)
     }
   }
-  
+  console.log("render steamer")
   return (
       <div>
         {!selected && !props.unavailable && !props.taskId

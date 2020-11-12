@@ -26,9 +26,6 @@ const SetTaskNew = () => {
   const [num,setNum] = useState(-1)
   const [name,setName] = useState("defaultName")
   const [nametype,setNameType] = useState("defaultNameType")
-  const [change,setChange] = useState(false)
-
-
 
   const options = [
     { label: 'คิว', value: 'Q' },
@@ -53,13 +50,15 @@ const SetTaskNew = () => {
 
   const onFinish = () => {
     if((!name || name === "")){
-      message.error('กรุณาเปลี่ยนแปลง เลขโต๊ะ, เลขคิว ให้ถูกต้อง')
+      window.alert('กรุณาเปลี่ยนแปลง เลขโต๊ะ, เลขคิว ให้ถูกต้อง')
     }
     else if((!num || num == 0)){
-      message.error('กรุณาเปลี่ยนแปลง จำนวนเข่ง ให้ถูกต้อง')
+      window.alert('กรุณาเปลี่ยนแปลง จำนวนเข่ง ให้ถูกต้อง')
     }
-    else if((name === "defaultName" || name === taskName) && (num <= -1 || num === parseInt(total))){
-      message.error('กรุณาเปลี่ยนแปลง เลขโต๊ะ, เลขคิว หรือ จำนวนเข่ง ให้ถูกต้อง')
+    else if((name === "defaultName" || name === taskName) && (num <= -1 || num === parseInt(total))
+      && (nametype === "defaultNameType" || nametype === type)
+    ){
+      window.alert('กรุณาเปลี่ยนแปลง เลขโต๊ะ, เลขคิว หรือ จำนวนเข่ง ให้ถูกต้อง')
     }else if(id && name && num){
       var task = ((nametype === "defaultNameType" ? type : nametype) === "T" ? "โต๊ะ " : "คิว ") +  (name === "defaultName" ? taskName : name)
       updateTask(id
@@ -67,7 +66,7 @@ const SetTaskNew = () => {
         , num === -1 ? parseInt(total) : num
         )
     }else{
-      message.error('ข้อมูลไม่ถูกต้อง')
+      window.alert('ข้อมูลไม่ถูกต้อง')
     }
   }
 
@@ -80,7 +79,7 @@ const SetTaskNew = () => {
           <div className="w-3/4 sm:w-auto md:w-auto lg:w-auto xl:w-auto max-w-screen-md text-center"
         >
         <div className="text-xl font-bold w-full text-center block underline mt-3"
-          style={{ textAlign:'left', paddingBottom:'15px'}}>เพิ่ม/แก้ไขออเดอร์</div>
+          style={{ textAlign:'left', paddingBottom:'15px'}}>แก้ไขออเดอร์</div>
         <Form
         onFinish={onFinish}
         >      
