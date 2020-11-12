@@ -55,7 +55,9 @@ const SetTaskNew = () => {
     else if((!num || num == 0)){
       window.alert('กรุณาเปลี่ยนแปลง จำนวนเข่ง ให้ถูกต้อง')
     }
-    else if((name === "defaultName" || name === taskName) && (num <= -1 || num === parseInt(total))){
+    else if((name === "defaultName" || name === taskName) && (num <= -1 || num === parseInt(total))
+      && (nametype === "defaultNameType" || nametype === type)
+    ){
       window.alert('กรุณาเปลี่ยนแปลง เลขโต๊ะ, เลขคิว หรือ จำนวนเข่ง ให้ถูกต้อง')
     }else if(id && name && num){
       var task = ((nametype === "defaultNameType" ? type : nametype) === "T" ? "โต๊ะ " : "คิว ") +  (name === "defaultName" ? taskName : name)

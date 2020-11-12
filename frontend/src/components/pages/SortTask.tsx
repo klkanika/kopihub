@@ -20,14 +20,12 @@ function SortTask() {
   const [ updatedAt, setUpdatedAt] = useState(new Date)
   const userName = sessionStorage.getItem("loggedUserName");
   const [userRole, setUserRole] = useState(userRoleParam ? userRoleParam : sessionStorage.getItem("loggedUserRole") ? sessionStorage.getItem("loggedUserRole") : "CASHIER")
-  const [ setTask, setSetTask ] = useState(false);
 
   const [getTaksCompare , {called, loading : taskLazyLoading, data : taskLazyData}] = useLazyQuery(GET_PENDING_TASKS,{
-    // fetchPolicy: 'network-only',
+    fetchPolicy: 'network-only',
     variables: {},
     onCompleted: (sre) => {
       var dates = sre.tasks.map((item:any) => { return new Date(item.updatedAt) })
-      console.log("datescompare",dates)
       var latest = new Date(Math.max.apply(null,dates))
 
       if(updatedAt.getFullYear() != latest.getFullYear()
@@ -48,18 +46,13 @@ function SortTask() {
           }}).then(
             res => {
               console.log("Update task succes")
+              history.push('/TaskView?userRole=CASHIER')
             }
             ,err => {
               console.log("Update task failed")
             }
           );
         })
-        // newOrderingtasks.forEach(function(part, index, theArray) {
-        //   // if(index > 0){
-        //   //   console.log(theArray[index], index)
-        //   // }
-        // })
-        history.push('/TaskView')
       }
     },
     onError: (err) => {
@@ -68,12 +61,11 @@ function SortTask() {
   });
 
   const {data: tasksData, loading: tasksLoading} = useQuery(GET_PENDING_TASKS,{
-    // fetchPolicy: 'network-only',
+    fetchPolicy: 'network-only',
     variables: {},
     onCompleted: (sre) => {
       setTasks(sre.tasks)
       var dates = sre.tasks.map((item:any) => { return new Date(item.updatedAt) })
-      console.log("dates",dates)
       var latest = new Date(Math.max.apply(null,dates))
       setUpdatedAt(latest)
     },
@@ -101,31 +93,6 @@ function SortTask() {
   }
 
   const [updateTaskPriority, { error, loading, data }] = useMutation(UPDATE_TASK_PRIORITY)
-
-  const [UpdateEditTask] = useMutation(UPDATE_EDIT_TASK)
-
-  const updateTask = (taskId : string, taskName : string, total : number) => {
-    setSetTask(!setTask)
-    UpdateEditTask({variables : {
-      taskId : taskId,
-      name: taskName,
-      total: total,
-      }}).then(
-      res => {
-        console.log("update task succes")
-        window.location.reload()
-      }
-      ,err => {
-        console.log("update task failed")
-      }
-    );
-  }
-
-  const toggleEditTask = (taskId: string, taskName: string, total : number) => {
-    const taskNameArr = taskName.split(/([0-9]+)/)
-    const type = taskNameArr[0] && taskNameArr[0].trim() === "โต๊ะ" ? "T" : "Q"
-    history.push('/SetTaskNew/'+taskId+'/'+taskNameArr[1]+'/'+total+'/'+type)
-  }
     
 
   const save = () => {
@@ -135,7 +102,7 @@ function SortTask() {
   return (
     <>
     {
-      tasksLoading || taskLazyLoading
+      tasksLoading
       ? <Loadding />
       :
       <div style={{margin:"2em"}} className="relative">
@@ -155,7 +122,7 @@ function SortTask() {
           <div key={item.id} className="m-2 flex flex-wrap">
               <TaskNew taskId={item.id} taskName={item.name} total={item.total} userRole={"CASHIER"}
                 status={item.status} finishDate={new Date(item.finishTime)} page="SortTask"
-                cancel={onCancel} setTask={toggleEditTask} />                
+                cancel={onCancel} setTask={() => {}} />                
             </div>
           ))}
         </ReactSortable>
