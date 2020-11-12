@@ -39,20 +39,27 @@ function SortTask() {
       {
         info()
       }else{
-        tasks.map((t:any, index)=>{
+        Promise.all(tasks.map((t:any, index) => {
           updateTaskPriority({variables : {
-            taskId : t.id,
-            priority : index+1
-          }}).then(
-            res => {
-              console.log("Update task succes")
-              history.push('/TaskView?userRole=CASHIER')
-            }
-            ,err => {
-              console.log("Update task failed")
-            }
-          );
-        })
+                taskId : t.id,
+                priority : index+1}})
+        }));
+        history.push('/TaskView?userRole=CASHIER')
+        // tasks.map((t:any, index)=>{
+        //   updateTaskPriority({variables : {
+        //     taskId : t.id,
+        //     priority : index+1
+        //   }}).then(
+        //     res => {
+        //       console.log("Update task succes")
+        //       history.push('/TaskView?userRole=CASHIER')
+        //     }
+        //     ,err => {
+        //       console.log("Update task failed")
+        //     }
+        //   );
+        // })
+
       }
     },
     onError: (err) => {
