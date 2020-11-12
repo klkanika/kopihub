@@ -99,22 +99,21 @@ const SetTime = () => {
       }
     }).then(
       res => {
+        UpdateSteamerComplete({
+          variables: {
+            taskId: dbTaskId
+          }
+        }).then(
+          res => {
+            history.push('/TaskView?userRole=CHEF')
+          }
+          , err => {
+            console.log("Update steamer completed failed")
+          }
+        );
       }
       , err => {
         console.log("Update task completed failed")
-      }
-    );
-
-    UpdateSteamerComplete({
-      variables: {
-        taskId: dbTaskId
-      }
-    }).then(
-      res => {
-        history.push('/TaskView?userRole=CHEF')
-      }
-      , err => {
-        console.log("Update steamer completed failed")
       }
     );
   }
