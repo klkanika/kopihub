@@ -5,6 +5,7 @@ schema.objectType({
   definition(t) {
     t.model.id()
     t.model.createdAt()
+    t.model.updateAt()
     t.model.queueNo()
     t.model.status()
     t.model.ordered()
@@ -12,5 +13,7 @@ schema.objectType({
     t.model.name()
     t.model.seat()
     t.model.pictureUrl()
+    t.model.tableId()
+    t.model.table()
   },
 })

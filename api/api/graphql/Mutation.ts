@@ -11,7 +11,7 @@ moment.locale("th");
 const line = require("@line/bot-sdk");
 
 const client = new line.Client({
-  channelAccessToken: 'h7+lLICufFajGFVAyPVGHszfoMgmCuhrANvkgeqXREEmCgsVUUb/tEa6WxRZm1ofl+NERQYq4hdahQBlZeIybFXw1Ro6wIfB0xYTf6uKGTIv1OZ6m2er+nUrJVGp9FoHggTBAiLSrpoWh5kQq8mSVQdB04t89/1O/w1cDnyilFU=',
+  channelAccessToken: '4kuOFDDMvTDhPcv5wyYekEs7TS5xXphUooS4L43vHAOGGW8QxuQOCez6gnBIAprscTjKIERPiRxLuke6tTaQ0ZE9ibd8EgPjxR/9nIR91FwjGFG6JxWD5E8y2xrtcH0zZ4ShbwGORKxWk0Ae6cZNWQdB04t89/1O/w1cDnyilFU=',
 });
 
 const sendMessageToClient = (toUser: String, message: any) => {
@@ -308,9 +308,10 @@ schema.mutationType({
         id: intArg({ required: true }),
       },
       resolve: async (_parent, { id }, ctx) => {
-        const updateCancelQueue = await ctx.db.queue.update({
+        const updateCancelQueue = await ctx.db.queue.updateMany({
           where: {
-            id: id
+            id: id,
+            status: 'ACTIVE'
           },
           data: {
             status: 'CANCELLED'
@@ -325,18 +326,36 @@ schema.mutationType({
       type: 'Boolean',
       args: {
         id: intArg({ required: true }),
+        tableId: intArg({ required: false })
       },
-      resolve: async (_parent, { id }, ctx) => {
-        const updateFetchQueue = await ctx.db.queue.update({
-          where: {
-            id: id
-          },
-          data: {
-            status: 'SUCCESS'
-          },
-        })
+      resolve: async (_parent, { id, tableId }, ctx) => {
+        if (id && tableId) {
+          const updateFetchQueue = await ctx.db.queue.update({
+            where: {
+              id: id,
+            },
+            data: {
+              status: 'SUCCESS',
+              table: {
+                connect: {
+                  id: tableId,
+                },
+              },
+            },
+          })
 
-        return updateFetchQueue ? true : false
+
+          if (updateFetchQueue && updateFetchQueue.userId) {
+            await sendMessageToClient(updateFetchQueue.userId, {
+              type: "text",
+              text: `ขอบคุณสำหรับการรอค่ะ คุณ${updateFetchQueue.name ? updateFetchQueue.name : 'ลูกค้า'} ถึงคิว ${updateFetchQueue.queueNo} ของคุณแล้ว กรุณาแจ้งพนักงาน`,
+            });
+          }
+
+          return updateFetchQueue ? true : false
+        }else{
+          return false
+        }
       },
     })
 
@@ -368,63 +387,264 @@ schema.mutationType({
         pictureUrl: stringArg({ required: false })
       },
       resolve: async (_parent, { userId, seat, name, pictureUrl }, ctx) => {
-        let queueString = 'A'
+        let queueString = seat < 4 ? 'A' : seat < 7 ? 'B' : 'C'
         let maxQueueDigit = 3
-        const lastQueues = await ctx.db.queue.findMany({
-          where: {
-            AND: [
-              {
-                createdAt: {
-                  gt: moment().startOf('day').toDate()
-                }
+
+        let myQueue
+        if (userId) {
+          myQueue = await ctx.db.queue.findMany({
+            where: {
+              AND: {
+                OR: [
+                  { status: 'ACTIVE' },
+                  {
+                    AND: {
+                      status: 'SUCCESS',
+                      createdAt: {
+                        gte: moment().subtract(1, "hour").toDate()
+                      }
+                    }
+                  }
+                ]
               },
-              {
-                createdAt: {
-                  lt: moment().endOf('day').toDate()
+              userId: { equals: userId }
+            }
+          })
+        }
+
+        let createBookQueue
+        if (myQueue && myQueue.length > 0) { } else {
+          const queues = await ctx.db.queue.findMany({
+            where: {
+              AND: [
+                {
+                  createdAt: {
+                    gt: moment().startOf('day').toDate()
+                  }
+                },
+                {
+                  createdAt: {
+                    lt: moment().endOf('day').toDate()
+                  }
+                },
+                {
+                  queueNo: {
+                    startsWith: queueString
+                  }
+                },
+                {
+                  status: {
+                    equals: 'ACTIVE'
+                  }
+                }
+              ]
+            }
+          })
+
+          const lastQueues = await ctx.db.queue.findMany({
+            where: {
+              AND: [
+                {
+                  createdAt: {
+                    gt: moment().startOf('day').toDate()
+                  }
+                },
+                {
+                  createdAt: {
+                    lt: moment().endOf('day').toDate()
+                  }
+                },
+                // {
+                //   queueNo: {
+                //     startsWith: queueString
+                //   }
+                // }
+              ]
+            },
+            orderBy: {
+              id: 'desc'
+            }
+          })
+
+          let lastQueue
+          if (lastQueues && lastQueues.length > 0) {
+            lastQueue = lastQueues[0]
+          }
+
+          let queueNo
+          if (lastQueue) {
+            queueNo = parseInt(lastQueue.queueNo.substr(queueString.length)) + 1 + ''
+          } else {
+            queueNo = '1'
+          }
+
+          while (queueNo.length < maxQueueDigit) {
+            queueNo = '0' + queueNo
+          }
+
+          queueNo = queueString + queueNo
+
+          createBookQueue = await ctx.db.queue.create({
+            data: {
+              queueNo: queueNo,
+              status: 'ACTIVE',
+              ordered: false,
+              userId: userId,
+              seat: seat,
+              name: name,
+              pictureUrl: pictureUrl
+            },
+          })
+
+          if (createBookQueue && userId) {
+            await sendMessageToClient(userId, {
+              type: "flex",
+              altText: `คุณจองคิว ${createBookQueue.queueNo} สำหรับ ${createBookQueue.seat} คน`,
+              contents: {
+                "type": "bubble",
+                "body": {
+                  "type": "box",
+                  "layout": "vertical",
+                  "contents": [
+                    {
+                      "type": "text",
+                      "text": `${createBookQueue.name ? `คุณ${createBookQueue.name}` : 'คุณลูกค้า'}`,
+                      "weight": "bold",
+                      "size": "xxl",
+                      "margin": "md",
+                      "color": "#683830"
+                    },
+                    {
+                      "type": "text",
+                      "text": `จำนวน ${createBookQueue.seat} ท่าน`,
+                      "color": "#585568",
+                      "wrap": true,
+                      "margin": "6px",
+                      "size": "md"
+                    },
+                    {
+                      "type": "separator",
+                      "margin": "xxl"
+                    },
+                    {
+                      "type": "box",
+                      "layout": "horizontal",
+                      "margin": "xxl",
+                      "spacing": "sm",
+                      "contents": [
+                        {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "text",
+                              "text": "รออีก (คิว)",
+                              "size": "md",
+                              "color": "#585568",
+                              "align": "center",
+                              "offsetEnd": "none"
+                            },
+                            {
+                              "type": "text",
+                              "text": `${queues.length + 1}`,
+                              "size": "4xl",
+                              "color": "#683830",
+                              "align": "center"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "box",
+                          "layout": "vertical",
+                          "contents": [
+                            {
+                              "type": "text",
+                              "text": "หมายเลขคิว",
+                              "size": "md",
+                              "color": "#585568",
+                              "align": "center"
+                            },
+                            {
+                              "type": "text",
+                              "text": `${createBookQueue.queueNo}`,
+                              "size": "4xl",
+                              "color": "#683830",
+                              "align": "center"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "box",
+                      "layout": "horizontal",
+                      "contents": [
+                        {
+                          "type": "box",
+                          "layout": "baseline",
+                          "contents": [
+                            {
+                              "type": "filler"
+                            },
+                            {
+                              "type": "text",
+                              "color": "#ffffff",
+                              "flex": 0,
+                              "text": "ดูคิวของคุณ"
+                            },
+                            {
+                              "type": "filler"
+                            }
+                          ],
+                          "backgroundColor": "#683830",
+                          "cornerRadius": "4px",
+                          "spacing": "md",
+                          "paddingAll": "16px",
+                          "action": {
+                            "type": "uri",
+                            "label": "action",
+                            "uri": "https://liff.line.me/1655216608-Gl3yPZWv/customerqueue"
+                          }
+                        }
+                      ],
+                      "alignItems": "center",
+                      "margin": "lg"
+                    },
+                    {
+                      "type": "separator",
+                      "margin": "xxl"
+                    },
+                    {
+                      "type": "box",
+                      "layout": "horizontal",
+                      "contents": [
+                        {
+                          "type": "text",
+                          "text": "ยกเลิกคิว",
+                          "color": "#FD0F0F",
+                          "flex": 0,
+                          "size": "md",
+                          "action": {
+                            "type": "uri",
+                            "label": "action",
+                            "uri": `https://liff.line.me/1655216608-Gl3yPZWv/cancelqueue&id=${createBookQueue.id}`
+                          }
+                        }
+                      ],
+                      "justifyContent": "center",
+                      "margin": "xl"
+                    }
+                  ],
+                  "position": "relative"
+                },
+                "styles": {
+                  "footer": {
+                    "separator": true
+                  }
                 }
               }
-            ]
-          },
-          orderBy: {
-            id: 'desc'
+            });
           }
-        })
-
-        let lastQueue
-        if (lastQueues && lastQueues.length > 0) {
-          lastQueue = lastQueues[0]
-        }
-
-        let queueNo
-        if (lastQueue) {
-          queueNo = parseInt(lastQueue.queueNo.substr(queueString.length)) + 1 + ''
-        } else {
-          queueNo = '1'
-        }
-
-        while (queueNo.length < maxQueueDigit) {
-          queueNo = '0' + queueNo
-        }
-
-        queueNo = queueString + queueNo
-
-        const createBookQueue = await ctx.db.queue.create({
-          data: {
-            queueNo: queueNo,
-            status: 'ACTIVE',
-            ordered: false,
-            userId: userId,
-            seat: seat,
-            name: name,
-            pictureUrl: pictureUrl
-          },
-        })
-
-        if (createBookQueue && userId) {
-          // await sendMessageToClient(userId, {
-          //   type: "text",
-          //   text: `คิวของคุณ ${createBookQueue.queueNo}`,
-          // });
         }
 
         return createBookQueue ? true : false

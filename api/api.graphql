@@ -2,6 +2,11 @@
 ### Do not make changes to this file directly
 
 
+input BoolFilter {
+  equals: Boolean
+  not: NestedBoolFilter
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
 `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
@@ -28,6 +33,23 @@ enum EnableStatus {
   DELETE
   HIDE
   SHOW
+}
+
+type getQueuesArgs {
+  activeQueues: [getQueuesRow!]
+  recentQueue: Queue
+}
+
+type getQueuesRow {
+  createdAt: DateTime
+  id: Int
+  name: String
+  ordered: Boolean
+  pictureUrl: String
+  queueNo: String
+  seat: Int
+  status: String
+  userId: String
 }
 
 input IntFieldUpdateOperationsInput {
@@ -155,13 +177,17 @@ input LogUserWhereUniqueInput {
 }
 
 type Mutation {
+  bookQueue(name: String, pictureUrl: String, seat: Int!, userId: String): Boolean
+  cancelQueue(id: Int!): Boolean
   createOneLogUser(data: LogUserCreateInput!): LogUser!
   createOneSteamer(data: SteamerCreateInput!): Steamer!
   createOneTask(data: TaskCreateInput!): Task!
   createOneUser(data: UserCreateInput!): User!
   createTask(countTime: Int!, finishTime: DateTime, name: String!, serverId: String, total: Int!, userId: String!): Task
   createUser(name: String!, password: String!, userName: String!): User
+  fetchQueue(id: Int!): Boolean
   login(password: String!, userName: String!): LogUser
+  orderFood(id: Int!): Boolean
   UpdateEditTask(name: String!, taskId: String!, total: Int!): Task
   updateOneLogUser(data: LogUserUpdateInput!, where: LogUserWhereUniqueInput!): LogUser
   updateOneSteamer(data: SteamerUpdateInput!, where: SteamerWhereUniqueInput!): Steamer
@@ -173,6 +199,11 @@ type Mutation {
   updateTaskOngoing(countTime: Int!, finishTime: DateTime, taskId: String!): Task
   updateTaskPriority(priority: Int!, taskId: String!): Task
   updateTaskTimeup(taskId: String!): Task
+}
+
+input NestedBoolFilter {
+  equals: Boolean
+  not: NestedBoolFilter
 }
 
 input NestedDateTimeFilter {
@@ -230,9 +261,64 @@ input NullableStringFieldUpdateOperationsInput {
 }
 
 type Query {
+  getMyQueue(userId: String!): Boolean
+  getQueues: getQueuesArgs
+  queues(after: QueueWhereUniqueInput, before: QueueWhereUniqueInput, first: Int, last: Int, orderBy: [QueueOrderByInput!], where: QueueWhereInput): [Queue!]!
   steamers(after: SteamerWhereUniqueInput, before: SteamerWhereUniqueInput, first: Int, last: Int, orderBy: [SteamerOrderByInput!], where: SteamerWhereInput): [Steamer!]!
   tasks(after: TaskWhereUniqueInput, before: TaskWhereUniqueInput, first: Int, last: Int, orderBy: [TaskOrderByInput!], where: TaskWhereInput): [Task!]!
   users(after: UserWhereUniqueInput, before: UserWhereUniqueInput, first: Int, last: Int, where: UserWhereInput): [User!]!
+}
+
+type Queue {
+  createdAt: DateTime!
+  id: Int!
+  name: String
+  ordered: Boolean!
+  pictureUrl: String
+  queueNo: String!
+  seat: Int!
+  status: QueueStatus!
+  updateAt: DateTime!
+  userId: String
+}
+
+input QueueOrderByInput {
+  createdAt: SortOrder
+  id: SortOrder
+  name: SortOrder
+  ordered: SortOrder
+  pictureUrl: SortOrder
+  queueNo: SortOrder
+  seat: SortOrder
+  status: SortOrder
+  updateAt: SortOrder
+  userId: SortOrder
+}
+
+enum QueueStatus {
+  ACTIVE
+  CANCELLED
+  SUCCESS
+}
+
+input QueueWhereInput {
+  AND: [QueueWhereInput!]
+  createdAt: DateTimeFilter
+  id: IntFilter
+  name: StringNullableFilter
+  NOT: [QueueWhereInput!]
+  OR: [QueueWhereInput!]
+  ordered: BoolFilter
+  pictureUrl: StringNullableFilter
+  queueNo: StringFilter
+  seat: IntFilter
+  status: QueueStatus
+  updateAt: DateTimeFilter
+  userId: StringNullableFilter
+}
+
+input QueueWhereUniqueInput {
+  id: Int
 }
 
 enum SortOrder {

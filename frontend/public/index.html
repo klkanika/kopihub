@@ -32,7 +32,8 @@
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <!-- <div id="audio">เปิดเสียง</div> -->
-    <audio src="https://www.soundjay.com/button/beep-01a.mp3" id="audio" controls autostart muted></audio>
+    <!-- <audio src="https://www.soundjay.com/button/beep-01a.mp3" id="audio" controls autostart muted></audio> -->
+    <audio src="/beep.mp3" id="audio" controls autostart muted></audio>
     <script>
       // let audio = new Audio("https://www.soundjay.com/button/beep-01a.mp3")
       // document.getElementById('audio').addEventListener("click",()=>{
@@ -41,6 +42,10 @@
       // window.playSound = ()=>{
       //   audio.play()        
       // }
+      let search = window.location.search;
+      let params = new URLSearchParams(search);
+      let liffPath = params.get("liff.state");
+
       let startedInterval = false
       let initialLoad = false
       const reload = ()=>{
@@ -73,8 +78,9 @@
         console.log("muted")        
         document.getElementById('audio').muted = true
       }
-      if(window.location.pathname.toLowerCase().indexOf('queue') != -1){
-        document.getElementById('audio').style.display = 'none'
+      if(window.location.pathname.toLowerCase().indexOf('queue') != -1 || liffPath != null){
+        document.getElementById('audio').style.display = 'none';
+        document.getElementById('audio').style.visibility = 'hidden';
       }
     </script>
     <script

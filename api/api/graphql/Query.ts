@@ -40,6 +40,7 @@ schema.queryType({
     t.crud.tasks({ filtering: true, ordering: true })
     t.crud.steamers({ filtering: true, ordering: true })
     t.crud.queues({ filtering: true, ordering: true, pagination: true })
+    t.crud.tables({ filtering: true, ordering: true, pagination: true })
 
     t.field("getQueues", {
       type: "getQueuesArgs",
@@ -61,7 +62,7 @@ schema.queryType({
             ]
           },
           orderBy: {
-            createdAt: 'desc'
+            updateAt: 'desc'
           },
         })
 

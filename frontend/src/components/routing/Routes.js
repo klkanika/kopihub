@@ -9,10 +9,14 @@ import EditTask from '../pages/EditTask'
 import PrivateRoute from '../routing/PrivateRoute'
 import StaffQueue from '../pages/StaffQueue'
 import CustomerQueue from '../pages/CustomerQueue'
+import CustomerCancelQueue from '../pages/CustomerCancelQueue'
+import SetTaskNew from '../pages/SetTaskNew'
+import InsertTask from '../pages/InsertTask'
+import SetTime from '../pages/SetTime'
+import SortTask from '../pages/SortTask'
 
 
-let search = window.location.search;
-let params = new URLSearchParams(search);
+let params = new URLSearchParams(decodeURIComponent(window.location.search));
 let liffPath = params.get("liff.state");
 
 export default () => (
@@ -32,7 +36,7 @@ export default () => (
                   return <Home />
                 }
               } else {
-                return <Redirect to={liffPath} />
+                return <Redirect preserveQueryString to={liffPath} />
               }
             } else {
               return <Home />
@@ -44,8 +48,14 @@ export default () => (
         <PrivateRoute exact path="/TaskView" component={TaskView} />
         <PrivateRoute exact path="/Register" component={Register} />
         <PrivateRoute exact path="/EditTask" component={EditTask} />
+        <PrivateRoute exact path="/SortTask" component={SortTask} />
+        <PrivateRoute exact path="/InsertTask" component={InsertTask} />
+        <PrivateRoute exact path="/SetTaskNew/:id/:taskName/:total/:type" component={SetTaskNew} />
+        <PrivateRoute exact path="/SetTime/:id/:status/:finishDate" component={SetTime} />
         <Route exact path="/staffqueue" component={StaffQueue} />
         <Route exact path="/customerqueue" component={CustomerQueue} />
+        <Route exact path="/cancelqueue" component={CustomerCancelQueue} />
+        
         {/* <Route exact path="*" component={Home} /> */}
       </Switch>
     </Fragment>

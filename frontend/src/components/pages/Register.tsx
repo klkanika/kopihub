@@ -32,9 +32,14 @@ const Register = () => {
       ,password:value.password}})
       .then(
         res => {
-          login(value.username,value.password)
+          login(value.username, value.password)
         },
-        err => message.error('error')
+        err => {
+          if(err.message.includes("Unique constraint"))
+            message.error("มี username นี้ในระบบแล้ว")
+          else
+            message.error(err.message)
+        }
       )
 
       form.resetFields()

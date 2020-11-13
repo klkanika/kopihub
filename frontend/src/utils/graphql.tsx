@@ -307,6 +307,10 @@ query getQueues{
       seat
       name
       pictureUrl
+      table {
+        tableName
+        ochaTableName
+      }
     }
     activeQueues{
       id
@@ -318,6 +322,27 @@ query getQueues{
       name
       pictureUrl
     }
+  }
+}
+`
+
+export const GET_TABLES = gql`
+query getTables{
+  tables{
+    id
+    ochaTableName
+    tableName
+  }
+}
+`
+
+export const GET_QUEUE = gql`
+query getQueue($id: Int!){
+  queues(where : {id : {equals : $id}}){
+    queueNo
+    ordered
+    status
+    userId
   }
 }
 `
@@ -335,8 +360,8 @@ mutation cancelQueue($id: Int!){
 `
 
 export const FETCH_QUEUE = gql`
-mutation fetchQueue($id : Int!){
-  fetchQueue(id: $id)
+mutation fetchQueue($id : Int!, $tableId: Int){
+  fetchQueue(id: $id, tableId: $tableId)
 }
 `
 
