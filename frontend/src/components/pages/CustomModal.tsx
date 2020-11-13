@@ -19,12 +19,15 @@ const CustomModal = (props: any) => {
         } else if (props && props.type === 'cancel') {
             if (!cancelQueueLoading) {
                 await cancelQueue({ variables: { id: parseInt(props.id) } })
+                if (props.onCancel) {
+                    await props.onCancel()
+                }
             }
         } else if (props && props.type === 'order') {
             if (!orderFoodLoading) {
                 await orderFood({ variables: { id: parseInt(props.id) } })
             }
-        } else {
+        } else if (props && props.type === 'book') {
             if (!bookQueueLoading) {
                 await bookQueue({ variables: { seat: props.seat, name: props.name, userId: props.userId, pictureUrl: props.pictureUrl } })
 
@@ -66,7 +69,7 @@ const CustomModal = (props: any) => {
                         }
             `}
                 />
-                <div className={`fixed w-full h-full top-0 right-0 flex justify-center items-center`} style={{ backgroundColor: 'rgb(0,0,0,0.3)' }} onClick={() => { onCancel() }}>
+                <div className={`fixed w-full h-full top-0 right-0 flex justify-center items-center`} style={{ backgroundColor: 'rgb(0,0,0,0.3)', zIndex: 999 }} onClick={() => { onCancel() }}>
                     <div className="bg-white text-center relative popup-width" style={{ borderRadius: '0.5rem' }} onClick={(e) => { e.stopPropagation() }}>
                         {props.permanent ? '' : <div className="absolute right-0 top-0 pt-2 pr-2"><CloseOutlined onClick={() => { onCancel() }} style={{ fontSize: '3em' }} /></div>}
                         {props.content}
