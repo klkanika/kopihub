@@ -51,12 +51,12 @@ schema.queryType({
             AND: [
               {
                 createdAt: {
-                  gt: moment().startOf('day').toDate()
+                  gt: moment().utc(true).startOf('day').toDate()
                 }
               },
               {
                 createdAt: {
-                  lt: moment().endOf('day').toDate()
+                  lt: moment().utc(true).endOf('day').toDate()
                 }
               }
             ]
@@ -72,12 +72,12 @@ schema.queryType({
             AND: [
               {
                 createdAt: {
-                  gt: moment().startOf('day').toDate()
+                  gt: moment().utc(true).startOf('day').toDate()
                 }
               },
               {
                 createdAt: {
-                  lt: moment().endOf('day').toDate()
+                  lt: moment().utc(true).endOf('day').toDate()
                 }
               }
             ]
@@ -109,7 +109,7 @@ schema.queryType({
                   AND: {
                     status: 'SUCCESS',
                     createdAt: {
-                      gte: moment().subtract(1, "hour").toDate()
+                      gte: moment().utc(true).subtract(1, "hour").toDate()
                     }
                   }
                 }

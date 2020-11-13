@@ -20,7 +20,7 @@ const link = createHttpLink({
   // uri: 'http://localhost:4000/graphql',
   uri:
     process.env.API_URL ||
-    "https://kopihub-api-ura2vr67wa-as.a.run.app/graphql",
+    "http://localhost:4000/graphql",
 });
 const cache = new InMemoryCache();
 const outerClient = new ApolloClient({
