@@ -24,7 +24,7 @@ moment.locale("th");
 
 const TableBtn = (props: any) => {
     return (
-        <div className={`w-1/6 text-center md:pt-4 md:pb-4 text-xl mr-1 mb-4 flex justify-center items-center font-bold fetch-btn ${props.selectedTableId === props.id ? 'fetch-btn-clicked' : ''}`} onClick={() => { props.setSelectedTableId(props.id) }}>
+        <div className={`w-1/6 text-center md:pt-2 md:pb-2 md:text-3xl text-xl mr-1 mb-4 flex justify-center items-center font-bold fetch-btn ${props.selectedTableId === props.id ? 'fetch-btn-clicked' : ''}`} onClick={() => { props.setSelectedTableId(props.id) }}>
             <p className="mb-0">{props.tableName}</p>
         </div>
     )
