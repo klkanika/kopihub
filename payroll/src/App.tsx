@@ -33,8 +33,8 @@ const App = () => {
               ยินดีต้อนรับ, admin
               <Tooltip placement="bottom" title={<button onClick={()=>{}}>Logout</button>}>
                 <img
-                  src="https://http.cat/404"
-                  className="w-5 h-5 ml-2"
+                  src="assets/down-arrow.png"
+                  className="w-3 h-3 ml-2"
                   alt=""
                 />
               </Tooltip>
