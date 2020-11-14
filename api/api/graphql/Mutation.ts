@@ -401,7 +401,7 @@ schema.mutationType({
                     AND: {
                       status: 'SUCCESS',
                       createdAt: {
-                        gte: moment().utc(true).subtract(1, "hour").toDate()
+                        gte: moment().utcOffset(7).subtract(1, "hour").toDate()
                       }
                     }
                   }
@@ -419,12 +419,12 @@ schema.mutationType({
               AND: [
                 {
                   createdAt: {
-                    gt: moment().utc(true).startOf('day').toDate()
+                    gt: moment().utcOffset(7).startOf('day').toDate()
                   }
                 },
                 {
                   createdAt: {
-                    lt: moment().utc(true).endOf('day').toDate()
+                    lt: moment().utcOffset(7).endOf('day').toDate()
                   }
                 },
                 {
@@ -446,12 +446,12 @@ schema.mutationType({
               AND: [
                 {
                   createdAt: {
-                    gt: moment().utc(true).startOf('day').toDate()
+                    gt: moment().utcOffset(7).startOf('day').toDate()
                   }
                 },
                 {
                   createdAt: {
-                    lt: moment().utc(true).endOf('day').toDate()
+                    lt: moment().utcOffset(7).endOf('day').toDate()
                   }
                 },
                 // {
