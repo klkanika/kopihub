@@ -390,7 +390,7 @@ const StaffQueue = () => {
                     <Header className="" username={userName ? userName : ''} userRole={"QUEUE"} page="edit" toggleRole={() => { }}></Header>
                 </div>
                 <div className="flex justify-center pb-12 md:pt-18 pt-8">
-                    <img src={queue_qr_code} alt="qrcode" className="md:w-1/4 w-full" />
+                    <img src={queue_qr_code} alt="qrcode" className="md:w-1/4 w-1/2" />
                 </div>
                 <div className="flex justify-center mb-8">
                     <div className="flex bg-white pt-2 pb-2 pr-4 pl-4 md:w-1/4 w-1/2 justify-center items-center" style={{ border: '1px solid #683830', borderRadius: '0.5rem', color: '#683830' }} onClick={() => { setViewTableVisible(true) }}>
