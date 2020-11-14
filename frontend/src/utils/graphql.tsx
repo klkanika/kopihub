@@ -326,6 +326,36 @@ query getQueues{
 }
 `
 
+export const GET_SUCCESS_QUEUES = gql`
+query getSuccessQueues($startDate: DateTime, $endDate: DateTime){
+  queues(where: {
+    AND: [
+      {
+        createdAt: {
+          gte: $startDate
+        }
+      },
+      {
+        createdAt: {
+          lt: $endDate
+        }
+      }
+    ],
+    status: SUCCESS
+    },
+    orderBy: {
+      updateAt : desc
+    }){
+    queueNo,
+    table {
+      ochaTableName
+      tableName
+    },
+    updateAt
+  }
+}
+`
+
 export const GET_TABLES = gql`
 query getTables{
   tables{
