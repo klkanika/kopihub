@@ -41,6 +41,8 @@ schema.mutationType({
       t.crud.updateOneTask(),
       t.crud.createOneSteamer(),
       t.crud.updateOneSteamer(),
+      t.crud.createOneEmployee(),
+      t.crud.updateOneEmployee(),
 
       t.field('createUser', {
         type: 'User',

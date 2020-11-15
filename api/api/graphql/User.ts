@@ -7,6 +7,7 @@ schema.objectType({
     t.model.name()
     t.model.userName()
     t.model.enableStatus()
+    t.model.isSuperAdmin()
   },
 })
 

@@ -41,6 +41,9 @@ schema.queryType({
     t.crud.steamers({ filtering: true, ordering: true })
     t.crud.queues({ filtering: true, ordering: true, pagination: true })
     t.crud.tables({ filtering: true, ordering: true, pagination: true })
+    t.crud.employees({ filtering: true, ordering: true, pagination: true })
+    t.crud.workingHistories({ filtering: true, ordering: true, pagination: true })
+    t.crud.payrolls({ filtering: true, ordering: true, pagination: true })
 
     t.field("getQueues", {
       type: "getQueuesArgs",

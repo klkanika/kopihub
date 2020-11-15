@@ -33,6 +33,17 @@ enum QueueStatus {
   SUCCESS
 }
 
+enum HiringType {
+  HOURLY
+  DAILY
+  MONTHLY
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  DELETED
+}
+
 model User {
   id           String       @id @default(uuid())
   createdAt    DateTime     @default(now())
@@ -43,6 +54,7 @@ model User {
   enableStatus EnableStatus
   LogUser      LogUser[]
   Task         Task[]
+  isSuperAdmin Boolean?     @default(false)
 }
 
 model LogUser {
@@ -104,4 +116,39 @@ model Table {
   ochaTableName String
   tableName     String
   Queue         Queue[]
+}
+
+model Employee {
+  id             String           @id @default(uuid())
+  createdAt      DateTime         @default(now())
+  updateAt       DateTime         @updatedAt
+  name           String
+  hiringType     HiringType
+  earning        Float
+  status         EmployeeStatus
+  WorkingHistory WorkingHistory[]
+  Payroll        Payroll[]
+}
+
+model WorkingHistory {
+  id                 String     @id @default(uuid())
+  createdAt          DateTime   @default(now())
+  updateAt           DateTime   @updatedAt
+  employee           Employee   @relation(fields: [employeeId], references: [id])
+  employeeId         String
+  historyDate        DateTime
+  hours              Float
+  hiringType         HiringType
+  earningRate        Float
+  earning            Float
+}
+
+model Payroll {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updateAt    DateTime @updatedAt
+  employee    Employee @relation(fields: [employeeId], references: [id])
+  employeeId  String
+  payrollDate DateTime
+  paid        Float
 }

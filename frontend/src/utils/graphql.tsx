@@ -376,3 +376,80 @@ mutation bookQueue($userId: String, $seat: Int!, $name: String, $pictureUrl: Str
   bookQueue(userId: $userId, seat: $seat, name: $name, pictureUrl: $pictureUrl)
 }
 `
+
+export const GET_EMPLOYEE = gql`
+  query getEmployee ($id: String!){
+    employees(where:{
+      id: {
+        equals: $id
+      }
+    }){
+      id
+      name
+      hiringType
+      earning
+    }
+  }
+`
+
+export const GET_EMPLOYEES = gql`
+  query getEmployees{
+    employees(where:{
+      status : ACTIVE
+    }){
+      id
+      name
+      hiringType
+      earning
+    }
+  }
+`
+
+export const CREATE_EMPLOYEE = gql`
+mutation createEmployee($name: String!, $hiringType: HiringType!, $earning: Float!){
+  createOneEmployee(
+    data: {
+      name : $name
+      hiringType : $hiringType
+      earning : $earning
+      status : ACTIVE
+    }
+  ){
+    id
+  }
+}
+`
+
+export const UPDATE_EMPLOYEE = gql`
+mutation updateEmployee($id: String!, $name: String!, $hiringType: HiringType!, $earning: Float!){
+  updateOneEmployee(
+    data : {
+      name : { set : $name }
+      hiringType : $hiringType
+      earning : { set : $earning }
+    }
+    where : {
+      id : $id
+    }
+  )
+  {
+      id 
+  }
+} 
+`
+
+export const DELETE_EMPLOYEE = gql`
+mutation deleteEmployee($id: String!){
+  updateOneEmployee(
+    data : {
+      status : DELETED
+    }
+    where : {
+      id : $id
+    }
+  )
+  {
+      id 
+  }
+} 
+`

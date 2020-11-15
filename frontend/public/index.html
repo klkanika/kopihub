@@ -78,7 +78,7 @@
         console.log("muted")        
         document.getElementById('audio').muted = true
       }
-      if(window.location.pathname.toLowerCase().indexOf('queue') != -1 || liffPath != null){
+      if(window.location.pathname.toLowerCase().indexOf('queue') != -1 || liffPath != null || window.location.pathname.toLowerCase().indexOf('payroll') != -1){
         document.getElementById('audio').style.display = 'none';
         document.getElementById('audio').style.visibility = 'hidden';
       }
