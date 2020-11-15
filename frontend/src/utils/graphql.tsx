@@ -453,3 +453,41 @@ mutation deleteEmployee($id: String!){
   }
 } 
 `
+
+export const GET_WORKLOGS = gql`
+  query getWorkLogs{
+    workingHistories{
+      id
+      historyDate
+      employee {
+        name
+      }
+      hours
+      earning
+    }
+  }
+`
+
+export const DELETE_WORKLOG = gql`
+  mutation deleteWorkLog($id: String!){
+    deleteOneWorkingHistory(
+      where : {
+        id : $id
+      }
+    ){
+      id
+    }
+  } 
+`
+
+export const GET_EMLOYEES_EARNING = gql`
+  query getEmployeesEarning{
+    getEmployeesEarning{
+      data{
+        id
+        name
+        remainingEarning
+      }
+    }
+  }
+`

@@ -1,61 +1,75 @@
+import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Button, Layout, Table, Form, DatePicker, Modal, Select } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import React, { useState } from "react";
+import { GET_WORKLOGS, DELETE_WORKLOG } from "../../utils/graphql";
+import moment from 'moment'
 
 const WorkLogPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [form] = useForm();
 
+  const { data: workLogData, loading: workLogLoading } = useQuery(GET_WORKLOGS, {
+    fetchPolicy: 'no-cache',
+    pollInterval: 1000,
+    onError: (err: any) => {
+      window.alert(err)
+    }
+  });
+
+  const [deleteWorkLog, { loading: deleteWorkLogLoading }] = useMutation(DELETE_WORKLOG);
+
   const columns = [
     {
       title: "วันที่ทำงาน",
-      dataIndex: "date",
-      key: "date",
+      dataIndex: "historyDate",
+      key: "historyDate",
       width: "15%",
+      render: (date: any) => {
+        return moment(date).format('DD/MM/YYYY')
+      }
     },
     {
       title: "ชื่อพนักงาน",
-      dataIndex: "name",
-      key: "name",
+      dataIndex: "employee",
+      key: "employee",
       width: "15%",
+      render: (emp: any) => {
+        return emp.name
+      }
     },
     {
       title: "ชั่วโมงทำงาน",
-      dataIndex: "hour",
-      key: "hour",
+      dataIndex: "hours",
+      key: "hours",
       width: "15%",
     },
     {
       title: "ค่าจ้าง (ยอดรวม)",
-      dataIndex: "total_wage",
-      key: "total_wage",
+      dataIndex: "earning",
+      key: "earning",
       width: "15%",
+      render: (earning: any) => {
+        return earning.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
     },
     {
       title: "ตัวเลือก",
-      dataIndex: "option",
-      key: "option",
+      dataIndex: "id",
+      key: "id",
       width: "60%",
-      render: (emp: any) => (
+      render: (id: any) => (
         <div>
           <Button type="primary" className="mr-4">
             แก้ไข
           </Button>
-          <Button>ลบ</Button>
+          <Button onClick={() => { deleteWorkLog({ variables: { id: id } }) }}>ลบ</Button>
         </div>
       ),
     },
   ];
 
-  const datasource = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map((d, i) => {
-    return {
-      key: i,
-      date: "2020-11-07",
-      name: i,
-      hour: i,
-      total_wage: (i + 1) * 50,
-    };
-  });
+  const datasource = workLogData && workLogData.workingHistories
 
   const onFinish = (values: any) => {
     console.log(values);

@@ -22,7 +22,7 @@ export const getQueuesRow = schema.objectType({
       t.string("userId"),
       t.string("name"),
       t.int("seat")
-      t.string("pictureUrl")
+    t.string("pictureUrl")
   },
 });
 
@@ -31,6 +31,22 @@ export const getQueuesArgs = schema.objectType({
   definition(t) {
     t.field("recentQueue", { type: "Queue" });
     t.list.field("activeQueues", { type: "getQueuesRow" });
+  },
+});
+
+export const getEmployeesEarningRow = schema.objectType({
+  name: "getEmployeesEarningRow",
+  definition(t) {
+    t.string("id"),
+      t.string("name"),
+      t.float("remainingEarning")
+  },
+});
+
+export const getEmployeesEarningArgs = schema.objectType({
+  name: "getEmployeesEarningArgs",
+  definition(t) {
+    t.list.field("data", { type: "getEmployeesEarningRow" });
   },
 });
 
@@ -122,6 +138,53 @@ schema.queryType({
           }
         })
         return myQueue && myQueue.length > 0 ? true : false
+      },
+    });
+
+    t.field("getEmployeesEarning", {
+      type: "getEmployeesEarningArgs",
+      resolve: async (_, args, ctx) => {
+        const employees = await prisma.employee.findMany({
+          where: {
+            status: 'ACTIVE'
+          }
+        })
+
+        let results: any = []
+
+        for (let emp of employees) {
+          const earning = await prisma.workingHistory.findMany({
+            where: {
+              employeeId: emp.id
+            }
+          })
+
+          const paid = await prisma.payroll.findMany({
+            where: {
+              employeeId: emp.id
+            }
+          })
+
+          let paidMoney = 0
+          let earningMoney = 0
+
+          for (let p of paid) {
+            paidMoney += p.paid
+          }
+
+          for (let e of earning) {
+            earningMoney += e.earning
+          }
+
+          results.push({
+            ...emp,
+            remainingEarning: earningMoney - paidMoney
+          })
+        }
+
+        return {
+          data: results
+        }
       },
     });
   },

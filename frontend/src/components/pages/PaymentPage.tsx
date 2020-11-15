@@ -1,106 +1,21 @@
+import { useQuery } from "@apollo/react-hooks";
 import { Button, Layout, Table } from "antd";
 import React from "react";
+import { GET_EMLOYEES_EARNING } from "../../utils/graphql";
 
 const PaymentPage = () => {
-  const dataSource = [
-    {
-      key: "1",
-      name: "Mike",
-      wage: 32,
-      option: "10 Downing Street",
-    },
-    {
-      key: "2",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "3",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "4",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "5",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "6",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "7",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "8",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "9",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "10",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "11",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "12",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "13",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "14",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "15",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
-    {
-      key: "16",
-      name: "John",
-      wage: 42,
-      option: "10 Downing Street",
-    },
 
-  ];
+  const { data: workLogData, loading: workLogLoading } = useQuery(GET_EMLOYEES_EARNING, {
+    fetchPolicy: 'no-cache',
+    // pollInterval: 1000,
+    onError: (err: any) => {
+      window.alert(err)
+    }
+  });
+
+  console.log(workLogData && workLogData.getEmployeesEarning)
+
+  const dataSource = workLogData && workLogData.getEmployeesEarning && workLogData.getEmployeesEarning.data
 
   const columns = [
     {
@@ -111,15 +26,15 @@ const PaymentPage = () => {
     },
     {
       title: "ค่าจ้างคงเหลือที่เบิกได้",
-      dataIndex: "wage",
-      key: "wage",
+      dataIndex: "remainingEarning",
+      key: "remainingEarning",
       width: "20%",
-      render: (wage: any) => <div className="text-center">{wage} บาท</div>,
+      render: (wage: any) => <div className="text-center">{wage.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท</div>,
     },
     {
       title: "ตัวเลือก",
-      dataIndex: "option",
-      key: "option",
+      dataIndex: "id",
+      key: "id",
       width: "60%",
       render: (emp: any) => (
         <div>
