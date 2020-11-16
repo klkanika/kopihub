@@ -41,6 +41,8 @@ schema.mutationType({
       t.crud.updateOneTask(),
       t.crud.createOneSteamer(),
       t.crud.updateOneSteamer(),
+      t.crud.createOneNotification(),
+      t.crud.createOneNotificationLog(),
 
       t.field('createUser', {
         type: 'User',
