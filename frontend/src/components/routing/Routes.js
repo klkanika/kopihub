@@ -17,6 +17,7 @@ import SortTask from '../pages/SortTask'
 import EmployeePage from '../pages/EmployeePage'
 import PaymentPage from '../pages/PaymentPage'
 import WorkLogPage from '../pages/WorkLogPage'
+import Payroll from '../pages/Payroll'
 
 
 let params = new URLSearchParams(decodeURIComponent(window.location.search));
@@ -58,9 +59,7 @@ export default () => (
         <Route exact path="/staffqueue" component={StaffQueue} />
         <Route exact path="/customerqueue" component={CustomerQueue} />
         <Route exact path="/cancelqueue" component={CustomerCancelQueue} />
-        <Route exact path="/payroll/employee" component={EmployeePage} />
-        <Route exact path="/payroll/worklog" component={WorkLogPage} />
-        <Route exact path="/payroll/payment" component={PaymentPage} />
+        <Route path="/payroll" component={Payroll} />
         {/* <Route exact path="*" component={Home} /> */}
       </Switch>
     </Fragment>

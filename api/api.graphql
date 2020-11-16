@@ -7,6 +7,11 @@ input BoolFilter {
   not: NestedBoolFilter
 }
 
+input BoolNullableFilter {
+  equals: Boolean
+  not: NestedBoolNullableFilter
+}
+
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the
 `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO
@@ -29,10 +34,103 @@ input DateTimeFilter {
   notIn: [DateTime!]
 }
 
+type Employee {
+  createdAt: DateTime!
+  earning: Float!
+  hiringType: HiringType!
+  id: String!
+  name: String!
+  status: EmployeeStatus!
+  updateAt: DateTime!
+}
+
+input EmployeeCreateInput {
+  createdAt: DateTime
+  earning: Float!
+  hiringType: HiringType!
+  id: String
+  name: String!
+  Payroll: PayrollCreateManyWithoutEmployeeInput
+  status: EmployeeStatus!
+  updateAt: DateTime
+  WorkingHistory: WorkingHistoryCreateManyWithoutEmployeeInput
+}
+
+input EmployeeOrderByInput {
+  createdAt: SortOrder
+  earning: SortOrder
+  hiringType: SortOrder
+  id: SortOrder
+  name: SortOrder
+  status: SortOrder
+  updateAt: SortOrder
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  DELETED
+}
+
+input EmployeeUpdateInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  earning: FloatFieldUpdateOperationsInput
+  hiringType: HiringType
+  id: StringFieldUpdateOperationsInput
+  name: StringFieldUpdateOperationsInput
+  Payroll: PayrollUpdateManyWithoutEmployeeInput
+  status: EmployeeStatus
+  updateAt: DateTimeFieldUpdateOperationsInput
+  WorkingHistory: WorkingHistoryUpdateManyWithoutEmployeeInput
+}
+
+input EmployeeWhereInput {
+  AND: [EmployeeWhereInput!]
+  createdAt: DateTimeFilter
+  earning: FloatFilter
+  hiringType: HiringType
+  id: StringFilter
+  name: StringFilter
+  NOT: [EmployeeWhereInput!]
+  OR: [EmployeeWhereInput!]
+  Payroll: PayrollListRelationFilter
+  status: EmployeeStatus
+  updateAt: DateTimeFilter
+  WorkingHistory: WorkingHistoryListRelationFilter
+}
+
+input EmployeeWhereUniqueInput {
+  id: String
+}
+
 enum EnableStatus {
   DELETE
   HIDE
   SHOW
+}
+
+input FloatFieldUpdateOperationsInput {
+  set: Float
+}
+
+input FloatFilter {
+  equals: Float
+  gt: Float
+  gte: Float
+  in: [Float!]
+  lt: Float
+  lte: Float
+  not: NestedFloatFilter
+  notIn: [Float!]
+}
+
+type getEmployeesEarningArgs {
+  data: [getEmployeesEarningRow!]
+}
+
+type getEmployeesEarningRow {
+  id: String
+  name: String
+  remainingEarning: Float
 }
 
 type getQueuesArgs {
@@ -52,6 +150,12 @@ type getQueuesRow {
   userId: String
 }
 
+enum HiringType {
+  DAILY
+  HOURLY
+  MONTHLY
+}
+
 input IntFieldUpdateOperationsInput {
   set: Int
 }
@@ -64,6 +168,17 @@ input IntFilter {
   lt: Int
   lte: Int
   not: NestedIntFilter
+  notIn: [Int!]
+}
+
+input IntNullableFilter {
+  equals: Int
+  gt: Int
+  gte: Int
+  in: [Int!]
+  lt: Int
+  lte: Int
+  not: NestedIntNullableFilter
   notIn: [Int!]
 }
 
@@ -179,16 +294,19 @@ input LogUserWhereUniqueInput {
 type Mutation {
   bookQueue(name: String, pictureUrl: String, seat: Int!, userId: String): Boolean
   cancelQueue(id: Int!): Boolean
+  createOneEmployee(data: EmployeeCreateInput!): Employee!
   createOneLogUser(data: LogUserCreateInput!): LogUser!
   createOneSteamer(data: SteamerCreateInput!): Steamer!
   createOneTask(data: TaskCreateInput!): Task!
   createOneUser(data: UserCreateInput!): User!
   createTask(countTime: Int!, finishTime: DateTime, name: String!, serverId: String, total: Int!, userId: String!): Task
   createUser(name: String!, password: String!, userName: String!): User
-  fetchQueue(id: Int!): Boolean
+  deleteOneWorkingHistory(where: WorkingHistoryWhereUniqueInput!): WorkingHistory
+  fetchQueue(id: Int!, tableId: Int): Boolean
   login(password: String!, userName: String!): LogUser
   orderFood(id: Int!): Boolean
   UpdateEditTask(name: String!, taskId: String!, total: Int!): Task
+  updateOneEmployee(data: EmployeeUpdateInput!, where: EmployeeWhereUniqueInput!): Employee
   updateOneLogUser(data: LogUserUpdateInput!, where: LogUserWhereUniqueInput!): LogUser
   updateOneSteamer(data: SteamerUpdateInput!, where: SteamerWhereUniqueInput!): Steamer
   updateOneTask(data: TaskUpdateInput!, where: TaskWhereUniqueInput!): Task
@@ -206,6 +324,11 @@ input NestedBoolFilter {
   not: NestedBoolFilter
 }
 
+input NestedBoolNullableFilter {
+  equals: Boolean
+  not: NestedBoolNullableFilter
+}
+
 input NestedDateTimeFilter {
   equals: DateTime
   gt: DateTime
@@ -217,6 +340,17 @@ input NestedDateTimeFilter {
   notIn: [DateTime!]
 }
 
+input NestedFloatFilter {
+  equals: Float
+  gt: Float
+  gte: Float
+  in: [Float!]
+  lt: Float
+  lte: Float
+  not: NestedFloatFilter
+  notIn: [Float!]
+}
+
 input NestedIntFilter {
   equals: Int
   gt: Int
@@ -225,6 +359,17 @@ input NestedIntFilter {
   lt: Int
   lte: Int
   not: NestedIntFilter
+  notIn: [Int!]
+}
+
+input NestedIntNullableFilter {
+  equals: Int
+  gt: Int
+  gte: Int
+  in: [Int!]
+  lt: Int
+  lte: Int
+  not: NestedIntNullableFilter
   notIn: [Int!]
 }
 
@@ -256,17 +401,137 @@ input NestedStringNullableFilter {
   startsWith: String
 }
 
+input NullableBoolFieldUpdateOperationsInput {
+  set: Boolean
+}
+
 input NullableStringFieldUpdateOperationsInput {
   set: String
 }
 
+type Payroll {
+  createdAt: DateTime!
+  employee: Employee!
+  employeeId: String!
+  id: String!
+  paid: Float!
+  payrollDate: DateTime!
+  updateAt: DateTime!
+}
+
+input PayrollCreateManyWithoutEmployeeInput {
+  connect: [PayrollWhereUniqueInput!]
+  create: [PayrollCreateWithoutEmployeeInput!]
+}
+
+input PayrollCreateWithoutEmployeeInput {
+  createdAt: DateTime
+  id: String
+  paid: Float!
+  payrollDate: DateTime!
+  updateAt: DateTime
+}
+
+input PayrollListRelationFilter {
+  every: PayrollWhereInput
+  none: PayrollWhereInput
+  some: PayrollWhereInput
+}
+
+input PayrollOrderByInput {
+  createdAt: SortOrder
+  employeeId: SortOrder
+  id: SortOrder
+  paid: SortOrder
+  payrollDate: SortOrder
+  updateAt: SortOrder
+}
+
+input PayrollScalarWhereInput {
+  AND: [PayrollScalarWhereInput!]
+  createdAt: DateTimeFilter
+  employeeId: StringFilter
+  id: StringFilter
+  NOT: [PayrollScalarWhereInput!]
+  OR: [PayrollScalarWhereInput!]
+  paid: FloatFilter
+  payrollDate: DateTimeFilter
+  updateAt: DateTimeFilter
+}
+
+input PayrollUpdateManyDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  paid: FloatFieldUpdateOperationsInput
+  payrollDate: DateTimeFieldUpdateOperationsInput
+  updateAt: DateTimeFieldUpdateOperationsInput
+}
+
+input PayrollUpdateManyWithoutEmployeeInput {
+  connect: [PayrollWhereUniqueInput!]
+  create: [PayrollCreateWithoutEmployeeInput!]
+  delete: [PayrollWhereUniqueInput!]
+  deleteMany: [PayrollScalarWhereInput!]
+  disconnect: [PayrollWhereUniqueInput!]
+  set: [PayrollWhereUniqueInput!]
+  update: [PayrollUpdateWithWhereUniqueWithoutEmployeeInput!]
+  updateMany: [PayrollUpdateManyWithWhereNestedInput!]
+  upsert: [PayrollUpsertWithWhereUniqueWithoutEmployeeInput!]
+}
+
+input PayrollUpdateManyWithWhereNestedInput {
+  data: PayrollUpdateManyDataInput!
+  where: PayrollScalarWhereInput!
+}
+
+input PayrollUpdateWithoutEmployeeDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  paid: FloatFieldUpdateOperationsInput
+  payrollDate: DateTimeFieldUpdateOperationsInput
+  updateAt: DateTimeFieldUpdateOperationsInput
+}
+
+input PayrollUpdateWithWhereUniqueWithoutEmployeeInput {
+  data: PayrollUpdateWithoutEmployeeDataInput!
+  where: PayrollWhereUniqueInput!
+}
+
+input PayrollUpsertWithWhereUniqueWithoutEmployeeInput {
+  create: PayrollCreateWithoutEmployeeInput!
+  update: PayrollUpdateWithoutEmployeeDataInput!
+  where: PayrollWhereUniqueInput!
+}
+
+input PayrollWhereInput {
+  AND: [PayrollWhereInput!]
+  createdAt: DateTimeFilter
+  employee: EmployeeWhereInput
+  employeeId: StringFilter
+  id: StringFilter
+  NOT: [PayrollWhereInput!]
+  OR: [PayrollWhereInput!]
+  paid: FloatFilter
+  payrollDate: DateTimeFilter
+  updateAt: DateTimeFilter
+}
+
+input PayrollWhereUniqueInput {
+  id: String
+}
+
 type Query {
+  employees(after: EmployeeWhereUniqueInput, before: EmployeeWhereUniqueInput, first: Int, last: Int, orderBy: [EmployeeOrderByInput!], where: EmployeeWhereInput): [Employee!]!
+  getEmployeesEarning: getEmployeesEarningArgs
   getMyQueue(userId: String!): Boolean
   getQueues: getQueuesArgs
+  payrolls(after: PayrollWhereUniqueInput, before: PayrollWhereUniqueInput, first: Int, last: Int, orderBy: [PayrollOrderByInput!], where: PayrollWhereInput): [Payroll!]!
   queues(after: QueueWhereUniqueInput, before: QueueWhereUniqueInput, first: Int, last: Int, orderBy: [QueueOrderByInput!], where: QueueWhereInput): [Queue!]!
   steamers(after: SteamerWhereUniqueInput, before: SteamerWhereUniqueInput, first: Int, last: Int, orderBy: [SteamerOrderByInput!], where: SteamerWhereInput): [Steamer!]!
+  tables(after: TableWhereUniqueInput, before: TableWhereUniqueInput, first: Int, last: Int, orderBy: [TableOrderByInput!], where: TableWhereInput): [Table!]!
   tasks(after: TaskWhereUniqueInput, before: TaskWhereUniqueInput, first: Int, last: Int, orderBy: [TaskOrderByInput!], where: TaskWhereInput): [Task!]!
   users(after: UserWhereUniqueInput, before: UserWhereUniqueInput, first: Int, last: Int, where: UserWhereInput): [User!]!
+  workingHistories(after: WorkingHistoryWhereUniqueInput, before: WorkingHistoryWhereUniqueInput, first: Int, last: Int, orderBy: [WorkingHistoryOrderByInput!], where: WorkingHistoryWhereInput): [WorkingHistory!]!
 }
 
 type Queue {
@@ -278,8 +543,16 @@ type Queue {
   queueNo: String!
   seat: Int!
   status: QueueStatus!
+  table: Table
+  tableId: Int
   updateAt: DateTime!
   userId: String
+}
+
+input QueueListRelationFilter {
+  every: QueueWhereInput
+  none: QueueWhereInput
+  some: QueueWhereInput
 }
 
 input QueueOrderByInput {
@@ -291,6 +564,7 @@ input QueueOrderByInput {
   queueNo: SortOrder
   seat: SortOrder
   status: SortOrder
+  tableId: SortOrder
   updateAt: SortOrder
   userId: SortOrder
 }
@@ -313,6 +587,8 @@ input QueueWhereInput {
   queueNo: StringFilter
   seat: IntFilter
   status: QueueStatus
+  table: TableWhereInput
+  tableId: IntNullableFilter
   updateAt: DateTimeFilter
   userId: StringNullableFilter
 }
@@ -485,6 +761,32 @@ input StringNullableFilter {
   not: NestedStringNullableFilter
   notIn: [String!]
   startsWith: String
+}
+
+type Table {
+  id: Int!
+  ochaTableName: String!
+  tableName: String!
+}
+
+input TableOrderByInput {
+  id: SortOrder
+  ochaTableName: SortOrder
+  tableName: SortOrder
+}
+
+input TableWhereInput {
+  AND: [TableWhereInput!]
+  id: IntFilter
+  NOT: [TableWhereInput!]
+  ochaTableName: StringFilter
+  OR: [TableWhereInput!]
+  Queue: QueueListRelationFilter
+  tableName: StringFilter
+}
+
+input TableWhereUniqueInput {
+  id: Int
 }
 
 type Task {
@@ -732,6 +1034,7 @@ input TaskWhereUniqueInput {
 type User {
   enableStatus: EnableStatus!
   id: String!
+  isSuperAdmin: Boolean
   name: String
   userName: String!
 }
@@ -740,6 +1043,7 @@ input UserCreateInput {
   createdAt: DateTime
   enableStatus: EnableStatus!
   id: String
+  isSuperAdmin: Boolean
   LogUser: LogUserCreateManyWithoutUserInput
   name: String
   password: String!
@@ -762,6 +1066,7 @@ input UserCreateWithoutLogUserInput {
   createdAt: DateTime
   enableStatus: EnableStatus!
   id: String
+  isSuperAdmin: Boolean
   name: String
   password: String!
   Task: TaskCreateManyWithoutUserInput
@@ -773,6 +1078,7 @@ input UserCreateWithoutTaskInput {
   createdAt: DateTime
   enableStatus: EnableStatus!
   id: String
+  isSuperAdmin: Boolean
   LogUser: LogUserCreateManyWithoutUserInput
   name: String
   password: String!
@@ -790,6 +1096,7 @@ input UserUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   enableStatus: EnableStatus
   id: StringFieldUpdateOperationsInput
+  isSuperAdmin: NullableBoolFieldUpdateOperationsInput
   LogUser: LogUserUpdateManyWithoutUserInput
   name: NullableStringFieldUpdateOperationsInput
   password: StringFieldUpdateOperationsInput
@@ -816,6 +1123,7 @@ input UserUpdateWithoutLogUserDataInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   enableStatus: EnableStatus
   id: StringFieldUpdateOperationsInput
+  isSuperAdmin: NullableBoolFieldUpdateOperationsInput
   name: NullableStringFieldUpdateOperationsInput
   password: StringFieldUpdateOperationsInput
   Task: TaskUpdateManyWithoutUserInput
@@ -827,6 +1135,7 @@ input UserUpdateWithoutTaskDataInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   enableStatus: EnableStatus
   id: StringFieldUpdateOperationsInput
+  isSuperAdmin: NullableBoolFieldUpdateOperationsInput
   LogUser: LogUserUpdateManyWithoutUserInput
   name: NullableStringFieldUpdateOperationsInput
   password: StringFieldUpdateOperationsInput
@@ -849,6 +1158,7 @@ input UserWhereInput {
   createdAt: DateTimeFilter
   enableStatus: EnableStatus
   id: StringFilter
+  isSuperAdmin: BoolNullableFilter
   LogUser: LogUserListRelationFilter
   name: StringNullableFilter
   NOT: [UserWhereInput!]
@@ -862,4 +1172,136 @@ input UserWhereInput {
 input UserWhereUniqueInput {
   id: String
   userName: String
+}
+
+type WorkingHistory {
+  createdAt: DateTime!
+  earning: Float!
+  earningRate: Float!
+  employee: Employee!
+  employeeId: String!
+  hiringType: HiringType!
+  historyDate: DateTime!
+  hours: Float!
+  id: String!
+  updateAt: DateTime!
+}
+
+input WorkingHistoryCreateManyWithoutEmployeeInput {
+  connect: [WorkingHistoryWhereUniqueInput!]
+  create: [WorkingHistoryCreateWithoutEmployeeInput!]
+}
+
+input WorkingHistoryCreateWithoutEmployeeInput {
+  createdAt: DateTime
+  earning: Float!
+  earningRate: Float!
+  hiringType: HiringType!
+  historyDate: DateTime!
+  hours: Float!
+  id: String
+  updateAt: DateTime
+}
+
+input WorkingHistoryListRelationFilter {
+  every: WorkingHistoryWhereInput
+  none: WorkingHistoryWhereInput
+  some: WorkingHistoryWhereInput
+}
+
+input WorkingHistoryOrderByInput {
+  createdAt: SortOrder
+  earning: SortOrder
+  earningRate: SortOrder
+  employeeId: SortOrder
+  hiringType: SortOrder
+  historyDate: SortOrder
+  hours: SortOrder
+  id: SortOrder
+  updateAt: SortOrder
+}
+
+input WorkingHistoryScalarWhereInput {
+  AND: [WorkingHistoryScalarWhereInput!]
+  createdAt: DateTimeFilter
+  earning: FloatFilter
+  earningRate: FloatFilter
+  employeeId: StringFilter
+  hiringType: HiringType
+  historyDate: DateTimeFilter
+  hours: FloatFilter
+  id: StringFilter
+  NOT: [WorkingHistoryScalarWhereInput!]
+  OR: [WorkingHistoryScalarWhereInput!]
+  updateAt: DateTimeFilter
+}
+
+input WorkingHistoryUpdateManyDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  earning: FloatFieldUpdateOperationsInput
+  earningRate: FloatFieldUpdateOperationsInput
+  hiringType: HiringType
+  historyDate: DateTimeFieldUpdateOperationsInput
+  hours: FloatFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  updateAt: DateTimeFieldUpdateOperationsInput
+}
+
+input WorkingHistoryUpdateManyWithoutEmployeeInput {
+  connect: [WorkingHistoryWhereUniqueInput!]
+  create: [WorkingHistoryCreateWithoutEmployeeInput!]
+  delete: [WorkingHistoryWhereUniqueInput!]
+  deleteMany: [WorkingHistoryScalarWhereInput!]
+  disconnect: [WorkingHistoryWhereUniqueInput!]
+  set: [WorkingHistoryWhereUniqueInput!]
+  update: [WorkingHistoryUpdateWithWhereUniqueWithoutEmployeeInput!]
+  updateMany: [WorkingHistoryUpdateManyWithWhereNestedInput!]
+  upsert: [WorkingHistoryUpsertWithWhereUniqueWithoutEmployeeInput!]
+}
+
+input WorkingHistoryUpdateManyWithWhereNestedInput {
+  data: WorkingHistoryUpdateManyDataInput!
+  where: WorkingHistoryScalarWhereInput!
+}
+
+input WorkingHistoryUpdateWithoutEmployeeDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  earning: FloatFieldUpdateOperationsInput
+  earningRate: FloatFieldUpdateOperationsInput
+  hiringType: HiringType
+  historyDate: DateTimeFieldUpdateOperationsInput
+  hours: FloatFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  updateAt: DateTimeFieldUpdateOperationsInput
+}
+
+input WorkingHistoryUpdateWithWhereUniqueWithoutEmployeeInput {
+  data: WorkingHistoryUpdateWithoutEmployeeDataInput!
+  where: WorkingHistoryWhereUniqueInput!
+}
+
+input WorkingHistoryUpsertWithWhereUniqueWithoutEmployeeInput {
+  create: WorkingHistoryCreateWithoutEmployeeInput!
+  update: WorkingHistoryUpdateWithoutEmployeeDataInput!
+  where: WorkingHistoryWhereUniqueInput!
+}
+
+input WorkingHistoryWhereInput {
+  AND: [WorkingHistoryWhereInput!]
+  createdAt: DateTimeFilter
+  earning: FloatFilter
+  earningRate: FloatFilter
+  employee: EmployeeWhereInput
+  employeeId: StringFilter
+  hiringType: HiringType
+  historyDate: DateTimeFilter
+  hours: FloatFilter
+  id: StringFilter
+  NOT: [WorkingHistoryWhereInput!]
+  OR: [WorkingHistoryWhereInput!]
+  updateAt: DateTimeFilter
+}
+
+input WorkingHistoryWhereUniqueInput {
+  id: String
 }

@@ -3,21 +3,28 @@ import { Button, Layout, Table, Form, DatePicker, Modal, Select } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import React, { useState } from "react";
 import { GET_WORKLOGS, DELETE_WORKLOG } from "../../utils/graphql";
-import moment from 'moment'
+import moment from "moment";
 
 const WorkLogPage = () => {
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [form] = useForm();
+  const [editForm] = useForm();
 
-  const { data: workLogData, loading: workLogLoading } = useQuery(GET_WORKLOGS, {
-    fetchPolicy: 'no-cache',
-    pollInterval: 1000,
-    onError: (err: any) => {
-      window.alert(err)
+  const { data: workLogData, loading: workLogLoading } = useQuery(
+    GET_WORKLOGS,
+    {
+      fetchPolicy: "no-cache",
+      pollInterval: 1000,
+      onError: (err: any) => {
+        window.alert(err);
+      },
     }
-  });
+  );
 
-  const [deleteWorkLog, { loading: deleteWorkLogLoading }] = useMutation(DELETE_WORKLOG);
+  const [deleteWorkLog, { loading: deleteWorkLogLoading }] = useMutation(
+    DELETE_WORKLOG
+  );
 
   const columns = [
     {
@@ -26,8 +33,8 @@ const WorkLogPage = () => {
       key: "historyDate",
       width: "15%",
       render: (date: any) => {
-        return moment(date).format('DD/MM/YYYY')
-      }
+        return moment(date).format("DD/MM/YYYY");
+      },
     },
     {
       title: "ชื่อพนักงาน",
@@ -35,8 +42,8 @@ const WorkLogPage = () => {
       key: "employee",
       width: "15%",
       render: (emp: any) => {
-        return emp.name
-      }
+        return emp.name;
+      },
     },
     {
       title: "ชั่วโมงทำงาน",
@@ -50,8 +57,11 @@ const WorkLogPage = () => {
       key: "earning",
       width: "15%",
       render: (earning: any) => {
-        return earning.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      }
+        return earning
+          .toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      },
     },
     {
       title: "ตัวเลือก",
@@ -60,21 +70,50 @@ const WorkLogPage = () => {
       width: "60%",
       render: (id: any) => (
         <div>
-          <Button type="primary" className="mr-4">
+          <Button
+            type="primary"
+            className="mr-4"
+            onClick={() => {
+              //set editForm vales
+              setShowEditModal(true);
+            }}
+          >
             แก้ไข
           </Button>
-          <Button onClick={() => { deleteWorkLog({ variables: { id: id } }) }}>ลบ</Button>
+          <Button
+            onClick={() => {
+              deleteWorkLog({ variables: { id: id } });
+            }}
+          >
+            ลบ
+          </Button>
         </div>
       ),
     },
   ];
 
-  const datasource = workLogData && workLogData.workingHistories
+  // const datasource = workLogData && workLogData.workingHistories
+  const datasource = [
+    {
+      key: 1,
+      employee: {
+        id: "2ac5fe8c-eecc-42bb-90ce-dc614aba2cc8",
+        name: "Q",
+      },
+      earning: 150,
+    },
+  ];
 
   const onFinish = (values: any) => {
     console.log(values);
     form.resetFields();
     setShowModal(false);
+  };
+
+  const onEdit = (values: any) => {
+    console.log(values);
+    form.resetFields();
+    setShowEditModal(false);
   };
 
   return (
@@ -141,6 +180,52 @@ const WorkLogPage = () => {
         <Form
           form={form}
           onFinish={onFinish}
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 14 }}
+        >
+          <Form.Item
+            name="employee"
+            label="พนักงาน"
+            rules={[{ required: true, message: "กรุณาเลือกพนักงาน" }]}
+          >
+            <Select className="w-32">
+              <Select.Option value="-">-</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="date_range"
+            label="วันที่ทำงาน"
+            rules={[{ required: true, message: "กรุณาใส่ช่วงเวลาที่ทำงาน" }]}
+          >
+            <DatePicker.RangePicker placeholder={["วันเริ่ม", "วันสิ้นสุด"]} />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <Modal
+        title="บันทึกการทำงาน"
+        visible={showEditModal}
+        onCancel={() => setShowEditModal(false)}
+        footer={[
+          <Button key="cancel" onClick={() => setShowEditModal(false)}>
+            ยกเลิก
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() =>
+              form
+                .validateFields()
+                .then((values) => onFinish(values))
+                .catch((info) => console.log(info))
+            }
+          >
+            เพิ่ม
+          </Button>,
+        ]}
+      >
+        <Form
+          form={form}
+          onFinish={onEdit}
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 16 }}
         >
