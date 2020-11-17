@@ -90,6 +90,8 @@ const getNotifications = async () =>{
     console.log( `getNotifications` );
     const startTime = moment(moment(moment().utcOffset('+0700').format(dateFormat) + " 00:00").format(dateTimeFormat)).toDate()
     const endTime = moment(moment(moment().utcOffset('+0700').add(1, 'days').format(dateFormat) + " 00:00").format(dateTimeFormat)).toDate()
+    console.log( `startTime`,  moment(startTime).format(dateTimeFormat));
+    console.log( `endTime`, moment(endTime).format(dateTimeFormat) );
     const notifications = await (await fetch(API, {
         method: 'POST',
         headers: {
