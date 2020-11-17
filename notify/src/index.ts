@@ -4,9 +4,9 @@ import moment from "moment";
 import fetch from 'node-fetch'
 import { parse } from "path";
 
-const API = 'http://localhost:4000/graphql'
-const PORT = 3030; // default port to listen
-// const { API, PORT } = process.env
+// const API = 'http://localhost:4000/graphql'
+// const PORT = 3030; // default port to listen
+const { API, PORT } = process.env
 const app = express();
 
 const timeFormat = "HH:mm";
@@ -14,30 +14,30 @@ const dateFormat = "YYYY-MM-DD";
 const dateTimeFormat = "YYYY-MM-DD HH:mm";
 
 // define a route handler for the default home page
-app.get( "/", ( req, res ) => {
-// app.post("/sync-order" , async (req,res) => {
-    res.send( "Hello world!" );
-    // try{
-    //     getNotifications();
-    //     console.log("fetched")
-    // }catch(ex){
-    //     console.log(ex)
-    // }
+// app.get( "/", ( req, res ) => {
+app.post("/sync-order" , async (req,res) => {
+    // res.send( "Hello world!" );
+    try{
+        getNotifications();
+        console.log("fetched")
+    }catch(ex){
+        console.log(ex)
+    }
 } );
 
 // start the Express server
 app.listen( PORT || 3030, () => {
     console.log( `server started at http://localhost:${ PORT || 3030 }` );
 
-    const interval = 10
-    setInterval(async () => {
-        getNotifications()
+    // const interval = 10
+    // setInterval(async () => {
+    //     getNotifications()
         
-    }, interval * 1000)
+    // }, interval * 1000)
 } );
 
 const logTime = async (now: string, time: string, id: string, message: string,token: string) => {
-    if(now == time){
+    if(now == time && token && token !== "" && message && message !== ""){
         await (sendLineNotify(token, message))
         const res = await (await fetch(API, {
             method: 'POST',
