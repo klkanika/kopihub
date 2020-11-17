@@ -25,6 +25,8 @@ app.post("/notify" , async (req,res) => {
     }catch(ex){
         console.log(ex)
     }
+
+    res.send("ok")
 } );
 
 // start the Express server
@@ -109,6 +111,7 @@ const getNotifications = async () =>{
         const time = moment(h + ':' + m ,timeFormat).format(timeFormat)
         const now = moment().format(timeFormat)
         console.log( `Notifications id:${t.id}, message:${t.message}, token:${t.token}, time:${time} ` );
+        console.log( `Log condition:${moment(now,timeFormat).isAfter(moment(time,timeFormat))}, now:${now} ` );
         if(moment(now,timeFormat).isAfter(moment(time,timeFormat))){
             logTime(now, time, t.id, t.message, t.token)
         }
