@@ -15,7 +15,7 @@ const dateTimeFormat = "YYYY-MM-DD HH:mm";
 
 // define a route handler for the default home page
 // app.get( "/", ( req, res ) => {
-app.post("/sync-order" , async (req,res) => {
+app.post("/notify" , async (req,res) => {
     // res.send( "Hello world!" );
     try{
         getNotifications();
