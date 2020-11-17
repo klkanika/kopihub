@@ -116,7 +116,7 @@ const getNotifications = async () =>{
         const now = moment().utcOffset('+0700').format(timeFormat)
         console.log( `Notifications id:${t.id}, message:${t.message}, token:${t.token}, time:${time} ` );
         console.log( `Log condition:${moment(now,timeFormat).isAfter(moment(time,timeFormat))}, now:${now} ` );
-        if(moment(now,timeFormat).diff(moment(time,timeFormat)) >= 0){
+        if(moment(now,timeFormat).diff(moment(time,timeFormat)) == 0){
             logTime(now, time, t.id, t.message, t.token)
         }
     })
