@@ -60,6 +60,8 @@ schema.queryType({
     t.crud.employees({ filtering: true, ordering: true, pagination: true })
     t.crud.workingHistories({ filtering: true, ordering: true, pagination: true })
     t.crud.payrolls({ filtering: true, ordering: true, pagination: true })
+    t.crud.notifications({ filtering: true })
+    t.crud.notificationLogs({ filtering: true })
 
     t.field("getQueues", {
       type: "getQueuesArgs",
@@ -70,12 +72,12 @@ schema.queryType({
             AND: [
               {
                 createdAt: {
-                  gt: moment().startOf('day').toDate()
+                  gt: moment().utcOffset(7).startOf('day').toDate()
                 }
               },
               {
                 createdAt: {
-                  lt: moment().endOf('day').toDate()
+                  lt: moment().utcOffset(7).endOf('day').toDate()
                 }
               }
             ]
@@ -91,12 +93,12 @@ schema.queryType({
             AND: [
               {
                 createdAt: {
-                  gt: moment().startOf('day').toDate()
+                  gt: moment().utcOffset(7).startOf('day').toDate()
                 }
               },
               {
                 createdAt: {
-                  lt: moment().endOf('day').toDate()
+                  lt: moment().utcOffset(7).endOf('day').toDate()
                 }
               }
             ]
@@ -128,7 +130,7 @@ schema.queryType({
                   AND: {
                     status: 'SUCCESS',
                     createdAt: {
-                      gte: moment().subtract(1, "hour").toDate()
+                      gte: moment().utcOffset(7).subtract(1, "hour").toDate()
                     }
                   }
                 }

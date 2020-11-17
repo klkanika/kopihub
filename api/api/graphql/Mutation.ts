@@ -41,9 +41,8 @@ schema.mutationType({
       t.crud.updateOneTask(),
       t.crud.createOneSteamer(),
       t.crud.updateOneSteamer(),
-      t.crud.createOneEmployee(),
-      t.crud.updateOneEmployee(),
-      t.crud.deleteOneWorkingHistory()
+      t.crud.createOneNotification(),
+      t.crud.createOneNotificationLog(),
 
       t.field('createUser', {
         type: 'User',
@@ -404,7 +403,7 @@ schema.mutationType({
                     AND: {
                       status: 'SUCCESS',
                       createdAt: {
-                        gte: moment().subtract(1, "hour").toDate()
+                        gte: moment().utcOffset(7).subtract(1, "hour").toDate()
                       }
                     }
                   }
@@ -422,12 +421,12 @@ schema.mutationType({
               AND: [
                 {
                   createdAt: {
-                    gt: moment().startOf('day').toDate()
+                    gt: moment().utcOffset(7).startOf('day').toDate()
                   }
                 },
                 {
                   createdAt: {
-                    lt: moment().endOf('day').toDate()
+                    lt: moment().utcOffset(7).endOf('day').toDate()
                   }
                 },
                 {
@@ -449,12 +448,12 @@ schema.mutationType({
               AND: [
                 {
                   createdAt: {
-                    gt: moment().startOf('day').toDate()
+                    gt: moment().utcOffset(7).startOf('day').toDate()
                   }
                 },
                 {
                   createdAt: {
-                    lt: moment().endOf('day').toDate()
+                    lt: moment().utcOffset(7).endOf('day').toDate()
                   }
                 },
                 // {

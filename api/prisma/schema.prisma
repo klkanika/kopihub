@@ -54,7 +54,7 @@ model User {
   enableStatus EnableStatus
   LogUser      LogUser[]
   Task         Task[]
-  isSuperAdmin Boolean?     @default(false)
+  is_admin     Boolean      @default(value: false)
 }
 
 model LogUser {
@@ -151,4 +151,25 @@ model Payroll {
   employeeId  String
   payrollDate DateTime
   paid        Float
+}
+
+model Notification {
+  id              String    @id @default(uuid())
+  message         String
+  hour            Int
+  minute          Int
+  token           String
+  user            User      @relation(fields: [updatedBy], references: [id])
+  updatedBy       String
+  updatedAt       DateTime  @default(now()) @updatedAt
+  NotificationLog NotificationLog[]
+}
+
+model NotificationLog {
+  id              String        @id @default(uuid())
+  notification    Notification  @relation(fields: [notificationId], references: [id])
+  notificationId  String
+  user            User          @relation(fields: [createdBy], references: [id])
+  createdBy       String
+  createdAt       DateTime      @default(now())
 }

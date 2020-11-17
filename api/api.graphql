@@ -2,6 +2,10 @@
 ### Do not make changes to this file directly
 
 
+input BoolFieldUpdateOperationsInput {
+  set: Boolean
+}
+
 input BoolFilter {
   equals: Boolean
   not: NestedBoolFilter
@@ -296,12 +300,13 @@ type Mutation {
   cancelQueue(id: Int!): Boolean
   createOneEmployee(data: EmployeeCreateInput!): Employee!
   createOneLogUser(data: LogUserCreateInput!): LogUser!
+  createOneNotification(data: NotificationCreateInput!): Notification!
+  createOneNotificationLog(data: NotificationLogCreateInput!): NotificationLog!
   createOneSteamer(data: SteamerCreateInput!): Steamer!
   createOneTask(data: TaskCreateInput!): Task!
   createOneUser(data: UserCreateInput!): User!
   createTask(countTime: Int!, finishTime: DateTime, name: String!, serverId: String, total: Int!, userId: String!): Task
   createUser(name: String!, password: String!, userName: String!): User
-  deleteOneWorkingHistory(where: WorkingHistoryWhereUniqueInput!): WorkingHistory
   fetchQueue(id: Int!, tableId: Int): Boolean
   login(password: String!, userName: String!): LogUser
   orderFood(id: Int!): Boolean
@@ -401,8 +406,295 @@ input NestedStringNullableFilter {
   startsWith: String
 }
 
-input NullableBoolFieldUpdateOperationsInput {
-  set: Boolean
+type Notification {
+  hour: Int!
+  id: String!
+  message: String!
+  minute: Int!
+  token: String!
+}
+
+input NotificationCreateInput {
+  hour: Int!
+  id: String
+  message: String!
+  minute: Int!
+  NotificationLog: NotificationLogCreateManyWithoutNotificationInput
+  token: String!
+  updatedAt: DateTime
+  user: UserCreateOneWithoutNotificationInput!
+}
+
+input NotificationCreateManyWithoutUserInput {
+  connect: [NotificationWhereUniqueInput!]
+  create: [NotificationCreateWithoutUserInput!]
+}
+
+input NotificationCreateOneWithoutNotificationLogInput {
+  connect: NotificationWhereUniqueInput
+  create: NotificationCreateWithoutNotificationLogInput
+}
+
+input NotificationCreateWithoutNotificationLogInput {
+  hour: Int!
+  id: String
+  message: String!
+  minute: Int!
+  token: String!
+  updatedAt: DateTime
+  user: UserCreateOneWithoutNotificationInput!
+}
+
+input NotificationCreateWithoutUserInput {
+  hour: Int!
+  id: String
+  message: String!
+  minute: Int!
+  NotificationLog: NotificationLogCreateManyWithoutNotificationInput
+  token: String!
+  updatedAt: DateTime
+}
+
+input NotificationListRelationFilter {
+  every: NotificationWhereInput
+  none: NotificationWhereInput
+  some: NotificationWhereInput
+}
+
+type NotificationLog {
+  createdAt: DateTime!
+  id: String!
+  notificationId: String!
+}
+
+input NotificationLogCreateInput {
+  createdAt: DateTime
+  id: String
+  notification: NotificationCreateOneWithoutNotificationLogInput!
+  user: UserCreateOneWithoutNotificationLogInput!
+}
+
+input NotificationLogCreateManyWithoutNotificationInput {
+  connect: [NotificationLogWhereUniqueInput!]
+  create: [NotificationLogCreateWithoutNotificationInput!]
+}
+
+input NotificationLogCreateManyWithoutUserInput {
+  connect: [NotificationLogWhereUniqueInput!]
+  create: [NotificationLogCreateWithoutUserInput!]
+}
+
+input NotificationLogCreateWithoutNotificationInput {
+  createdAt: DateTime
+  id: String
+  user: UserCreateOneWithoutNotificationLogInput!
+}
+
+input NotificationLogCreateWithoutUserInput {
+  createdAt: DateTime
+  id: String
+  notification: NotificationCreateOneWithoutNotificationLogInput!
+}
+
+input NotificationLogListRelationFilter {
+  every: NotificationLogWhereInput
+  none: NotificationLogWhereInput
+  some: NotificationLogWhereInput
+}
+
+input NotificationLogScalarWhereInput {
+  AND: [NotificationLogScalarWhereInput!]
+  createdAt: DateTimeFilter
+  createdBy: StringFilter
+  id: StringFilter
+  NOT: [NotificationLogScalarWhereInput!]
+  notificationId: StringFilter
+  OR: [NotificationLogScalarWhereInput!]
+}
+
+input NotificationLogUpdateManyDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+}
+
+input NotificationLogUpdateManyWithoutNotificationInput {
+  connect: [NotificationLogWhereUniqueInput!]
+  create: [NotificationLogCreateWithoutNotificationInput!]
+  delete: [NotificationLogWhereUniqueInput!]
+  deleteMany: [NotificationLogScalarWhereInput!]
+  disconnect: [NotificationLogWhereUniqueInput!]
+  set: [NotificationLogWhereUniqueInput!]
+  update: [NotificationLogUpdateWithWhereUniqueWithoutNotificationInput!]
+  updateMany: [NotificationLogUpdateManyWithWhereNestedInput!]
+  upsert: [NotificationLogUpsertWithWhereUniqueWithoutNotificationInput!]
+}
+
+input NotificationLogUpdateManyWithoutUserInput {
+  connect: [NotificationLogWhereUniqueInput!]
+  create: [NotificationLogCreateWithoutUserInput!]
+  delete: [NotificationLogWhereUniqueInput!]
+  deleteMany: [NotificationLogScalarWhereInput!]
+  disconnect: [NotificationLogWhereUniqueInput!]
+  set: [NotificationLogWhereUniqueInput!]
+  update: [NotificationLogUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [NotificationLogUpdateManyWithWhereNestedInput!]
+  upsert: [NotificationLogUpsertWithWhereUniqueWithoutUserInput!]
+}
+
+input NotificationLogUpdateManyWithWhereNestedInput {
+  data: NotificationLogUpdateManyDataInput!
+  where: NotificationLogScalarWhereInput!
+}
+
+input NotificationLogUpdateWithoutNotificationDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  user: UserUpdateOneRequiredWithoutNotificationLogInput
+}
+
+input NotificationLogUpdateWithoutUserDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  notification: NotificationUpdateOneRequiredWithoutNotificationLogInput
+}
+
+input NotificationLogUpdateWithWhereUniqueWithoutNotificationInput {
+  data: NotificationLogUpdateWithoutNotificationDataInput!
+  where: NotificationLogWhereUniqueInput!
+}
+
+input NotificationLogUpdateWithWhereUniqueWithoutUserInput {
+  data: NotificationLogUpdateWithoutUserDataInput!
+  where: NotificationLogWhereUniqueInput!
+}
+
+input NotificationLogUpsertWithWhereUniqueWithoutNotificationInput {
+  create: NotificationLogCreateWithoutNotificationInput!
+  update: NotificationLogUpdateWithoutNotificationDataInput!
+  where: NotificationLogWhereUniqueInput!
+}
+
+input NotificationLogUpsertWithWhereUniqueWithoutUserInput {
+  create: NotificationLogCreateWithoutUserInput!
+  update: NotificationLogUpdateWithoutUserDataInput!
+  where: NotificationLogWhereUniqueInput!
+}
+
+input NotificationLogWhereInput {
+  AND: [NotificationLogWhereInput!]
+  createdAt: DateTimeFilter
+  createdBy: StringFilter
+  id: StringFilter
+  NOT: [NotificationLogWhereInput!]
+  notification: NotificationWhereInput
+  notificationId: StringFilter
+  OR: [NotificationLogWhereInput!]
+  user: UserWhereInput
+}
+
+input NotificationLogWhereUniqueInput {
+  id: String
+}
+
+input NotificationScalarWhereInput {
+  AND: [NotificationScalarWhereInput!]
+  hour: IntFilter
+  id: StringFilter
+  message: StringFilter
+  minute: IntFilter
+  NOT: [NotificationScalarWhereInput!]
+  OR: [NotificationScalarWhereInput!]
+  token: StringFilter
+  updatedAt: DateTimeFilter
+  updatedBy: StringFilter
+}
+
+input NotificationUpdateManyDataInput {
+  hour: IntFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  message: StringFieldUpdateOperationsInput
+  minute: IntFieldUpdateOperationsInput
+  token: StringFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+}
+
+input NotificationUpdateManyWithoutUserInput {
+  connect: [NotificationWhereUniqueInput!]
+  create: [NotificationCreateWithoutUserInput!]
+  delete: [NotificationWhereUniqueInput!]
+  deleteMany: [NotificationScalarWhereInput!]
+  disconnect: [NotificationWhereUniqueInput!]
+  set: [NotificationWhereUniqueInput!]
+  update: [NotificationUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [NotificationUpdateManyWithWhereNestedInput!]
+  upsert: [NotificationUpsertWithWhereUniqueWithoutUserInput!]
+}
+
+input NotificationUpdateManyWithWhereNestedInput {
+  data: NotificationUpdateManyDataInput!
+  where: NotificationScalarWhereInput!
+}
+
+input NotificationUpdateOneRequiredWithoutNotificationLogInput {
+  connect: NotificationWhereUniqueInput
+  create: NotificationCreateWithoutNotificationLogInput
+  update: NotificationUpdateWithoutNotificationLogDataInput
+  upsert: NotificationUpsertWithoutNotificationLogInput
+}
+
+input NotificationUpdateWithoutNotificationLogDataInput {
+  hour: IntFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  message: StringFieldUpdateOperationsInput
+  minute: IntFieldUpdateOperationsInput
+  token: StringFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  user: UserUpdateOneRequiredWithoutNotificationInput
+}
+
+input NotificationUpdateWithoutUserDataInput {
+  hour: IntFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  message: StringFieldUpdateOperationsInput
+  minute: IntFieldUpdateOperationsInput
+  NotificationLog: NotificationLogUpdateManyWithoutNotificationInput
+  token: StringFieldUpdateOperationsInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+}
+
+input NotificationUpdateWithWhereUniqueWithoutUserInput {
+  data: NotificationUpdateWithoutUserDataInput!
+  where: NotificationWhereUniqueInput!
+}
+
+input NotificationUpsertWithoutNotificationLogInput {
+  create: NotificationCreateWithoutNotificationLogInput!
+  update: NotificationUpdateWithoutNotificationLogDataInput!
+}
+
+input NotificationUpsertWithWhereUniqueWithoutUserInput {
+  create: NotificationCreateWithoutUserInput!
+  update: NotificationUpdateWithoutUserDataInput!
+  where: NotificationWhereUniqueInput!
+}
+
+input NotificationWhereInput {
+  AND: [NotificationWhereInput!]
+  hour: IntFilter
+  id: StringFilter
+  message: StringFilter
+  minute: IntFilter
+  NOT: [NotificationWhereInput!]
+  NotificationLog: NotificationLogListRelationFilter
+  OR: [NotificationWhereInput!]
+  token: StringFilter
+  updatedAt: DateTimeFilter
+  updatedBy: StringFilter
+  user: UserWhereInput
+}
+
+input NotificationWhereUniqueInput {
+  id: String
 }
 
 input NullableStringFieldUpdateOperationsInput {
@@ -525,7 +817,8 @@ type Query {
   getEmployeesEarning: getEmployeesEarningArgs
   getMyQueue(userId: String!): Boolean
   getQueues: getQueuesArgs
-  payrolls(after: PayrollWhereUniqueInput, before: PayrollWhereUniqueInput, first: Int, last: Int, orderBy: [PayrollOrderByInput!], where: PayrollWhereInput): [Payroll!]!
+  notificationLogs(after: NotificationLogWhereUniqueInput, before: NotificationLogWhereUniqueInput, first: Int, last: Int, where: NotificationLogWhereInput): [NotificationLog!]!
+  notifications(after: NotificationWhereUniqueInput, before: NotificationWhereUniqueInput, first: Int, last: Int, where: NotificationWhereInput): [Notification!]!
   queues(after: QueueWhereUniqueInput, before: QueueWhereUniqueInput, first: Int, last: Int, orderBy: [QueueOrderByInput!], where: QueueWhereInput): [Queue!]!
   steamers(after: SteamerWhereUniqueInput, before: SteamerWhereUniqueInput, first: Int, last: Int, orderBy: [SteamerOrderByInput!], where: SteamerWhereInput): [Steamer!]!
   tables(after: TableWhereUniqueInput, before: TableWhereUniqueInput, first: Int, last: Int, orderBy: [TableOrderByInput!], where: TableWhereInput): [Table!]!
@@ -1043,9 +1336,11 @@ input UserCreateInput {
   createdAt: DateTime
   enableStatus: EnableStatus!
   id: String
-  isSuperAdmin: Boolean
+  is_admin: Boolean
   LogUser: LogUserCreateManyWithoutUserInput
   name: String
+  Notification: NotificationCreateManyWithoutUserInput
+  NotificationLog: NotificationLogCreateManyWithoutUserInput
   password: String!
   Task: TaskCreateManyWithoutUserInput
   updatedAt: DateTime
@@ -1057,6 +1352,16 @@ input UserCreateOneWithoutLogUserInput {
   create: UserCreateWithoutLogUserInput
 }
 
+input UserCreateOneWithoutNotificationInput {
+  connect: UserWhereUniqueInput
+  create: UserCreateWithoutNotificationInput
+}
+
+input UserCreateOneWithoutNotificationLogInput {
+  connect: UserWhereUniqueInput
+  create: UserCreateWithoutNotificationLogInput
+}
+
 input UserCreateOneWithoutTaskInput {
   connect: UserWhereUniqueInput
   create: UserCreateWithoutTaskInput
@@ -1066,8 +1371,38 @@ input UserCreateWithoutLogUserInput {
   createdAt: DateTime
   enableStatus: EnableStatus!
   id: String
-  isSuperAdmin: Boolean
+  is_admin: Boolean
   name: String
+  Notification: NotificationCreateManyWithoutUserInput
+  NotificationLog: NotificationLogCreateManyWithoutUserInput
+  password: String!
+  Task: TaskCreateManyWithoutUserInput
+  updatedAt: DateTime
+  userName: String!
+}
+
+input UserCreateWithoutNotificationInput {
+  createdAt: DateTime
+  enableStatus: EnableStatus!
+  id: String
+  is_admin: Boolean
+  LogUser: LogUserCreateManyWithoutUserInput
+  name: String
+  NotificationLog: NotificationLogCreateManyWithoutUserInput
+  password: String!
+  Task: TaskCreateManyWithoutUserInput
+  updatedAt: DateTime
+  userName: String!
+}
+
+input UserCreateWithoutNotificationLogInput {
+  createdAt: DateTime
+  enableStatus: EnableStatus!
+  id: String
+  is_admin: Boolean
+  LogUser: LogUserCreateManyWithoutUserInput
+  name: String
+  Notification: NotificationCreateManyWithoutUserInput
   password: String!
   Task: TaskCreateManyWithoutUserInput
   updatedAt: DateTime
@@ -1078,9 +1413,11 @@ input UserCreateWithoutTaskInput {
   createdAt: DateTime
   enableStatus: EnableStatus!
   id: String
-  isSuperAdmin: Boolean
+  is_admin: Boolean
   LogUser: LogUserCreateManyWithoutUserInput
   name: String
+  Notification: NotificationCreateManyWithoutUserInput
+  NotificationLog: NotificationLogCreateManyWithoutUserInput
   password: String!
   updatedAt: DateTime
   userName: String!
@@ -1096,9 +1433,11 @@ input UserUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   enableStatus: EnableStatus
   id: StringFieldUpdateOperationsInput
-  isSuperAdmin: NullableBoolFieldUpdateOperationsInput
+  is_admin: BoolFieldUpdateOperationsInput
   LogUser: LogUserUpdateManyWithoutUserInput
   name: NullableStringFieldUpdateOperationsInput
+  Notification: NotificationUpdateManyWithoutUserInput
+  NotificationLog: NotificationLogUpdateManyWithoutUserInput
   password: StringFieldUpdateOperationsInput
   Task: TaskUpdateManyWithoutUserInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -1112,6 +1451,20 @@ input UserUpdateOneRequiredWithoutLogUserInput {
   upsert: UserUpsertWithoutLogUserInput
 }
 
+input UserUpdateOneRequiredWithoutNotificationInput {
+  connect: UserWhereUniqueInput
+  create: UserCreateWithoutNotificationInput
+  update: UserUpdateWithoutNotificationDataInput
+  upsert: UserUpsertWithoutNotificationInput
+}
+
+input UserUpdateOneRequiredWithoutNotificationLogInput {
+  connect: UserWhereUniqueInput
+  create: UserCreateWithoutNotificationLogInput
+  update: UserUpdateWithoutNotificationLogDataInput
+  upsert: UserUpsertWithoutNotificationLogInput
+}
+
 input UserUpdateOneRequiredWithoutTaskInput {
   connect: UserWhereUniqueInput
   create: UserCreateWithoutTaskInput
@@ -1123,8 +1476,38 @@ input UserUpdateWithoutLogUserDataInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   enableStatus: EnableStatus
   id: StringFieldUpdateOperationsInput
-  isSuperAdmin: NullableBoolFieldUpdateOperationsInput
+  is_admin: BoolFieldUpdateOperationsInput
   name: NullableStringFieldUpdateOperationsInput
+  Notification: NotificationUpdateManyWithoutUserInput
+  NotificationLog: NotificationLogUpdateManyWithoutUserInput
+  password: StringFieldUpdateOperationsInput
+  Task: TaskUpdateManyWithoutUserInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  userName: StringFieldUpdateOperationsInput
+}
+
+input UserUpdateWithoutNotificationDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  enableStatus: EnableStatus
+  id: StringFieldUpdateOperationsInput
+  is_admin: BoolFieldUpdateOperationsInput
+  LogUser: LogUserUpdateManyWithoutUserInput
+  name: NullableStringFieldUpdateOperationsInput
+  NotificationLog: NotificationLogUpdateManyWithoutUserInput
+  password: StringFieldUpdateOperationsInput
+  Task: TaskUpdateManyWithoutUserInput
+  updatedAt: DateTimeFieldUpdateOperationsInput
+  userName: StringFieldUpdateOperationsInput
+}
+
+input UserUpdateWithoutNotificationLogDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  enableStatus: EnableStatus
+  id: StringFieldUpdateOperationsInput
+  is_admin: BoolFieldUpdateOperationsInput
+  LogUser: LogUserUpdateManyWithoutUserInput
+  name: NullableStringFieldUpdateOperationsInput
+  Notification: NotificationUpdateManyWithoutUserInput
   password: StringFieldUpdateOperationsInput
   Task: TaskUpdateManyWithoutUserInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -1135,9 +1518,11 @@ input UserUpdateWithoutTaskDataInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   enableStatus: EnableStatus
   id: StringFieldUpdateOperationsInput
-  isSuperAdmin: NullableBoolFieldUpdateOperationsInput
+  is_admin: BoolFieldUpdateOperationsInput
   LogUser: LogUserUpdateManyWithoutUserInput
   name: NullableStringFieldUpdateOperationsInput
+  Notification: NotificationUpdateManyWithoutUserInput
+  NotificationLog: NotificationLogUpdateManyWithoutUserInput
   password: StringFieldUpdateOperationsInput
   updatedAt: DateTimeFieldUpdateOperationsInput
   userName: StringFieldUpdateOperationsInput
@@ -1146,6 +1531,16 @@ input UserUpdateWithoutTaskDataInput {
 input UserUpsertWithoutLogUserInput {
   create: UserCreateWithoutLogUserInput!
   update: UserUpdateWithoutLogUserDataInput!
+}
+
+input UserUpsertWithoutNotificationInput {
+  create: UserCreateWithoutNotificationInput!
+  update: UserUpdateWithoutNotificationDataInput!
+}
+
+input UserUpsertWithoutNotificationLogInput {
+  create: UserCreateWithoutNotificationLogInput!
+  update: UserUpdateWithoutNotificationLogDataInput!
 }
 
 input UserUpsertWithoutTaskInput {
@@ -1158,10 +1553,12 @@ input UserWhereInput {
   createdAt: DateTimeFilter
   enableStatus: EnableStatus
   id: StringFilter
-  isSuperAdmin: BoolNullableFilter
+  is_admin: BoolFilter
   LogUser: LogUserListRelationFilter
   name: StringNullableFilter
   NOT: [UserWhereInput!]
+  Notification: NotificationListRelationFilter
+  NotificationLog: NotificationLogListRelationFilter
   OR: [UserWhereInput!]
   password: StringFilter
   Task: TaskListRelationFilter
