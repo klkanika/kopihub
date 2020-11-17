@@ -1,6 +1,6 @@
 FROM node:14.5-alpine
 RUN apk add git
-WORKDIR /usr/src/notify_service
+WORKDIR /usr/src/notify
 ADD . .
 RUN rm -rf /node_modules
 RUN yarn cache clean
