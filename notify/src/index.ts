@@ -15,10 +15,12 @@ const dateTimeFormat = "YYYY-MM-DD HH:mm";
 
 // define a route handler for the default home page
 // app.get( "/", ( req, res ) => {
+//   res.send( "Hello world!" );
+// });
+
 app.post("/notify" , async (req,res) => {
-    // res.send( "Hello world!" );
     try{
-        getNotifications();
+        await getNotifications();
         console.log("fetched")
     }catch(ex){
         console.log(ex)
@@ -37,7 +39,8 @@ app.listen( PORT || 3030, () => {
 } );
 
 const logTime = async (now: string, time: string, id: string, message: string,token: string) => {
-    if(now == time && token && token !== "" && message && message !== ""){
+    console.log( `logTime id:${id}, message:${message}, token:${token}, time:${time} ` );
+    if(message && message !== "" && token && token !== ""){
         await (sendLineNotify(token, message))
         const res = await (await fetch(API, {
             method: 'POST',
@@ -58,6 +61,7 @@ const logTime = async (now: string, time: string, id: string, message: string,to
 }
 
 const sendLineNotify = async (token: string, message: string) => {
+  
     request({
         method: 'POST',
         uri: 'https://notify-api.line.me/api/notify',
@@ -72,15 +76,16 @@ const sendLineNotify = async (token: string, message: string) => {
         }
     }, (err, httpResponse, body) => {
         if(err){
-            console.log('sendLineNotify', err);
+            console.log('sendLineNotify Error', err);
         } else {
-            console.log('sendLineNotify', body)
+            console.log('sendLineNotify Complete', body)
         }
     });
+    
 }
 
 const getNotifications = async () =>{
-    
+    console.log( `getNotifications` );
     const startTime = moment(moment(moment().format(dateFormat) + " 00:00").format(dateTimeFormat)).toDate()
     const endTime = moment(moment(moment().add(1, 'days').format(dateFormat) + " 00:00").format(dateTimeFormat)).toDate()
     const notifications = await (await fetch(API, {
@@ -103,8 +108,10 @@ const getNotifications = async () =>{
         const m = t.minute < 10 ? "0" + t.minute : t.minute
         const time = moment(h + ':' + m ,timeFormat).format(timeFormat)
         const now = moment().format(timeFormat)
-        if(now <= time)
+        console.log( `Notifications id:${t.id}, message:${t.message}, token:${t.token}, time:${time} ` );
+        if(moment(now,timeFormat).isAfter(moment(time,timeFormat))){
             logTime(now, time, t.id, t.message, t.token)
+        }
     })
 }
 
