@@ -88,8 +88,8 @@ const sendLineNotify = async (token: string, message: string) => {
 
 const getNotifications = async () =>{
     console.log( `getNotifications` );
-    const startTime = moment(moment(moment().format(dateFormat) + " 00:00").format(dateTimeFormat)).toDate()
-    const endTime = moment(moment(moment().add(1, 'days').format(dateFormat) + " 00:00").format(dateTimeFormat)).toDate()
+    const startTime = moment(moment(moment().utcOffset('+0700').format(dateFormat) + " 00:00").format(dateTimeFormat)).toDate()
+    const endTime = moment(moment(moment().utcOffset('+0700').add(1, 'days').format(dateFormat) + " 00:00").format(dateTimeFormat)).toDate()
     const notifications = await (await fetch(API, {
         method: 'POST',
         headers: {
@@ -106,10 +106,12 @@ const getNotifications = async () =>{
       })).json();
     
     notifications.data.notifications.map((t : any) => {
+        
         const h = t.hour < 10 ? "0" + t.hour : t.hour
         const m = t.minute < 10 ? "0" + t.minute : t.minute
+        console.log( `Notifications id:${t.id}, message:${t.message}, token:${t.token}, hour:${t.hour}, minute:${t.minute} ` );
         const time = moment(h + ':' + m ,timeFormat).format(timeFormat)
-        const now = moment().format(timeFormat)
+        const now = moment().utcOffset('+0700').format(timeFormat)
         console.log( `Notifications id:${t.id}, message:${t.message}, token:${t.token}, time:${time} ` );
         console.log( `Log condition:${moment(now,timeFormat).isAfter(moment(time,timeFormat))}, now:${now} ` );
         if(moment(now,timeFormat).isAfter(moment(time,timeFormat))){
