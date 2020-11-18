@@ -14,6 +14,7 @@ import { EditOutlined, CheckCircleOutlined,UploadOutlined, CheckOutlined, Pictur
 import { ALL_NOTIFICATION } from '../../utils/graphql';
 import Modal from 'antd/lib/modal/Modal';
 import moment from 'moment';
+import MenuList from './MenuList'
 
 const Admin = () => {
   const history = useHistory()
@@ -91,16 +92,17 @@ const Admin = () => {
 
   return (
     <div>
+      <MenuList/>
       <Spin spinning={loading}>
         <title>ข้อมูลการแจ้งเตือน</title>
-        <div style={{ margin: '2rem' }}>
+        <div style={{ margin: '3rem' }}>
           <div className="flex items-center justify-between mt-8 mb-8">
             <p className="w-1/2" style={{ fontSize: '1.8em', fontWeight: 'bold' }}>ข้อมูลการแจ้งเตือน</p>
           </div>
           <Table dataSource={filterTable == null ? dataSource : filterTable} columns={columns} bordered size="middle" />
         </div>
       </Spin>
-      <div style={{textAlign:'center'}}>
+      <div className="flex items-center justify-center">
       <Button
         type="primary"
         htmlType="submit"

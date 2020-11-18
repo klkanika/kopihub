@@ -557,13 +557,46 @@ export const CHECK_ADMIN = gql`
 `
 
 export const CREATE_NOTIFICATION = gql`
-  mutation CreateNotification($message: String!,$hour: Int!,$minute:Int!,$token:String!,$userId:String!){
+  mutation CreateNotification($message: String!,$hour: Int!,$minute:Int!,$token:String!,$userId:String!,$mon:Boolean!,$tue:Boolean!,$wed:Boolean!,$thu:Boolean!,$fri:Boolean!,$sat:Boolean!,$sun:Boolean!){
     createNotification(
       message : $message
       hour : $hour
       minute : $minute
       token : $token
       userId : $userId
+      mon : $mon
+      tue : $tue
+      wed : $wed
+      thu : $thu
+      fri : $fri
+      sat : $sat
+      sun : $sun
+  )
+  {
+      id 
+      message
+      hour
+      minute
+      token
+  }
+} 
+`
+
+export const UPDATE_NOTIFICATION = gql`
+  mutation UpdateNotification($id: String!,$message: String!,$hour: Int!,$minute:Int!,$token:String!,$mon:Boolean!,$tue:Boolean!,$wed:Boolean!,$thu:Boolean!,$fri:Boolean!,$sat:Boolean!,$sun:Boolean!){
+    updateNotification(
+      id : $id
+      message : $message
+      hour : $hour
+      minute : $minute
+      token : $token
+      mon : $mon
+      tue : $tue
+      wed : $wed
+      thu : $thu
+      fri : $fri
+      sat : $sat
+      sun : $sun
   )
   {
       id 

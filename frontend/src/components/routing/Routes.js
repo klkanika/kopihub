@@ -63,7 +63,7 @@ export default () => (
         <PrivateRoute exact path="/NotifyLog" component={NotifyLog} />
         <PrivateRoute exact path="/Admin" component={Admin} />
         <PrivateRoute exact path="/InsertAdmin" component={InsertAdmin} />
-        <PrivateRoute exact path="/EditAdmin" component={EditAdmin} />
+        <PrivateRoute exact path="/EditAdmin/:id" component={EditAdmin} />
         <Route exact path="/staffqueue" component={StaffQueue} />
         <Route exact path="/customerqueue" component={CustomerQueue} />
         <Route exact path="/cancelqueue" component={CustomerCancelQueue} />

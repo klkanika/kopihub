@@ -9,6 +9,7 @@ import {
 } from '@apollo/react-hooks'
 import { Form, Input, Button, Checkbox, Table, Spin } from 'antd';
 import { GET_ALL_NOTIFY_LOG } from '../../utils/graphql';
+import MenuList from './MenuList'
 
 
 const NotifyLog = () => {
@@ -82,6 +83,7 @@ const NotifyLog = () => {
 
   return (
     <div>
+      <MenuList/>
       <Spin spinning={allCustomerLoading}>
         <title>Notify Log</title>
         <div style={{ margin: '3rem' }}>

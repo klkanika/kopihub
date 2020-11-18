@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { Modal, Input, Radio, message, Form, Button, notification } from 'antd';
+import { Modal, Input, Radio, message, Form, Button, TimePicker, Checkbox, Divider } from 'antd';
 import {
   CREATE_TASK, CREATE_NOTIFICATION
 } from '../../utils/graphql';
@@ -7,64 +7,104 @@ import {
   useMutation
 } from '@apollo/react-hooks'
 import { useHistory } from "react-router-dom";
+import moment from 'moment';
+import CheckboxGroup from 'antd/lib/checkbox/Group';
 
 
 const InsertAdmin = () => {
   const history = useHistory()
-  const [num, setNum] = useState(-1)
   const [message, setMessage] = useState("defaultMessage")
-  const [hour, setHour] = useState(-1)
-  const [minute, setMinute] = useState(-1)
+  const [hour, setHour] = useState(0)
+  const [minute, setMinute] = useState(0)
   const [token, setToken] = useState("defaultToken")
-//   const [nametype, setNameType] = useState("defaultNameType")
+  const format = 'HH:mm';
+  const plainOptions = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const defaultCheckedList = ['Mon', 'Tue'];
+  const [checkedList, setCheckedList] = React.useState(defaultCheckedList);
+  const [indeterminate, setIndeterminate] = React.useState(true);
+  const [checkAll, setCheckAll] = React.useState(false);
+  const CheckboxGroup = Checkbox.Group;
 
   const [CreateNotification, { error, loading, data }] = useMutation(CREATE_NOTIFICATION)
 
-  const addNotification = (message: string, hour: number, minute: number,token:string) => {
+  const addNotification = (message: string, hour: number, minute: number,token:string,Mon:string[],Tue:string[],Wed:string[],Thu:string[],Fri:string[],Sat:string[],Sun:string[]) => {
     CreateNotification({
       variables: {
         message: message,
         hour: hour,
         minute: minute,
         token: token,
-        userId: sessionStorage.getItem("loggedUserId")
+        userId: sessionStorage.getItem("loggedUserId"),
+        mon : Mon.length===0?false:true,
+        tue : Tue.length===0?false:true,
+        wed : Wed.length===0?false:true,
+        thu : Thu.length===0?false:true,
+        fri : Fri.length===0?false:true,
+        sat : Sat.length===0?false:true,
+        sun : Sun.length===0?false:true,
       }
     }).then(
       res => {
         window.alert('บันทึกข้อความแจ้งเตือนเรียบร้อยแล้ว!')
         history.push('/Admin')
+        window.location.reload()
       }
       , err => {
         console.log("add notification failed")
       }
     );
   }
-  
-  const onFinish = () => {
-      console.log("message",message)
-      console.log("hour",hour)
-      console.log("minute",minute)
+
+  const onFinish = async (values: any) => {
+    console.log(hour)
+    console.log(minute)
     if(!message || message === "" || message === "defaultMessage"){
       window.alert('กรุณาระบุข้อความให้ถูกต้อง')
     }
-    else if(!hour || hour <= -1 || hour > 24){
-        console.log("!hour",!hour)
-        console.log("hour <= -1",hour <= -1)
-        console.log("hour > 24",hour > 24)
+    else if(hour <= -1 || hour > 24){
       window.alert('กรุณาระบุเวลาแจ้งเตือนหน่วยชั่วโมง 0-24 ให้ถูกต้อง')
     }
-    else if(!minute || minute <= -1 || minute > 60){
+    else if(minute <= -1 || minute > 60){
         window.alert('กรุณาระบุเวลาแจ้งเตือนหน่วยนาที 0-60 ให้ถูกต้อง')
     }
     else if(!token || token === "" || token === "defaultToken"){
         window.alert('กรุณาระบุ Token ให้ถูกต้อง')
     }
-    else if(message && hour && minute && token){
+    else if(message && token && checkedList){
+        const Mon = checkedList.filter((checkedList) => {
+            return checkedList == "Mon"
+        })
+        const Tue = checkedList.filter((checkedList) => {
+            return checkedList == "Tue"
+        })
+        const Wed = checkedList.filter((checkedList) => {
+            return checkedList == "Wed"
+        })
+        const Thu = checkedList.filter((checkedList) => {
+            return checkedList == "Thu"
+        })
+        const Fri = checkedList.filter((checkedList) => {
+            return checkedList == "Fri"
+        })
+        const Sat = checkedList.filter((checkedList) => {
+            return checkedList == "Sat"
+        })
+        const Sun = checkedList.filter((checkedList) => {
+            return checkedList == "Sun"
+        })
+
         addNotification(
         message, 
         hour===24?0:hour, 
         minute===60?0:minute,
-        token
+        token,
+        Mon,
+        Tue,
+        Wed,
+        Thu,
+        Fri,
+        Sat,
+        Sun
         )
     }else{
       console.log('message && hour && minute && token', message && hour && minute && token)  
@@ -72,6 +112,26 @@ const InsertAdmin = () => {
     }
   }
 
+  function onChangeTime(time: any, timeString: any) {
+    const hh = timeString.substring(0, 2);
+    setHour(parseInt(hh))
+    const mm = timeString.substring(3, 6);
+    setMinute(parseInt(mm))
+  }
+
+  const onChange = (list : any) => {
+    setCheckedList(list);
+    setIndeterminate(!!list.length && list.length < plainOptions.length);
+    setCheckAll(list.length === plainOptions.length);
+  };
+
+  const onCheckAllChange = (e : any) => {
+    setCheckedList(e.target.checked ? plainOptions : []);
+    setIndeterminate(false);
+    setCheckAll(e.target.checked);
+  };
+
+  
   return (
     <div className="flex items-center justify-center " 
     style={{background: '#FFFCF9',width: '100vw',height: '100vh'}}>
@@ -94,23 +154,14 @@ const InsertAdmin = () => {
                 placeholder="ข้อความ" 
                 onChange={(e) => setMessage(e.target.value)}
               />
-              <div style={{ width: '33%',textAlign:'right', paddingRight:'15px'}}>เวลาที่จะแจ้งเตือน(ชั่วโมง)</div>
-              <Input
+              <div style={{ width: '33%',textAlign:'right', paddingRight:'15px'}}>เวลาที่จะแจ้งเตือน</div>
+              <TimePicker 
                 size="large"
-                type="number"
-                pattern="[0-9]*"
-                style={{ width: '50%' }} 
-                placeholder="ชั่วโมง" 
-                onChange={(e) => setHour(parseInt(e.target.value))}
-              />
-              <div style={{ width: '33%',textAlign:'right', paddingRight:'15px'}}>เวลาที่จะแจ้งเตือน(นาที)</div>
-                <Input
-                size="large"
-                type="number"
-                pattern="[0-9]*"
-                style={{ width: '50%' }} 
-                placeholder="นาที" 
-                onChange={(e) => setMinute(parseInt(e.target.value))}
+                defaultValue={moment('00:00', format)} 
+                format={format} 
+                style={{ width: '50%'}} 
+                name="time"
+                onChange={onChangeTime}
               />
               <div style={{ width: '33%',textAlign:'right', paddingRight:'15px'}}>Token</div>
                 <Input
@@ -120,6 +171,13 @@ const InsertAdmin = () => {
                 placeholder="Token" 
                 onChange={(e) => setToken(e.target.value)}
               />
+              <Divider />
+              <div style={{ width: '33%',textAlign:'right', paddingRight:'15px'}}>วันที่ต้องการส่งแจ้งเตือน </div>
+              <Checkbox indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll}>
+                 Everyday
+              </Checkbox>
+              <Divider />
+              <CheckboxGroup options={plainOptions} value={checkedList} onChange={onChange} /> 
             </Input.Group>
           </Form.Item>
           <Form.Item

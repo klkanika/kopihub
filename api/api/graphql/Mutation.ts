@@ -73,15 +73,29 @@ schema.mutationType({
           minute : intArg({ nullable: false }),
           token : stringArg({ nullable: false }),
           userId: stringArg({ nullable: false }),
+          mon : booleanArg({ nullable: false }),
+          tue : booleanArg({ nullable: false }),
+          wed : booleanArg({ nullable: false }),
+          thu : booleanArg({ nullable: false }),
+          fri : booleanArg({ nullable: false }),
+          sat : booleanArg({ nullable: false }),
+          sun : booleanArg({ nullable: false }),
         },
         nullable: true,
-        resolve: async (_parent, { message, hour, minute, token, userId }, ctx) => {
+        resolve: async (_parent, { message, hour, minute, token, userId, mon, tue, wed, thu, fri, sat, sun }, ctx) => {
           return ctx.db.notification.create({
             data: {
               message: message,
               hour: hour,
               minute: minute,
               token: token,
+              mon : mon,
+              tue : tue,
+              wed : wed,
+              thu : thu,
+              fri : fri,
+              sat : sat,
+              sun : sun,
               user: { connect: { id: userId } },
             },
           })
@@ -266,6 +280,51 @@ schema.mutationType({
           data: {
             name: name,
             total: total
+          },
+        }).finally(
+          () => {
+            // io.emit('taskUpdate','update')
+            // io.emit('pendingTaskUpdate','update')
+          }
+        )
+      },
+    })
+
+    t.field('UpdateNotification', {
+      type: 'Notification',
+      args: {
+        id : stringArg({ nullable: false }),
+        message: stringArg({ nullable: false }),
+        hour : intArg({ nullable: false }),
+        minute : intArg({ nullable: false }),
+        token : stringArg({ nullable: false }),
+        mon : booleanArg({ nullable: false }),
+        tue : booleanArg({ nullable: false }),
+        wed : booleanArg({ nullable: false }),
+        thu : booleanArg({ nullable: false }),
+        fri : booleanArg({ nullable: false }),
+        sat : booleanArg({ nullable: false }),
+        sun : booleanArg({ nullable: false }),
+      },
+      nullable: true,
+      resolve: async (_parent, { id, message, hour, minute, token, mon, tue, wed, thu, fri, sat, sun }, ctx) => {
+
+        return ctx.db.notification.update({
+          where: {
+            id: id
+          },
+          data: {
+              message: message,
+              hour: hour,
+              minute: minute,
+              token: token,
+              mon : mon,
+              tue : tue,
+              wed : wed,
+              thu : thu,
+              fri : fri,
+              sat : sat,
+              sun : sun,
           },
         }).finally(
           () => {
