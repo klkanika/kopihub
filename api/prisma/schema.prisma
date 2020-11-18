@@ -163,6 +163,13 @@ model Notification {
   updatedBy       String
   updatedAt       DateTime  @default(now()) @updatedAt
   NotificationLog NotificationLog[]
+  mon             Boolean      @default(value: false)
+  tue             Boolean      @default(value: false)
+  wed             Boolean      @default(value: false)
+  thu             Boolean      @default(value: false)
+  fri             Boolean      @default(value: false)
+  sat             Boolean      @default(value: false)
+  sun             Boolean      @default(value: false)
 }
 
 model NotificationLog {

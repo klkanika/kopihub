@@ -521,3 +521,15 @@ export const GET_EMLOYEES_EARNING = gql`
     }
   }
 `
+
+export const GET_ALL_NOTIFY_LOG = gql`
+  query{
+    getAllNotifyLog{
+      data{
+        id
+        createdAt
+        message
+      }
+    }
+  }
+`

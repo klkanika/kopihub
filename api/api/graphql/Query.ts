@@ -50,6 +50,22 @@ export const getEmployeesEarningArgs = schema.objectType({
   },
 });
 
+export const getNotificationLogRow = schema.objectType({
+  name: "getNotificationLogRow",
+  definition(t) {
+    t.string("id"),
+    t.string("createdAt"),
+    t.string("message")
+  },
+});
+
+export const getNotificationLogArgs = schema.objectType({
+  name: "getNotificationLogArgs",
+  definition(t) {
+    t.list.field("data", { type: "getNotificationLogRow" });
+  },
+});
+
 schema.queryType({
   definition(t) {
     t.crud.users({ filtering: true })
@@ -187,6 +203,53 @@ schema.queryType({
         return {
           data: results
         }
+      },
+    });
+
+    t.field("getAllNotifyLog", {
+      type: "getNotificationLogArgs",
+      args: {
+      },
+      resolve: async (_, args, ctx) => {
+
+        const jobs: any = (
+          await prisma.notificationLog.findMany({
+            include: {
+              notification: true,
+            },
+            orderBy: [
+              {
+                createdAt: "desc",
+              },
+            ],
+          })
+        ).map(async (j) => {
+          let message: any = null;
+          let countMapping: any = null;
+          if (j.notificationId) {
+            const notify = prisma.notification.findOne({
+              where: {
+                id: j.notificationId
+              },
+            });
+
+            if (notify) {
+              message = notify.then((a) => {
+                return a?.message;
+              });
+            }
+          }
+
+          return {
+            id: j.id,
+            createdAt: `${moment(j.createdAt).add(543, 'years').format("DD MMM YYYY HH:mm")}`,
+            message: message,
+          };
+        });
+
+        return {
+          data: jobs,
+        };
       },
     });
   },
