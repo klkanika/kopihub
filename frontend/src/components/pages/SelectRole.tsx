@@ -1,18 +1,19 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Button } from 'antd';
 import {
   Redirect,
   useHistory
 } from "react-router-dom";
 import {
-  UPDATE_LOG_USER
+  UPDATE_LOG_USER,CHECK_ADMIN
 } from '../../utils/graphql';
 import {
-  useMutation,
+  useMutation, useQuery,
 } from '@apollo/react-hooks'
 import icon_chef from '../../imgs/icon_chef.svg'
 import icon_counter from '../../imgs/icon_counter.svg'
 import icon_queue from '../../imgs/icon_queue.svg'
+import icon_admin from '../../imgs/icon-admin.png'
 
 declare global {
   interface Window {
@@ -24,6 +25,7 @@ declare global {
 function SelectRole() {
   window.pauseSound()
   const history = useHistory()
+  const [admin, setAdmin] = useState("")
  
   const saveValue = (value: any) => {
         UpdateLogUser({variables : 
@@ -48,6 +50,20 @@ function SelectRole() {
   });
 
   const [UpdateLogUser] = useMutation(UPDATE_LOG_USER)
+
+  const { data: Data, loading: Loading } = useQuery(CHECK_ADMIN, {
+    fetchPolicy: 'network-only',
+    variables: {
+      id : sessionStorage.getItem("loggedUserId")
+    },
+    onCompleted: (sre) => {
+      console.log(sre.checkAdmin.is_admin)
+      setAdmin(sre.checkAdmin.is_admin)
+    },
+    onError: (err) => {
+      window.alert(err)
+    }
+  });
 
   return (
     <div className="flex items-center justify-center" style={{background: '#FFFCF9',width: '100vw',height: '100vh'}}>
@@ -79,6 +95,16 @@ function SelectRole() {
           <img src={icon_queue} style={{height:'150px',margin:'0 auto 30px'}}/>
           คิว
         </Button>  
+        {admin &&
+        <Button onClick={() => window.location.href = "/admin"} name="ADMIN" value="ADMIN"
+          className="shadow"
+          style={{width: '300px',margin:'20px',borderRadius:'5px',padding:'20px',height:'auto', fontSize:'22px', fontWeight:'bold',color:'#683830'
+            ,boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'}}
+        >
+          <img src={icon_admin} style={{height:'150px',margin:'0 auto 30px'}}/>
+          Admin
+        </Button> 
+        }
     </div>
    </div>
   )

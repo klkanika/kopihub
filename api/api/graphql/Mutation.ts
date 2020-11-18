@@ -65,6 +65,29 @@ schema.mutationType({
         },
       })
 
+      t.field('createNotification', {
+        type: 'Notification',
+        args: {
+          message: stringArg({ nullable: false }),
+          hour : intArg({ nullable: false }),
+          minute : intArg({ nullable: false }),
+          token : stringArg({ nullable: false }),
+          userId: stringArg({ nullable: false }),
+        },
+        nullable: true,
+        resolve: async (_parent, { message, hour, minute, token, userId }, ctx) => {
+          return ctx.db.notification.create({
+            data: {
+              message: message,
+              hour: hour,
+              minute: minute,
+              token: token,
+              user: { connect: { id: userId } },
+            },
+          })
+        },
+      })
+
     t.field('login', {
       type: 'LogUser',
       args: {

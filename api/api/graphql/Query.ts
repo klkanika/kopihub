@@ -79,6 +79,22 @@ schema.queryType({
     t.crud.notifications({ filtering: true })
     t.crud.notificationLogs({ filtering: true })
 
+    //CHECK_ADMIN
+    t.field("checkAdmin", {
+      type: "User",
+      args: {
+        id: stringArg({ required: true }),
+      },
+      resolve: async (_, args, ctx) => {
+        const user = await prisma.user.findOne({
+          where: {
+            id: args.id,
+          },
+        });
+        return user;
+      },
+    });    
+    
     t.field("getQueues", {
       type: "getQueuesArgs",
       resolve: async (_, args, ctx) => {

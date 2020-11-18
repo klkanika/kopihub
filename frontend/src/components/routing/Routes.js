@@ -19,6 +19,9 @@ import PaymentPage from '../pages/PaymentPage'
 import WorkLogPage from '../pages/WorkLogPage'
 import Payroll from '../pages/Payroll'
 import NotifyLog from '../pages/NotifyLog'
+import Admin from '../pages/Admin'
+import InsertAdmin from '../pages/InsertAdmin'
+import EditAdmin from '../pages/EditAdmin'
 
 
 let params = new URLSearchParams(decodeURIComponent(window.location.search));
@@ -58,6 +61,9 @@ export default () => (
         <PrivateRoute exact path="/SetTaskNew/:id/:taskName/:total/:type" component={SetTaskNew} />
         <PrivateRoute exact path="/SetTime/:id/:status/:finishDate" component={SetTime} />
         <PrivateRoute exact path="/NotifyLog" component={NotifyLog} />
+        <PrivateRoute exact path="/Admin" component={Admin} />
+        <PrivateRoute exact path="/InsertAdmin" component={InsertAdmin} />
+        <PrivateRoute exact path="/EditAdmin" component={EditAdmin} />
         <Route exact path="/staffqueue" component={StaffQueue} />
         <Route exact path="/customerqueue" component={CustomerQueue} />
         <Route exact path="/cancelqueue" component={CustomerCancelQueue} />

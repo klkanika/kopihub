@@ -7,6 +7,19 @@ export const GET_USERS = gql`
     }
   }
 `
+
+export const ALL_NOTIFICATION = gql`
+  query notifications{
+  notifications{
+      id
+      ,message
+      ,hour
+      ,minute
+      ,token
+  }
+} 
+`
+
 export const CREATE_USER = gql`
 mutation CreateUser($name: String!, $userName: String!, $password: String!){
   createOneUser(
@@ -532,4 +545,32 @@ export const GET_ALL_NOTIFY_LOG = gql`
       }
     }
   }
+`
+export const CHECK_ADMIN = gql`
+  query checkAdmin($id: String!){
+    checkAdmin(id: $id){
+      id,
+      userName,
+      is_admin
+    }
+  }
+`
+
+export const CREATE_NOTIFICATION = gql`
+  mutation CreateNotification($message: String!,$hour: Int!,$minute:Int!,$token:String!,$userId:String!){
+    createNotification(
+      message : $message
+      hour : $hour
+      minute : $minute
+      token : $token
+      userId : $userId
+  )
+  {
+      id 
+      message
+      hour
+      minute
+      token
+  }
+} 
 `
