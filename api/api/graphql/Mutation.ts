@@ -290,7 +290,7 @@ schema.mutationType({
       },
     })
 
-    t.field('UpdateNotification', {
+    t.field('updateNotification', {
       type: 'Notification',
       args: {
         id : stringArg({ nullable: false }),

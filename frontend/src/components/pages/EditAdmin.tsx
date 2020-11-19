@@ -1,14 +1,15 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { Modal, Input, Radio, message, Form, Button, TimePicker, Checkbox, Divider } from 'antd';
 import {
-    UPDATE_NOTIFICATION
+    UPDATE_NOTIFICATION,GET_NOTIFICATION_BY_ID
 } from '../../utils/graphql';
 import {
-  useMutation
+  useMutation, useQuery
 } from '@apollo/react-hooks'
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import moment from 'moment';
 import CheckboxGroup from 'antd/lib/checkbox/Group';
+import Loadding from '../layout/loadding'
 
 
 const EditAdmin = () => {
@@ -19,45 +20,83 @@ const EditAdmin = () => {
   const [token, setToken] = useState("defaultToken")
   const format = 'HH:mm';
   const plainOptions = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const defaultCheckedList = ['Mon', 'Tue'];
+  const defaultCheckedList : any[] | (() => any[]) = [];
   const [checkedList, setCheckedList] = React.useState(defaultCheckedList);
   const [indeterminate, setIndeterminate] = React.useState(true);
   const [checkAll, setCheckAll] = React.useState(false);
   const CheckboxGroup = Checkbox.Group;
-//   let search = window.location.search;
-//   let params = new URLSearchParams(search);
+  const {id} = useParams()
 
 
   const [UpdateAdmin] = useMutation(UPDATE_NOTIFICATION)
 
+  const { data: notifyData, loading: loading} = useQuery (GET_NOTIFICATION_BY_ID,{
+    fetchPolicy: 'network-only',
+    variables: {
+        id : id+""
+    },
+    onCompleted: (sre) => {  
+        console.log("sre",sre)
+        setMessage(sre.getNotificationById.message)
+        setHour(sre.getNotificationById.hour)
+        setMinute(sre.getNotificationById.minute)
+        setToken(sre.getNotificationById.token)
+        if(sre.getNotificationById.mon){
+            checkedList.push('Mon')
+        }
+        if(sre.getNotificationById.tue){
+            checkedList.push('Tue')
+        }
+        if(sre.getNotificationById.wed){
+            checkedList.push('Wed')
+        }
+        if(sre.getNotificationById.thu){
+            checkedList.push('Thu')
+        }
+        if(sre.getNotificationById.fri){
+            checkedList.push('Fri')
+        }
+        if(sre.getNotificationById.sat){
+            checkedList.push('Sat')
+        }
+        if(sre.getNotificationById.sun){
+            checkedList.push('Sun')
+        }
+    },
+    onError: (err) => {
+        window.alert(err)
+    }
+    });
+  
 
-//   const addNotification = (message: string, hour: number, minute: number,token:string,Mon:string[],Tue:string[],Wed:string[],Thu:string[],Fri:string[],Sat:string[],Sun:string[]) => {
-//     CreateNotification({
-//       variables: {
-//         message: message,
-//         hour: hour,
-//         minute: minute,
-//         token: token,
-//         userId: sessionStorage.getItem("loggedUserId"),
-//         mon : Mon.length===0?false:true,
-//         tue : Tue.length===0?false:true,
-//         wed : Wed.length===0?false:true,
-//         thu : Thu.length===0?false:true,
-//         fri : Fri.length===0?false:true,
-//         sat : Sat.length===0?false:true,
-//         sun : Sun.length===0?false:true,
-//       }
-//     }).then(
-//       res => {
-//         window.alert('บันทึกข้อความแจ้งเตือนเรียบร้อยแล้ว!')
-//         history.push('/Admin')
-//         window.location.reload()
-//       }
-//       , err => {
-//         console.log("add notification failed")
-//       }
-//     );
-//   }
+  const updateNotification = (message: string, hour: number, minute: number,token:string,Mon:string[],Tue:string[],Wed:string[],Thu:string[],Fri:string[],Sat:string[],Sun:string[]) => {
+    UpdateAdmin({
+      variables: {
+        id: id+"",
+        message: message,
+        hour: hour,
+        minute: minute,
+        token: token,
+        userId: sessionStorage.getItem("loggedUserId"),
+        mon : Mon.length===0?false:true,
+        tue : Tue.length===0?false:true,
+        wed : Wed.length===0?false:true,
+        thu : Thu.length===0?false:true,
+        fri : Fri.length===0?false:true,
+        sat : Sat.length===0?false:true,
+        sun : Sun.length===0?false:true,
+      }
+    }).then(
+      res => {
+        window.alert('บันทึกข้อความแจ้งเตือนเรียบร้อยแล้ว!')
+        history.push('/Admin')
+        window.location.reload()
+      }
+      , err => {
+        console.log("update notification failed")
+      }
+    );
+  }
 
   const onFinish = async (values: any) => {
     if(!message || message === "" || message === "defaultMessage"){
@@ -95,19 +134,19 @@ const EditAdmin = () => {
             return checkedList == "Sun"
         })
 
-        // addNotification(
-        // message, 
-        // hour===24?0:hour, 
-        // minute===60?0:minute,
-        // token,
-        // Mon,
-        // Tue,
-        // Wed,
-        // Thu,
-        // Fri,
-        // Sat,
-        // Sun
-        // )
+        updateNotification(
+        message, 
+        hour===24?0:hour, 
+        minute===60?0:minute,
+        token,
+        Mon,
+        Tue,
+        Wed,
+        Thu,
+        Fri,
+        Sat,
+        Sun
+        )
     }else{
       console.log('message && hour && minute && token', message && hour && minute && token)  
       window.alert('ข้อมูลไม่ถูกต้อง')
@@ -125,7 +164,6 @@ const EditAdmin = () => {
     setCheckedList(list);
     setIndeterminate(!!list.length && list.length < plainOptions.length);
     setCheckAll(list.length === plainOptions.length);
-  
   };
 
   const onCheckAllChange = (e : any) => {
@@ -136,6 +174,11 @@ const EditAdmin = () => {
 
   
   return (
+    <>
+    {
+      !notifyData || loading ?
+        <Loadding />
+        :
     <div className="flex items-center justify-center " 
     style={{background: '#FFFCF9',width: '100vw',height: '100vh'}}>
       <div style={{border:'3px solid #683830',borderRadius:'10px'}}
@@ -155,12 +198,13 @@ const EditAdmin = () => {
                 type="text"
                 style={{ width: '50%' }} 
                 placeholder="ข้อความ" 
+                defaultValue={notifyData.getNotificationById.message}
                 onChange={(e) => setMessage(e.target.value)}
               />
               <div style={{ width: '33%',textAlign:'right', paddingRight:'15px'}}>เวลาที่จะแจ้งเตือน</div>
               <TimePicker 
                 size="large"
-                defaultValue={moment('00:00', format)} 
+                defaultValue={moment(notifyData.getNotificationById.hour+":"+notifyData.getNotificationById.minute, format)} 
                 format={format} 
                 style={{ width: '50%'}} 
                 name="time"
@@ -171,7 +215,7 @@ const EditAdmin = () => {
                 size="large"
                 type="text"
                 style={{ width: '50%' }} 
-                placeholder="Token" 
+                defaultValue={notifyData.getNotificationById.token}
                 onChange={(e) => setToken(e.target.value)}
               />
               <Divider />
@@ -208,7 +252,8 @@ const EditAdmin = () => {
         </div>
       </div>
     </div>
-  
+    }
+   </>
   );
 }
 

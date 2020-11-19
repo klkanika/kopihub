@@ -583,7 +583,7 @@ export const CREATE_NOTIFICATION = gql`
 `
 
 export const UPDATE_NOTIFICATION = gql`
-  mutation UpdateNotification($id: String!,$message: String!,$hour: Int!,$minute:Int!,$token:String!,$mon:Boolean!,$tue:Boolean!,$wed:Boolean!,$thu:Boolean!,$fri:Boolean!,$sat:Boolean!,$sun:Boolean!){
+  mutation updateNotification($id: String!,$message: String!,$hour: Int!,$minute:Int!,$token:String!,$mon:Boolean!,$tue:Boolean!,$wed:Boolean!,$thu:Boolean!,$fri:Boolean!,$sat:Boolean!,$sun:Boolean!){
     updateNotification(
       id : $id
       message : $message
@@ -606,4 +606,21 @@ export const UPDATE_NOTIFICATION = gql`
       token
   }
 } 
+`
+export const GET_NOTIFICATION_BY_ID = gql`
+  query getNotificationById($id: String!){
+    getNotificationById(id: $id){
+      message,
+      hour,
+      minute,
+      token,
+      mon,
+      tue,
+      wed,
+      thu,
+      fri,
+      sat,
+      sun,
+    }
+  }
 `

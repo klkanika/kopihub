@@ -79,7 +79,6 @@ schema.queryType({
     t.crud.notifications({ filtering: true })
     t.crud.notificationLogs({ filtering: true })
 
-    //CHECK_ADMIN
     t.field("checkAdmin", {
       type: "User",
       args: {
@@ -266,6 +265,21 @@ schema.queryType({
         return {
           data: jobs,
         };
+      },
+    });
+
+    t.field("getNotificationById", {
+      type: "Notification",
+      args: {
+        id: stringArg({ required: true }),
+      },
+      resolve: async (_, args, ctx) => {
+        const notification = await prisma.notification.findOne({
+          where: {
+            id: args.id,
+          },
+        });
+        return notification;
       },
     });
   },

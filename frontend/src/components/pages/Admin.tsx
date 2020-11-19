@@ -36,6 +36,7 @@ const Admin = () => {
     return {
       key: index+1,
       ...ds,
+      time : ds.hour +':'+ ds.minute,
     }
   });
    
@@ -52,25 +53,19 @@ const Admin = () => {
       sorter : (a : any) => a.key,
     },
     {
-      title: 'message',
+      title: 'ข้อความ',
       dataIndex: 'message',
       key: 'message',
       sorter : (a : any ,b : any ) => a.message.localeCompare(b.message),
     },
     {
-      title: 'hour',
-      dataIndex: 'hour',
-      key: 'hour',
-      sorter : (a : any ,b : any ) => a.hour - (b.hour),
+      title: 'เวลา',
+      dataIndex: 'time',
+      key: 'time',
+      sorter : (a : any ,b : any ) => a.time - (b.time),
     },
     {
-      title: 'minute',
-      dataIndex: 'minute',
-      key: 'minute',
-      sorter : (a : any ,b : any ) => a.minute - (b.minute),
-    },
-    {
-      title: 'token',
+      title: 'Token',
       dataIndex: 'token',
       key: 'token',
       sorter : (a : any ,b : any ) => a.token.localeCompare(b.token),
@@ -99,23 +94,23 @@ const Admin = () => {
           <div className="flex items-center justify-between mt-8 mb-8">
             <p className="w-1/2" style={{ fontSize: '1.8em', fontWeight: 'bold' }}>ข้อมูลการแจ้งเตือน</p>
           </div>
+          <div className="flex items-center justify-center mt-8 mb-8">
+          <Button
+            type="primary"
+            htmlType="submit"
+            className="flex justify-center"
+            style={{borderRadius: '5px',fontSize: '20px',height: 'auto',padding: '0.5em 3em',background:'#683830'
+            ,border:'none',width: '30%'}}
+            onClick={() => { 
+            history.push('/InsertAdmin/')
+            }}
+          >
+            เพิ่มข้อความการแจ้งเตือนใหม่
+          </Button>
+          </div>
           <Table dataSource={filterTable == null ? dataSource : filterTable} columns={columns} bordered size="middle" />
         </div>
       </Spin>
-      <div className="flex items-center justify-center">
-      <Button
-        type="primary"
-        htmlType="submit"
-        className="flex justify-center"
-        style={{borderRadius: '5px',fontSize: '20px',height: 'auto',padding: '0.5em 3em',background:'#683830'
-        ,border:'none',width: '30%'}}
-        onClick={() => { 
-          history.push('/InsertAdmin/')
-        }}
-      >
-        เพิ่มข้อความการแจ้งเตือนใหม่
-      </Button>
-      </div>
     </div>
   )
 }

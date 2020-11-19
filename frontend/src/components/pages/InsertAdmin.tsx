@@ -19,7 +19,7 @@ const InsertAdmin = () => {
   const [token, setToken] = useState("defaultToken")
   const format = 'HH:mm';
   const plainOptions = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const defaultCheckedList = ['Mon', 'Tue'];
+  const defaultCheckedList: any[] | (() => any[]) = [];
   const [checkedList, setCheckedList] = React.useState(defaultCheckedList);
   const [indeterminate, setIndeterminate] = React.useState(true);
   const [checkAll, setCheckAll] = React.useState(false);
