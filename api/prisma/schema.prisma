@@ -179,4 +179,5 @@ model NotificationLog {
   user            User          @relation(fields: [createdBy], references: [id])
   createdBy       String
   createdAt       DateTime      @default(now())
+  message         String?
 }

@@ -6,6 +6,7 @@ schema.objectType({
     t.model.id()
     t.model.notificationId()
     t.model.createdAt()
+    t.model.message()
   },
 })
 

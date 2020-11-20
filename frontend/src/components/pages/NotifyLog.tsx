@@ -82,13 +82,13 @@ const NotifyLog = () => {
   };
 
   return (
-    <div>
+    <div style={{background: '#FFFCF9',width: '100vw',height: '100vh'}}>
       <MenuList/>
       <Spin spinning={allCustomerLoading}>
         <title>Notify Log</title>
         <div style={{ margin: '3rem' }}>
           <div className="flex items-center justify-between mt-8 mb-12">
-            <p className="w-1/2" style={{ fontSize: '1.8em', fontWeight: 'bold' }}>ประวัติการส่งข้อความ</p>
+            <p className="w-1/2" style={{ fontSize: '1.8em', fontWeight: 'bold' }}>ข้อมูลประวัติการแจ้งเตือน</p>
             <Input.Search
                 placeholder="Search"
                 enterButton

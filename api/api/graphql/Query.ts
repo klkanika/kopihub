@@ -239,26 +239,11 @@ schema.queryType({
             ],
           })
         ).map(async (j) => {
-          let message: any = null;
-          let countMapping: any = null;
-          if (j.notificationId) {
-            const notify = prisma.notification.findOne({
-              where: {
-                id: j.notificationId
-              },
-            });
-
-            if (notify) {
-              message = notify.then((a) => {
-                return a?.message;
-              });
-            }
-          }
 
           return {
             id: j.id,
             createdAt: `${moment(j.createdAt).add(543, 'years').format("DD MMM YYYY HH:mm")}`,
-            message: message,
+            message: j.message,
           };
         });
 

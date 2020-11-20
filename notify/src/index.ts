@@ -33,7 +33,7 @@ app.post("/notify" , async (req,res) => {
 app.listen( PORT || 3030, () => {
     console.log( `server started at http://localhost:${ PORT || 3030 }` );
 
-    // const interval = 10
+    // const interval = 60
     // setInterval(async () => {
     //     getNotifications()
         
@@ -54,7 +54,8 @@ const logTime = async (now: string, time: string, id: string, message: string,to
               query: CREATE_NOTIFY_LOG,
               variables: {
                 username: "root",
-                notifyId: id
+                notifyId: id,
+                message: message
               }
     
             })
@@ -143,6 +144,7 @@ mutation
     createOneNotificationLog(
     $username: String!
     $notifyId: String!
+    $message: String!
   )
   {
     createOneNotificationLog(
@@ -150,6 +152,7 @@ mutation
             user : {connect : { userName : $username}}
             notification : 
                 {connect : {id: $notifyId }}
+            message : $message
         }
     ){
         id

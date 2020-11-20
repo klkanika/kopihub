@@ -186,7 +186,7 @@ const EditAdmin = () => {
           w-auto sm:w-auto md:w-1/2 lg:w-1/2 xl:w-1/2">
         <div className="w-3/4 sm:w-auto md:w-auto lg:w-auto xl:w-auto max-w-screen-md text-center">
           <div className="text-xl font-bold w-full text-center block underline mt-3"
-            style={{ textAlign:'center', paddingBottom:'15px'}}>เพิ่มข้อความแจ้งเตือนพนักงาน</div>
+            style={{ textAlign:'center', paddingBottom:'15px'}}>  แก้ไขข้อความแจ้งเตือนพนักงาน</div>
           <Form
           onFinish={onFinish}
           >       

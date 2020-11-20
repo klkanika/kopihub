@@ -13,7 +13,8 @@ import {
 import icon_chef from '../../imgs/icon_chef.svg'
 import icon_counter from '../../imgs/icon_counter.svg'
 import icon_queue from '../../imgs/icon_queue.svg'
-import icon_admin from '../../imgs/icon-admin.png'
+import icon_admin from '../../imgs/icon-admin.svg'
+import icon_logout from '../../imgs/icon_logout.svg'
 
 declare global {
   interface Window {
@@ -57,7 +58,8 @@ function SelectRole() {
       id : sessionStorage.getItem("loggedUserId")
     },
     onCompleted: (sre) => {
-      console.log(sre.checkAdmin.is_admin)
+      if(sre.checkAdmin.is_admin == true)
+        sessionStorage.setItem("loggedIsAdmin", 'Y')
       setAdmin(sre.checkAdmin.is_admin)
     },
     onError: (err) => {
@@ -69,7 +71,7 @@ function SelectRole() {
     <div className="flex items-center justify-center" style={{background: '#FFFCF9',width: '100vw',height: '100vh'}}>
       <div className="text-center
         block sm:block md:flex lg:flex xl:flex
-        max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 
+        max-w-full
         max-h-full sm:max-h-screen md:max-h-full lg:max-h-screen xl:max-h-full">
         <Button onClick={() => saveValue('CASHIER')} name="CASHIER" value="CASHIER"
           className="shadow"
@@ -103,6 +105,17 @@ function SelectRole() {
         >
           <img src={icon_admin} style={{height:'150px',margin:'0 auto 30px'}}/>
           Admin
+        </Button> 
+        }
+        <Button onClick={() => {
+          sessionStorage.clear()
+            window.location.reload()}} name="LOGOUT" value="LOGOUT"
+          className="shadow"
+          style={{width: '300px',margin:'20px',borderRadius:'5px',padding:'20px',height:'auto', fontSize:'22px', fontWeight:'bold',color:'#683830'
+            ,boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)'}}
+        >
+          <img src={icon_logout} style={{height:'150px',margin:'0 auto 30px'}}/>
+          LOGOUT
         </Button> 
         }
     </div>

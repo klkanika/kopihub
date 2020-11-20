@@ -36,7 +36,7 @@ const Admin = () => {
     return {
       key: index+1,
       ...ds,
-      time : ds.hour +':'+ ds.minute,
+      time : (ds.hour < 10 ? "0" + ds.hour : ds.hour) + ':' + (ds.minute < 10 ? "0" + ds.minute : ds.minute),
     }
   });
    
@@ -62,7 +62,7 @@ const Admin = () => {
       title: 'เวลา',
       dataIndex: 'time',
       key: 'time',
-      sorter : (a : any ,b : any ) => a.time - (b.time),
+      sorter : (a : any ,b : any ) => a.time.localeCompare(b.time),
     },
     {
       title: 'Token',
@@ -86,7 +86,7 @@ const Admin = () => {
   ]
 
   return (
-    <div>
+    <div style={{background: '#FFFCF9',width: '100vw',height: '100vh'}}>
       <MenuList/>
       <Spin spinning={loading}>
         <title>ข้อมูลการแจ้งเตือน</title>
@@ -98,9 +98,10 @@ const Admin = () => {
           <Button
             type="primary"
             htmlType="submit"
-            className="flex justify-center"
-            style={{borderRadius: '5px',fontSize: '20px',height: 'auto',padding: '0.5em 3em',background:'#683830'
-            ,border:'none',width: '30%'}}
+            className="p-2 px-4 text-white font-bold flex
+              text-sm sm:text-lg md:text-lg lg:text-lg xl:text-lg
+              h-12"
+            style={{borderRadius: '5px',background:'#683830'}}
             onClick={() => { 
             history.push('/InsertAdmin/')
             }}

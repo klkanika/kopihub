@@ -22,6 +22,7 @@ import NotifyLog from '../pages/NotifyLog'
 import Admin from '../pages/Admin'
 import InsertAdmin from '../pages/InsertAdmin'
 import EditAdmin from '../pages/EditAdmin'
+import AdminRoute from '../routing/AdminRoute'
 
 
 let params = new URLSearchParams(decodeURIComponent(window.location.search));
@@ -60,10 +61,10 @@ export default () => (
         <PrivateRoute exact path="/InsertTask" component={InsertTask} />
         <PrivateRoute exact path="/SetTaskNew/:id/:taskName/:total/:type" component={SetTaskNew} />
         <PrivateRoute exact path="/SetTime/:id/:status/:finishDate" component={SetTime} />
-        <PrivateRoute exact path="/NotifyLog" component={NotifyLog} />
-        <PrivateRoute exact path="/Admin" component={Admin} />
-        <PrivateRoute exact path="/InsertAdmin" component={InsertAdmin} />
-        <PrivateRoute exact path="/EditAdmin/:id" component={EditAdmin} />
+        <AdminRoute exact path="/NotifyLog" component={NotifyLog} />
+        <AdminRoute exact path="/Admin" component={Admin} />
+        <AdminRoute exact path="/InsertAdmin" component={InsertAdmin} />
+        <AdminRoute exact path="/EditAdmin/:id" component={EditAdmin} />
         <Route exact path="/staffqueue" component={StaffQueue} />
         <Route exact path="/customerqueue" component={CustomerQueue} />
         <Route exact path="/cancelqueue" component={CustomerCancelQueue} />

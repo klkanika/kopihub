@@ -12,19 +12,20 @@ const MenuList = () => {
     return (
       <Menu mode="horizontal"
       selectedKeys={[current]}
+      style={{background: '#683830', color: 'white'}}
       >
         <Menu.Item key="/SelectRole">
-          <a href="/SelectRole">
+          <a href="/SelectRole"  style={{color: 'white'}}>
           หน้าหลัก
           </a>
         </Menu.Item>
         <Menu.Item key="/Admin">
-          <a href="/Admin">
+          <a href="/Admin"  style={{color: 'white'}}>
           ข้อมูลการแจ้งเตือน
           </a>
         </Menu.Item>
         <Menu.Item key="/NotifyLog">
-          <a href="/NotifyLog">
+          <a href="/NotifyLog"  style={{color: 'white'}}>
           ข้อมูลประวัติการแจ้งเตือน
           </a>
         </Menu.Item>
