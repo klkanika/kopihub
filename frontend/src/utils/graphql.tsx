@@ -7,6 +7,19 @@ export const GET_USERS = gql`
     }
   }
 `
+
+export const ALL_NOTIFICATION = gql`
+  query notifications{
+  notifications{
+      id
+      ,message
+      ,hour
+      ,minute
+      ,token
+  }
+} 
+`
+
 export const CREATE_USER = gql`
 mutation CreateUser($name: String!, $userName: String!, $password: String!){
   createOneUser(
@@ -123,52 +136,31 @@ export const CREATE_TASK = gql`
 `
 
 export const UPDATE_TASK_ONGOING = gql`
-  mutation UpdateTaskOngoing($finishTime:DateTime!,$countTime:Int!,$taskId:String!){
+  mutation UpdateTaskOngoing($finishTime:DateTime!,$countTime:Int!,$taskId:String!,$userId:String!){
     updateTaskOngoing(
       finishTime : $finishTime
       countTime : $countTime
       taskId : $taskId
+      userId : $userId
   )
-  {
-      id 
-      name
-      countTime
-      finishTime
-      status
-      priority
-  }
 } 
 `
 
 export const UPDATE_TASK_TIMEUP = gql`
-  mutation UpdateTaskTimeup($taskId:String!){
+  mutation UpdateTaskTimeup($taskId:String!,$userId:String!){
     updateTaskTimeup(
       taskId : $taskId
+      userId : $userId
   )
-  {
-      id 
-      name
-      countTime
-      finishTime
-      status
-      priority
-  }
 } 
 `
 
 export const UPDATE_TASK_COMPLETE = gql`
-  mutation UpdateTaskComplete($taskId:String!){
+  mutation UpdateTaskComplete($taskId:String!,$userId:String!){
     updateTaskComplete(
       taskId : $taskId
+      userId : $userId
   )
-  {
-      id 
-      name
-      countTime
-      finishTime
-      status
-      priority
-  }
 } 
 `
 
@@ -351,7 +343,8 @@ query getSuccessQueues($startDate: DateTime, $endDate: DateTime){
       ochaTableName
       tableName
     },
-    updateAt
+    updateAt,
+    orderedAt
   }
 }
 `
@@ -540,6 +533,27 @@ export const CREATE_PAYROLL = gql`
   }
 `
 
+export const GET_ALL_NOTIFY_LOG = gql`
+  query{
+    getAllNotifyLog{
+      data{
+        id
+        createdAt
+        message
+      }
+    }
+  }
+`
+export const CHECK_ADMIN = gql`
+  query checkAdmin($id: String!){
+    checkAdmin(id: $id){
+      id,
+      userName,
+      is_admin
+    }
+  }
+`
+
 export const GET_EMPLOYEE_HISTORIES = gql`
   query getEmployeeHistories($employeeId: String!, $startDate: DateTime, $endDate: DateTime){
     getEmployeeHistories(employeeId: $employeeId, startDate: $startDate, endDate: $endDate){
@@ -552,6 +566,74 @@ export const GET_EMPLOYEE_HISTORIES = gql`
         hours
         earning
       }
+    }
+  }
+`
+export const CREATE_NOTIFICATION = gql`
+  mutation CreateNotification($message: String!,$hour: Int!,$minute:Int!,$token:String!,$userId:String!,$mon:Boolean!,$tue:Boolean!,$wed:Boolean!,$thu:Boolean!,$fri:Boolean!,$sat:Boolean!,$sun:Boolean!){
+    createNotification(
+      message : $message
+      hour : $hour
+      minute : $minute
+      token : $token
+      userId : $userId
+      mon : $mon
+      tue : $tue
+      wed : $wed
+      thu : $thu
+      fri : $fri
+      sat : $sat
+      sun : $sun
+  )
+  {
+      id 
+      message
+      hour
+      minute
+      token
+  }
+} 
+`
+
+export const UPDATE_NOTIFICATION = gql`
+  mutation updateNotification($id: String!,$message: String!,$hour: Int!,$minute:Int!,$token:String!,$mon:Boolean!,$tue:Boolean!,$wed:Boolean!,$thu:Boolean!,$fri:Boolean!,$sat:Boolean!,$sun:Boolean!){
+    updateNotification(
+      id : $id
+      message : $message
+      hour : $hour
+      minute : $minute
+      token : $token
+      mon : $mon
+      tue : $tue
+      wed : $wed
+      thu : $thu
+      fri : $fri
+      sat : $sat
+      sun : $sun
+  )
+  {
+      id 
+      message
+      hour
+      minute
+      token
+  }
+} 
+`
+export const GET_NOTIFICATION_BY_ID = gql`
+  query getNotificationById($id: String!){
+    getNotificationById(id: $id){
+      message,
+      hour,
+      minute,
+      token,
+      mon,
+      tue,
+      wed,
+      thu,
+      fri,
+      sat,
+      sun,
     }
   }
 `

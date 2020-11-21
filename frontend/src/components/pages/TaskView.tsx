@@ -7,8 +7,7 @@ import Header from './Header';
 import { Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import {
-  CREATE_TASK, UPDATE_LOG_USER, GET_TASKS, UPDATE_TASK_ONGOING, UPDATE_TASK_TIMEUP, UPDATE_TASK_COMPLETE
-  , GET_STEAMER, UPDATE_STEAMER, UPDATE_STEAMER_COMPLETE
+  UPDATE_LOG_USER, GET_TASKS, UPDATE_TASK_TIMEUP, GET_STEAMER
 } from '../../utils/graphql';
 import {
   useMutation, useQuery, useLazyQuery
@@ -93,7 +92,8 @@ function TaskView() {
   const updateTimeUp = (dbTaskId: string) => {
     UpdateTaskTimeUp({
       variables: {
-        taskId: dbTaskId
+        taskId: dbTaskId,
+        userId: sessionStorage.getItem("loggedUserId")
       }
     }).then(
       res => {

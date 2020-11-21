@@ -346,7 +346,7 @@ const StaffQueue = () => {
                                         โต๊ะ
                                     </div>
                                     <div className="w-1/3 md:text-2xl text-base pt-2 pb-2 flex justify-center text-white" style={{ borderTop: '1px solid black', borderLeft: '1px solid black', borderBottom: '1px solid black', borderRight: '1px solid black', backgroundColor: '#683830', borderTopRightRadius: '0.5rem' }}>
-                                        เข้าเมื่อ
+                                        สั่งอาหารเมื่อ
                                     </div>
                                 </div>
                                 {successQueues && successQueues.queues && successQueues.queues.map((q: any, idx: any) => {
@@ -359,7 +359,7 @@ const StaffQueue = () => {
                                                 {q.table && q.table.ochaTableName}
                                             </div>
                                             <div className="w-1/3 md:text-base text-xs pt-2 pb-2 md:pl-6 flex md:justify-start justify-center" style={{ borderLeft: '0.5px solid black', borderBottom: '1px solid black', borderRight: '1px solid black', borderTop: 'none' }}>
-                                                {parseInt(((moment().diff(moment(q.updateAt)) / 1000) / 60).toString())} นาทีก่อน
+                                                {parseInt(((moment().diff(moment(q.orderedAt)) / 1000) / 60).toString())} นาทีก่อน
                                             </div>
                                         </div>
                                     )
@@ -389,9 +389,9 @@ const StaffQueue = () => {
                 <div className="flex justify-between items-center mt-8 ml-8 mr-8">
                     <Header className="" username={userName ? userName : ''} userRole={"QUEUE"} page="edit" toggleRole={() => { }}></Header>
                 </div>
-                <div className="flex justify-center pb-12 md:pt-18 pt-8">
-                    <img src={queue_qr_code} alt="qrcode" className="md:w-1/4 w-full h-auto" />
-                </div>
+                {/* <div className="flex justify-center pb-12 md:pt-18 pt-8"> */}
+                <img src={queue_qr_code} alt="qrcode" className="md:w-1/3 w-full pb-12 md:pt-18 pt-8 m-auto" />
+                {/* </div> */}
                 <div className="flex justify-center mb-8">
                     <div className="flex bg-white pt-2 pb-2 pr-4 pl-4 md:w-1/4 w-1/2 justify-center items-center" style={{ border: '1px solid #683830', borderRadius: '0.5rem', color: '#683830' }} onClick={() => { setViewTableVisible(true) }}>
                         <img src={queue_table} style={{ width: '25px' }} className="mr-4" /> ดู โต๊ะ/คิว

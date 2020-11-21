@@ -46,6 +46,7 @@ schema.mutationType({
       t.crud.createOneEmployee(),
       t.crud.updateOneEmployee(),
       t.crud.createOnePayroll(),
+      t.crud.createOneTaskLog(),
 
       t.field('createUser', {
         type: 'User',
@@ -67,6 +68,43 @@ schema.mutationType({
           })
         },
       })
+
+    t.field('createNotification', {
+      type: 'Notification',
+      args: {
+        message: stringArg({ nullable: false }),
+        hour: intArg({ nullable: false }),
+        minute: intArg({ nullable: false }),
+        token: stringArg({ nullable: false }),
+        userId: stringArg({ nullable: false }),
+        mon: booleanArg({ nullable: false }),
+        tue: booleanArg({ nullable: false }),
+        wed: booleanArg({ nullable: false }),
+        thu: booleanArg({ nullable: false }),
+        fri: booleanArg({ nullable: false }),
+        sat: booleanArg({ nullable: false }),
+        sun: booleanArg({ nullable: false }),
+      },
+      nullable: true,
+      resolve: async (_parent, { message, hour, minute, token, userId, mon, tue, wed, thu, fri, sat, sun }, ctx) => {
+        return ctx.db.notification.create({
+          data: {
+            message: message,
+            hour: hour,
+            minute: minute,
+            token: token,
+            mon: mon,
+            tue: tue,
+            wed: wed,
+            thu: thu,
+            fri: fri,
+            sat: sat,
+            sun: sun,
+            user: { connect: { id: userId } },
+          },
+        })
+      },
+    })
 
     t.field('login', {
       type: 'LogUser',
@@ -110,14 +148,18 @@ schema.mutationType({
       },
       nullable: true,
       resolve: async (_parent, { name, total, finishTime, countTime, userId, serverId }, ctx) => {
-
-        const count = await ctx.db.task.count()
+        let priority = 0;
+        if (serverId){
+          priority = parseInt(serverId)
+        }else {
+          priority = await ctx.db.task.count()
+        }
         return ctx.db.task.create({
           data: {
             countTime: countTime,
             finishTime: finishTime,
             name: name,
-            priority: count + 1,
+            priority: priority,
             status: 'PENDING',
             total: total,
             updatedBy: userId,
@@ -126,8 +168,7 @@ schema.mutationType({
           },
         }).finally(
           () => {
-            // io.emit('taskUpdate','update')
-            // io.emit('pendingTaskUpdate','update')
+            console.log("created ServerID" + serverId + ", time :" + new Date())
           }
 
         )
@@ -135,73 +176,139 @@ schema.mutationType({
     })
 
     t.field('updateTaskOngoing', {
-      type: 'Task',
+      type: "Boolean",
       args: {
         finishTime: dateTimeArg({ type: 'DateTime' }),
         countTime: intArg({ nullable: false }),
         taskId: stringArg({ nullable: false }),
+        userId: stringArg({ nullable: false }),
       },
       nullable: true,
-      resolve: async (_parent, { finishTime, countTime, taskId }, ctx) => {
-
-        return ctx.db.task.update({
+      resolve: async (_parent, args, ctx) => {
+        let check = false
+        const task = await ctx.db.task.findOne({
           where: {
-            id: taskId
-          },
-          data: {
-            countTime: countTime,
-            finishTime: finishTime,
-            status: 'ONGOING',
-            priority: 0
-          },
-        }).finally(
-          () => {
-            // io.emit('taskUpdate','update')
-            // io.emit('pendingTaskUpdate','update')
+            id : args.taskId
           }
-        )
+        })
+
+        if(task){
+          console.log("task",task)
+          if(task.status && (task.status == 'PENDING' || task.status == 'TIMEUP' || task.status == 'ONGOING')){
+            console.log("task.status",task.status)
+            const log = await ctx.db.taskLog.create({
+              data: {
+                status: 'PENDING',
+                updateStatus: 'ONGOING',
+                user: { connect: { id: args.userId } },
+                task: { connect: { id: args.taskId } },
+              },
+            })
+
+            const updateTask = await ctx.db.task.update({
+              where: {
+                id: args.taskId
+              },
+              data: {
+                countTime: args.countTime,
+                finishTime: args.finishTime,
+                status: 'ONGOING',
+                priority: 0
+              },
+            })
+
+            check = updateTask ? true : false
+            console.log("check",check)
+          }
+        }
+        
+        console.log("check",check)
+        return check
       },
     })
 
     t.field('updateTaskTimeup', {
-      type: 'Task',
+      type: 'Boolean',
       args: {
         taskId: stringArg({ nullable: false }),
+        userId: stringArg({ nullable: false }),
       },
       nullable: true,
-      resolve: async (_parent, { taskId }, ctx) => {
-
-        return ctx.db.task.update({
+      resolve: async (_parent, args, ctx) => {
+        let check = false
+        const task = await ctx.db.task.findOne({
           where: {
-            id: taskId
-          },
-          data: {
-            status: 'TIMEUP'
-          },
-        }).finally(
-          // () => io.emit('taskUpdate','update')
-        )
+            id : args.taskId
+          }
+        })
+
+        if(task){
+          if(task.status && task.status == 'ONGOING'){
+            const log = await ctx.db.taskLog.create({
+              data: {
+                status: 'ONGOING',
+                updateStatus: 'TIMEUP',
+                user: { connect: { id: args.userId } },
+                task: { connect: { id: args.taskId } },
+              },
+            })
+
+            const updateTask = await ctx.db.task.update({
+              where: {
+                id: args.taskId
+              },
+              data: {
+                status: 'TIMEUP'
+              },
+            })
+            
+            check = updateTask ? true : false
+          }
+        }
+        return check
       },
     })
 
     t.field('updateTaskComplete', {
-      type: 'Task',
+      type: 'Boolean',
       args: {
         taskId: stringArg({ nullable: false }),
+        userId: stringArg({ nullable: false }),
       },
       nullable: true,
-      resolve: async (_parent, { taskId }, ctx) => {
-
-        return ctx.db.task.update({
+      resolve: async (_parent, args, ctx) => {
+        let check = false
+        const task = await ctx.db.task.findOne({
           where: {
-            id: taskId
-          },
-          data: {
-            status: 'COMPLETED'
-          },
-        }).finally(
-          // () => io.emit('taskUpdate','update')
-        )
+            id : args.taskId
+          }
+        })
+
+        if(task){
+          if(task.status && task.status == 'TIMEUP'){
+            const log = await ctx.db.taskLog.create({
+              data: {
+                status: 'TIMEUP',
+                updateStatus: 'COMPLETED',
+                user: { connect: { id: args.userId } },
+                task: { connect: { id: args.taskId } },
+              },
+            })
+
+            const updateTask = await ctx.db.task.update({
+              where: {
+                id: args.taskId
+              },
+              data: {
+                status: 'COMPLETED'
+              },
+            })
+
+            check = updateTask ? true : false
+          }
+        }
+
+        return check
       },
     })
 
@@ -246,6 +353,51 @@ schema.mutationType({
           data: {
             name: name,
             total: total
+          },
+        }).finally(
+          () => {
+            // io.emit('taskUpdate','update')
+            // io.emit('pendingTaskUpdate','update')
+          }
+        )
+      },
+    })
+
+    t.field('updateNotification', {
+      type: 'Notification',
+      args: {
+        id: stringArg({ nullable: false }),
+        message: stringArg({ nullable: false }),
+        hour: intArg({ nullable: false }),
+        minute: intArg({ nullable: false }),
+        token: stringArg({ nullable: false }),
+        mon: booleanArg({ nullable: false }),
+        tue: booleanArg({ nullable: false }),
+        wed: booleanArg({ nullable: false }),
+        thu: booleanArg({ nullable: false }),
+        fri: booleanArg({ nullable: false }),
+        sat: booleanArg({ nullable: false }),
+        sun: booleanArg({ nullable: false }),
+      },
+      nullable: true,
+      resolve: async (_parent, { id, message, hour, minute, token, mon, tue, wed, thu, fri, sat, sun }, ctx) => {
+
+        return ctx.db.notification.update({
+          where: {
+            id: id
+          },
+          data: {
+            message: message,
+            hour: hour,
+            minute: minute,
+            token: token,
+            mon: mon,
+            tue: tue,
+            wed: wed,
+            thu: thu,
+            fri: fri,
+            sat: sat,
+            sun: sun,
           },
         }).finally(
           () => {
@@ -346,19 +498,21 @@ schema.mutationType({
                   id: tableId,
                 },
               },
-            },
+            }, include: {
+              table: true
+            }
           })
 
 
           if (updateFetchQueue && updateFetchQueue.userId) {
             await sendMessageToClient(updateFetchQueue.userId, {
               type: "text",
-              text: `ขอบคุณสำหรับการรอค่ะ คุณ${updateFetchQueue.name ? updateFetchQueue.name : 'ลูกค้า'} ถึงคิว ${updateFetchQueue.queueNo} ของคุณแล้ว กรุณาแจ้งพนักงาน`,
+              text: `ขอบคุณสำหรับการรอค่ะ คุณ${updateFetchQueue.name ? updateFetchQueue.name : 'ลูกค้า'} ถึงคิว ${updateFetchQueue.queueNo} ของคุณแล้วที่โต๊ะ ${updateFetchQueue.table?.ochaTableName} กรุณาแจ้งพนักงาน`,
             });
           }
 
           return updateFetchQueue ? true : false
-        }else{
+        } else {
           return false
         }
       },
@@ -375,7 +529,8 @@ schema.mutationType({
             id: id
           },
           data: {
-            ordered: true
+            ordered: true,
+            orderedAt: moment().utcOffset(7).toDate()
           },
         })
 

@@ -33,7 +33,7 @@ app.post("/notify" , async (req,res) => {
 app.listen( PORT || 3030, () => {
     console.log( `server started at http://localhost:${ PORT || 3030 }` );
 
-    // const interval = 10
+    // const interval = 60
     // setInterval(async () => {
     //     getNotifications()
         
@@ -54,7 +54,8 @@ const logTime = async (now: string, time: string, id: string, message: string,to
               query: CREATE_NOTIFY_LOG,
               variables: {
                 username: "root",
-                notifyId: id
+                notifyId: id,
+                message: message
               }
     
             })
@@ -88,8 +89,6 @@ const sendLineNotify = async (token: string, message: string) => {
 
 const getNotifications = async () =>{
     console.log( `getNotifications` );
-    const startTime = moment(moment(moment().utcOffset('+0700').format(dateFormat) + " 00:00").format(dateTimeFormat)).toDate()
-    const endTime = moment(moment(moment().utcOffset('+0700').add(1, 'days').format(dateFormat) + " 00:00").format(dateTimeFormat)).toDate()
     const notifications = await (await fetch(API, {
         method: 'POST',
         headers: {
@@ -98,10 +97,6 @@ const getNotifications = async () =>{
         },
         body: JSON.stringify({
           query: GET_NOTIFICATIONS,
-          variables: {
-            startTime: startTime,
-            endTime: endTime
-          }
         })
       })).json();
     
@@ -112,37 +107,36 @@ const getNotifications = async () =>{
         console.log( `Notifications id:${t.id}, message:${t.message}, token:${t.token}, hour:${t.hour}, minute:${t.minute} ` );
         const time = moment(h + ':' + m ,timeFormat).format(timeFormat)
         const now = moment().utcOffset('+0700').format(timeFormat)
-        console.log( `Notifications id:${t.id}, message:${t.message}, token:${t.token}, time:${time} ` );
-        console.log( `Log condition:${moment(now,timeFormat).isAfter(moment(time,timeFormat))}, now:${now} ` );
-        if(moment(now,timeFormat).diff(moment(time,timeFormat)) >= 0){
+        const nowDay = moment().utcOffset('+0700').day()
+        const isDayNotify = ((nowDay == 1 && t.mon == true) || (nowDay == 2 && t.tue == true) || (nowDay == 3 && t.wed == true) || (nowDay == 4 && t.thu == true)
+          || (nowDay == 5 && t.fri == true) || (nowDay == 6 && t.sat == true) || (nowDay == 7 && t.sat == true))
+        console.log( `Notifications id:${t.id}, message:${t.message}, token:${t.token}, time:${time} ,isDayNotify:${isDayNotify}` );
+        console.log( `Log condition:${(moment(now,timeFormat).diff(moment(time,timeFormat)) == 0 && isDayNotify)}, now:${now} ` );
+
+        if(moment(now,timeFormat).diff(moment(time,timeFormat)) == 0 && isDayNotify){
             logTime(now, time, t.id, t.message, t.token)
         }
     })
 }
 
+
 const GET_NOTIFICATIONS = `
-query 
-notifications(
-    $startTime: DateTime
-    $endTime: DateTime
-  )
-  {
-    notifications(
-      where : {
-        NotificationLog : 
-          {every : 
-            {NOT : 
-              [{AND : [{createdAt : {gte: $startTime}}
-                        ,{createdAt : {lt: $endTime}}]}]}}
-      }
-    ){
-      id
-      message
-      hour
-      minute
-      token
-    }
+query {
+  notifications{
+    id
+    message
+    hour
+    minute
+    token
+    mon
+    tue
+    wed
+    thu
+    fri
+    sat
+    sun
   }
+}
 `
 
 const CREATE_NOTIFY_LOG = `
@@ -150,6 +144,7 @@ mutation
     createOneNotificationLog(
     $username: String!
     $notifyId: String!
+    $message: String!
   )
   {
     createOneNotificationLog(
@@ -157,6 +152,7 @@ mutation
             user : {connect : { userName : $username}}
             notification : 
                 {connect : {id: $notifyId }}
+            message : $message
         }
     ){
         id

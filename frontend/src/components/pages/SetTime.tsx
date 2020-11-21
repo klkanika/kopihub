@@ -95,7 +95,8 @@ const SetTime = () => {
   const updateComplete = (dbTaskId: string) => {
     UpdateTaskComplete({
       variables: {
-        taskId: dbTaskId
+        taskId: dbTaskId,
+        userId: sessionStorage.getItem("loggedUserId")
       }
     }).then(
       res => {
@@ -129,6 +130,7 @@ const SetTime = () => {
         }
       }).then(
         res => {
+          history.push('/TaskView?userRole=CHEF')
         }
         , err => {
           console.log("Update steamer failed")
@@ -142,17 +144,20 @@ const SetTime = () => {
       setFinishDate = new Date(finishDate);
     }
     setFinishDate.setHours(setFinishDate.getHours(), setFinishDate.getMinutes() + time, setFinishDate.getSeconds(), setFinishDate.getMilliseconds());
-    updateSteamer(dbTaskId, selected)
 
     UpdateTaskOngoing({
       variables: {
         countTime: time,
         finishTime: setFinishDate,
-        taskId: dbTaskId
+        taskId: dbTaskId,
+        userId: sessionStorage.getItem("loggedUserId")
       }
     }).then(
       res => {
-        history.push('/TaskView?userRole=CHEF')
+        if(newSelectedArray.length == 0)
+          history.push('/TaskView?userRole=CHEF')
+        else
+          updateSteamer(dbTaskId, selected)
       }
       , err => {
         console.log("Update task failed")

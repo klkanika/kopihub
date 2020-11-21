@@ -86,6 +86,17 @@ model Task {
   @@index(createdBy)
 }
 
+model TaskLog {
+  id            String     @id @default(uuid())
+  taskId        String
+  task          Task       @relation(fields: [taskId], references: [id])
+  status        TaskStatus
+  updateStatus  TaskStatus
+  user          User       @relation(fields: [createdBy], references: [id])
+  createdBy     String
+  createdAt     DateTime   @default(now())
+}
+
 model Steamer {
   id        String   @id @default(uuid())
   steamerNo Int
@@ -100,6 +111,7 @@ model Queue {
   id         Int         @id @default(autoincrement())
   createdAt  DateTime    @default(now())
   updateAt   DateTime    @updatedAt
+  orderedAt  DateTime?
   queueNo    String
   status     QueueStatus
   ordered    Boolean
@@ -163,6 +175,13 @@ model Notification {
   updatedBy       String
   updatedAt       DateTime  @default(now()) @updatedAt
   NotificationLog NotificationLog[]
+  mon             Boolean      @default(value: false)
+  tue             Boolean      @default(value: false)
+  wed             Boolean      @default(value: false)
+  thu             Boolean      @default(value: false)
+  fri             Boolean      @default(value: false)
+  sat             Boolean      @default(value: false)
+  sun             Boolean      @default(value: false)
 }
 
 model NotificationLog {
@@ -172,4 +191,5 @@ model NotificationLog {
   user            User          @relation(fields: [createdBy], references: [id])
   createdBy       String
   createdAt       DateTime      @default(now())
+  message         String?
 }

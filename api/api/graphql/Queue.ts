@@ -6,6 +6,7 @@ schema.objectType({
     t.model.id()
     t.model.createdAt()
     t.model.updateAt()
+    t.model.orderedAt()
     t.model.queueNo()
     t.model.status()
     t.model.ordered()

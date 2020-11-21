@@ -55,6 +55,22 @@ export const getEmployeeHistoriesArgs = schema.objectType({
   definition(t) {
     t.list.field("payrolls", { type: "Payroll" });
     t.list.field("workingHistories", { type: "WorkingHistory" });
+  }
+});
+
+export const getNotificationLogRow = schema.objectType({
+  name: "getNotificationLogRow",
+  definition(t) {
+    t.string("id"),
+      t.string("createdAt"),
+      t.string("message")
+  },
+});
+
+export const getNotificationLogArgs = schema.objectType({
+  name: "getNotificationLogArgs",
+  definition(t) {
+    t.list.field("data", { type: "getNotificationLogRow" });
   },
 });
 
@@ -70,6 +86,21 @@ schema.queryType({
     t.crud.payrolls({ filtering: true, ordering: true, pagination: true })
     t.crud.notifications({ filtering: true })
     t.crud.notificationLogs({ filtering: true })
+
+    t.field("checkAdmin", {
+      type: "User",
+      args: {
+        id: stringArg({ required: true }),
+      },
+      resolve: async (_, args, ctx) => {
+        const user = await prisma.user.findOne({
+          where: {
+            id: args.id,
+          },
+        });
+        return user;
+      },
+    });
 
     t.field("getQueues", {
       type: "getQueuesArgs",
@@ -239,6 +270,53 @@ schema.queryType({
           workingHistories: workingHistories
         }
       }
+    });
+
+    t.field("getAllNotifyLog", {
+      type: "getNotificationLogArgs",
+      args: {
+      },
+      resolve: async (_, args, ctx) => {
+
+        const jobs: any = (
+          await prisma.notificationLog.findMany({
+            include: {
+              notification: true,
+            },
+            orderBy: [
+              {
+                createdAt: "desc",
+              },
+            ],
+          })
+        ).map(async (j) => {
+
+          return {
+            id: j.id,
+            createdAt: `${moment(j.createdAt).add(543, 'years').format("DD MMM YYYY HH:mm")}`,
+            message: j.message,
+          };
+        });
+
+        return {
+          data: jobs,
+        };
+      },
+    });
+
+    t.field("getNotificationById", {
+      type: "Notification",
+      args: {
+        id: stringArg({ required: true }),
+      },
+      resolve: async (_, args, ctx) => {
+        const notification = await prisma.notification.findOne({
+          where: {
+            id: args.id,
+          },
+        });
+        return notification;
+      },
     });
   },
 })
