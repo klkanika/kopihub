@@ -343,7 +343,8 @@ query getSuccessQueues($startDate: DateTime, $endDate: DateTime){
       ochaTableName
       tableName
     },
-    updateAt
+    updateAt,
+    orderedAt
   }
 }
 `
