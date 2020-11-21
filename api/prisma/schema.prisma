@@ -94,6 +94,7 @@ model TaskLog {
   updateStatus  TaskStatus
   user          User       @relation(fields: [createdBy], references: [id])
   createdBy     String
+  createdAt     DateTime   @default(now())
 }
 
 model Steamer {
