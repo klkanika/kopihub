@@ -63,7 +63,7 @@ const AddTask = async (orders) => {
     .filter((o) => !tasks.includes(o.serverId))
     .forEach(async order => {
       const { serverId, total, name } = order;
-
+      console.log("before created: ", serverId, total, name)
       const res = await (await fetch(API, {
         method: 'POST',
         headers: {
