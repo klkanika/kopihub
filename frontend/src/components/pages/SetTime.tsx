@@ -95,7 +95,8 @@ const SetTime = () => {
   const updateComplete = (dbTaskId: string) => {
     UpdateTaskComplete({
       variables: {
-        taskId: dbTaskId
+        taskId: dbTaskId,
+        userId: sessionStorage.getItem("loggedUserId")
       }
     }).then(
       res => {
@@ -148,7 +149,8 @@ const SetTime = () => {
       variables: {
         countTime: time,
         finishTime: setFinishDate,
-        taskId: dbTaskId
+        taskId: dbTaskId,
+        userId: sessionStorage.getItem("loggedUserId")
       }
     }).then(
       res => {

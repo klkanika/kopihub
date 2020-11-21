@@ -136,11 +136,12 @@ export const CREATE_TASK = gql`
 `
 
 export const UPDATE_TASK_ONGOING = gql`
-  mutation UpdateTaskOngoing($finishTime:DateTime!,$countTime:Int!,$taskId:String!){
+  mutation UpdateTaskOngoing($finishTime:DateTime!,$countTime:Int!,$taskId:String!,$userId:String!){
     updateTaskOngoing(
       finishTime : $finishTime
       countTime : $countTime
       taskId : $taskId
+      userId : $userId
   )
   {
       id 
@@ -154,9 +155,10 @@ export const UPDATE_TASK_ONGOING = gql`
 `
 
 export const UPDATE_TASK_TIMEUP = gql`
-  mutation UpdateTaskTimeup($taskId:String!){
+  mutation UpdateTaskTimeup($taskId:String!,$userId:String!){
     updateTaskTimeup(
       taskId : $taskId
+      userId : $userId
   )
   {
       id 
@@ -170,9 +172,10 @@ export const UPDATE_TASK_TIMEUP = gql`
 `
 
 export const UPDATE_TASK_COMPLETE = gql`
-  mutation UpdateTaskComplete($taskId:String!){
+  mutation UpdateTaskComplete($taskId:String!,$userId:String!){
     updateTaskComplete(
       taskId : $taskId
+      userId : $userId
   )
   {
       id 

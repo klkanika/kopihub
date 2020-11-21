@@ -43,6 +43,7 @@ schema.mutationType({
       t.crud.updateOneSteamer(),
       t.crud.createOneNotification(),
       t.crud.createOneNotificationLog(),
+      t.crud.createOneTaskLog(),
 
       t.field('createUser', {
         type: 'User',
@@ -174,17 +175,25 @@ schema.mutationType({
         finishTime: dateTimeArg({ type: 'DateTime' }),
         countTime: intArg({ nullable: false }),
         taskId: stringArg({ nullable: false }),
+        userId: stringArg({ nullable: false }),
       },
       nullable: true,
-      resolve: async (_parent, { finishTime, countTime, taskId }, ctx) => {
-
+      resolve: async (_parent, args, ctx) => {
+        const log = await ctx.db.taskLog.create({
+          data: {
+            status: 'PENDING',
+            updateStatus: 'ONGOING',
+            user: { connect: { id: args.userId } },
+            task: { connect: { id: args.taskId } },
+          },
+        })
         return ctx.db.task.update({
           where: {
-            id: taskId
+            id: args.taskId
           },
           data: {
-            countTime: countTime,
-            finishTime: finishTime,
+            countTime: args.countTime,
+            finishTime: args.finishTime,
             status: 'ONGOING',
             priority: 0
           },
@@ -201,13 +210,21 @@ schema.mutationType({
       type: 'Task',
       args: {
         taskId: stringArg({ nullable: false }),
+        userId: stringArg({ nullable: false }),
       },
       nullable: true,
-      resolve: async (_parent, { taskId }, ctx) => {
-
+      resolve: async (_parent, args, ctx) => {
+        const log = await ctx.db.taskLog.create({
+          data: {
+            status: 'ONGOING',
+            updateStatus: 'TIMEUP',
+            user: { connect: { id: args.userId } },
+            task: { connect: { id: args.taskId } },
+          },
+        })
         return ctx.db.task.update({
           where: {
-            id: taskId
+            id: args.taskId
           },
           data: {
             status: 'TIMEUP'
@@ -222,13 +239,22 @@ schema.mutationType({
       type: 'Task',
       args: {
         taskId: stringArg({ nullable: false }),
+        userId: stringArg({ nullable: false }),
       },
       nullable: true,
-      resolve: async (_parent, { taskId }, ctx) => {
+      resolve: async (_parent, args, ctx) => {
+        const log = await ctx.db.taskLog.create({
+          data: {
+            status: 'TIMEUP',
+            updateStatus: 'COMPLETED',
+            user: { connect: { id: args.userId } },
+            task: { connect: { id: args.taskId } },
+          },
+        })
 
         return ctx.db.task.update({
           where: {
-            id: taskId
+            id: args.taskId
           },
           data: {
             status: 'COMPLETED'
