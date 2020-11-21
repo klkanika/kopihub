@@ -521,3 +521,37 @@ export const GET_EMLOYEES_EARNING = gql`
     }
   }
 `
+
+export const CREATE_PAYROLL = gql`
+  mutation createPayroll($employeeId: String, $payrollDate: DateTime!, $paid: Float!){
+    createOnePayroll(
+      data: {
+        payrollDate: $payrollDate,
+        paid: $paid
+        employee: {
+          connect: {
+            id : $employeeId
+          }
+        }
+      }
+    ){
+      id
+    }
+  }
+`
+
+export const GET_EMPLOYEE_HISTORIES = gql`
+  query getEmployeeHistories($employeeId: String!, $startDate: DateTime, $endDate: DateTime){
+    getEmployeeHistories(employeeId: $employeeId, startDate: $startDate, endDate: $endDate){
+      payrolls {
+        payrollDate
+        paid
+      }
+      workingHistories {
+        historyDate
+        hours
+        earning
+      }
+    }
+  }
+`

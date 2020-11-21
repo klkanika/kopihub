@@ -29,7 +29,7 @@ const Payroll = () => {
           <Route exac path="/payroll" component={EmployeePage} />
         </Switch>
         <div className="w-full flex justify-center items-center h-12">
-          Kopihub ©2018 Created by Seeuchula Developer Team
+          Kopihub ©2020 Created by Till it's Done
         </div>
       </Layout>
     </Layout>

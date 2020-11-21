@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/react-hooks";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/react-hooks";
 import {
   Button,
   DatePicker,
@@ -12,30 +12,50 @@ import {
 import { useForm } from "antd/lib/form/Form";
 import { ColumnsType } from "antd/lib/table";
 import React, { useState } from "react";
-import { GET_EMLOYEES_EARNING } from "../../utils/graphql";
+import { CREATE_PAYROLL, GET_EMLOYEES_EARNING, GET_EMPLOYEE_HISTORIES } from "../../utils/graphql";
+import moment from "moment";
 
 const PaymentPage = () => {
   const [showPayModal, setShowPayModal] = useState(false);
   const [showPayHistoryModal, setShowPayHistoryModal] = useState(false);
+  const [paidDataSource, setPaidDataSource] = useState();
+  const [workingHistoriesDataSource, setWorkingHistoriesDataSource] = useState();
+  const [payEmpId, setPayEmpId] = useState();
+  const [employeeId, setEmployeeId] = useState();
   const [form] = useForm();
+
+  const [createPayroll, { loading: createPayrollLoading }] = useMutation(CREATE_PAYROLL);
+
+  const [getEmployeeHistories, { called, loading: employeeHistoriesLoading, data: employeeHistories }] = useLazyQuery(GET_EMPLOYEE_HISTORIES, {
+    fetchPolicy: 'network-only',
+    onCompleted: (sre) => {
+      let object = sre && sre.getEmployeeHistories
+      let payrolls = object && object.payrolls
+      let workingHistories = object && object.workingHistories
+      setPaidDataSource(payrolls)
+      setWorkingHistoriesDataSource(workingHistories)
+    },
+    onError: (err) => {
+      window.alert(err)
+    }
+  });
 
   const { data: workLogData, loading: workLogLoading } = useQuery(
     GET_EMLOYEES_EARNING,
     {
       fetchPolicy: "no-cache",
-      // pollInterval: 1000,
+      pollInterval: 1000,
       onError: (err: any) => {
         window.alert(err);
       },
     }
   );
 
-  console.log(workLogData && workLogData.getEmployeesEarning);
-
-  const dataSource =
+  let dataSource =
     workLogData &&
     workLogData.getEmployeesEarning &&
-    workLogData.getEmployeesEarning.data;
+    workLogData.getEmployeesEarning.data &&
+    workLogData.getEmployeesEarning.data.slice().sort(function (a: any, b: any) { return b.remainingEarning - a.remainingEarning });
 
   const columns = [
     {
@@ -61,8 +81,6 @@ const PaymentPage = () => {
     },
     {
       title: "ตัวเลือก",
-      dataIndex: "id",
-      key: "id",
       width: "60%",
       render: (emp: any) => (
         <div>
@@ -72,10 +90,11 @@ const PaymentPage = () => {
             onClick={() => {
               // set form data
               form.setFieldsValue({
-                employee: "Name",
-                date: "12-12-2555",
-                amount: 500,
+                employee: emp.name,
+                date: moment().utcOffset(7),
+                amount: ''
               });
+              setPayEmpId(emp.id)
               setShowPayModal(true);
             }}
           >
@@ -83,7 +102,12 @@ const PaymentPage = () => {
           </Button>
           <Button
             onClick={() => {
-              //set data
+              getEmployeeHistories({
+                variables: {
+                  employeeId: emp.id
+                }
+              })
+              setEmployeeId(emp.id)
               setShowPayHistoryModal(true);
             }}
           >
@@ -95,7 +119,13 @@ const PaymentPage = () => {
   ];
 
   const onPay = (values: any) => {
-    console.log(values);
+    createPayroll({
+      variables: {
+        employeeId: payEmpId,
+        payrollDate: moment(values.date).utcOffset(7).toDate(),
+        paid: parseFloat(values.amount)
+      }
+    })
     setShowPayModal(false);
   };
 
@@ -120,7 +150,11 @@ const PaymentPage = () => {
           <PayHistoryModal
             show={showPayHistoryModal}
             setShow={setShowPayHistoryModal}
+            paidDataSource={paidDataSource}
+            workingHistoriesDataSource={workingHistoriesDataSource}
+            getEmployeeHistories={getEmployeeHistories}
             employee={{}}
+            employeeId={employeeId}
           />
         </div>
       </div>
@@ -134,7 +168,7 @@ const PayModal = ({ show, setShow, form, onFinish }: any) => {
     <Modal
       title="จ่ายเงิน"
       visible={show}
-      onCancel={() => setShow(false)}
+      onCancel={() => { setShow(false) }}
       footer={[
         <Button key="cancel" onClick={() => setShow(false)}>
           ยกเลิก
@@ -163,35 +197,40 @@ const PayModal = ({ show, setShow, form, onFinish }: any) => {
           <Input disabled />
         </Form.Item>
         <Form.Item name="date" label="วันที่จ่ายเงิน">
-          <Input disabled />
+          <DatePicker format={'DD/MM/YYYY'} />
         </Form.Item>
         <Form.Item
           name="amount"
           label="จำนวนเงิน"
           rules={[{ required: true, message: "กรุณาระบุจำนวนเงิน" }]}
         >
-          <Input placeholder="100" />
+          <Input placeholder="1000" />
         </Form.Item>
       </Form>
     </Modal>
   );
 };
 
-const PayHistoryModal = ({ show, setShow, employee }: any) => {
+const PayHistoryModal = ({ show, setShow, employee, employeeId, paidDataSource, workingHistoriesDataSource, getEmployeeHistories }: any) => {
   //employe for fetch data
 
   const paidCol: ColumnsType<any> = [
     {
       title: "วันที่จ่ายเงิน",
-      dataIndex: "paidDate",
-      key: "paidDate",
+      dataIndex: "payrollDate",
+      key: "payrollDate",
+      render: (payrollDate) => {
+        return moment(payrollDate).format('DD/MM/YYY')
+      }
     },
     {
       title: "ยอดชำระ",
-      dataIndex: "paidAmount",
-      key: "paidAmount",
+      dataIndex: "paid",
+      key: "paid",
       align: "right",
-      render: (text) => <div>{text} บาท</div>,
+      render: (paid) => <div>{paid.toFixed(2)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท</div>,
     },
   ];
   const historyCol: ColumnsType<any> = [
@@ -205,14 +244,17 @@ const PayHistoryModal = ({ show, setShow, employee }: any) => {
         ) : status === "full" ? (
           <Tag color="green">จ่ายแล้วเต็มจำนวน</Tag>
         ) : (
-          <Tag>unknown</Tag>
-        );
-      },
+              <Tag color="red">ยังไม่จ่าย</Tag>
+            );
+      }
     },
     {
       title: "วันที่ทำงาน",
-      dataIndex: "workDate",
-      key: "workDate",
+      dataIndex: "historyDate",
+      key: "historyDate",
+      render: (historyDate) => {
+        return moment(historyDate).format('DD/MM/YYYY')
+      }
     },
     {
       title: "ชั่วโมงทำงาน",
@@ -222,16 +264,52 @@ const PayHistoryModal = ({ show, setShow, employee }: any) => {
     },
     {
       title: "ค่าจ้าง (ยอดรวม)",
-      dataIndex: "total",
-      key: "total",
+      dataIndex: "earning",
+      key: "earning",
       align: "right",
-      render: (text) => <div>{text} บาท</div>,
+      render: (earning) => <div>{earning.toFixed(2)
+        .toString()
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท</div>,
     },
   ];
 
+  let sumPayroll = 0
+  let sumWorkingHistories = 0
+  let formattedWorkingHistoriesDataSource: any = []
+
+  if (paidDataSource && paidDataSource.length > 0) {
+    for (let pd of paidDataSource) {
+      sumPayroll += pd.paid
+    }
+  }
+  if (workingHistoriesDataSource && workingHistoriesDataSource.length > 0) {
+    let tmpSumPayroll = sumPayroll
+    let alreadyPart = false
+    for (let whds of workingHistoriesDataSource.slice().reverse()) {
+      sumWorkingHistories += whds.earning
+      tmpSumPayroll -= whds.earning
+      let status
+      if (!alreadyPart) {
+        if (tmpSumPayroll >= 0) {
+          status = 'full'
+        } else {
+          status = 'part'
+          alreadyPart = true
+        }
+      } else {
+        status = 'none'
+      }
+      formattedWorkingHistoriesDataSource.push({
+        ...whds,
+        paidStatus: status
+      })
+    }
+    formattedWorkingHistoriesDataSource.reverse()
+  }
+
   return (
     <Modal
-      width="70%"
+      width="95%"
       title="ประวัติการจ่ายเงิน"
       visible={show}
       onCancel={() => setShow(false)}
@@ -243,52 +321,64 @@ const PayHistoryModal = ({ show, setShow, employee }: any) => {
         <div className="flex items-center justify-around mb-8">
           <div>
             ยอดที่ต้องชำระ <br />
-            {"35,966.25"} บาท
+            {sumWorkingHistories
+              .toFixed(2)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท
           </div>
           <div>
             ยอดที่ชำระไปแล้ว <br />
-            {"35,966.25"} บาท
+            {sumPayroll
+              .toFixed(2)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท
           </div>
           <div>
             ยอดคงเหลือ <br />
-            {"35,966.25"} บาท
+            {(sumWorkingHistories - sumPayroll)
+              .toFixed(2)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <DatePicker.RangePicker placeholder={["วันเริ่ม", "วันสิ้นสุด"]} />
-          <div>ยอดรวมในตาราง {"35,966"} บาท</div>
+          <DatePicker.RangePicker
+            placeholder={["วันเริ่ม", "วันสิ้นสุด"]}
+            format={'DD/MM/YYYY'}
+            onChange={(value: any) => {
+              if (value) {
+                let startDate = value[0]
+                let endDate = value[1]
+                getEmployeeHistories({
+                  variables: {
+                    employeeId: employeeId,
+                    startDate: moment(startDate).toDate(),
+                    endDate: moment(endDate).toDate()
+                  }
+                })
+              } else {
+                getEmployeeHistories({
+                  variables: {
+                    employeeId: employeeId
+                  }
+                })
+              }
+            }}
+          />
         </div>
         <div className="flex mt-4">
           <Table
             className="flex-1"
             scroll={{ y: 300 }}
             columns={paidCol}
-            dataSource={[
-              {
-                paidDate: "2020-11-14",
-                paidAmount: 500,
-              },
-            ]}
+            dataSource={paidDataSource}
           />
           <div className="w-4" />
           <Table
             className="flex-1"
             scroll={{ y: 300 }}
             columns={historyCol}
-            dataSource={[
-              {
-                paidStatus: "part",
-                workDate: "2020-11-14",
-                hours: "12:30",
-                total: 500,
-              },
-              {
-                paidStatus: "full",
-                workDate: "2020-11-14",
-                hours: "12:30",
-                total: 500,
-              },
-            ]}
+            dataSource={formattedWorkingHistoriesDataSource}
           />
         </div>
       </div>

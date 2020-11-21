@@ -56,7 +56,10 @@ const EmployeePage = () => {
       dataIndex: "earning",
       key: "earning",
       width: "20%",
-      render: (earning: any) => <div>{earning} บาท</div>,
+      render: (earning: any) => <div>
+        {earning.toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท</div>,
     },
     {
       title: "ตัวเลือก",
@@ -128,7 +131,7 @@ const EmployeePage = () => {
       <Modal
         title="เพิ่มพนักงานใหม่"
         visible={showModal}
-        onCancel={() => setShowModal(false)}
+        onCancel={() => { setShowModal(false); form.resetFields(); }}
         footer={[
           <Button key="cancel" onClick={() => setShowModal(false)}>
             ยกเลิก
@@ -183,7 +186,7 @@ const EmployeePage = () => {
               },
             ]}
           >
-            <Input placeholder="150" />
+            <Input type="number" placeholder="150" />
           </Form.Item>
         </Form>
       </Modal>
@@ -241,7 +244,7 @@ const EmployeePage = () => {
               },
             ]}
           >
-            <Input placeholder="150" />
+            <Input type="number" placeholder="150" />
           </Form.Item>
         </Form>
       </Modal>

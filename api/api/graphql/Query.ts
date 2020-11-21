@@ -50,6 +50,14 @@ export const getEmployeesEarningArgs = schema.objectType({
   },
 });
 
+export const getEmployeeHistoriesArgs = schema.objectType({
+  name: "getEmployeeHistoriesArgs",
+  definition(t) {
+    t.list.field("payrolls", { type: "Payroll" });
+    t.list.field("workingHistories", { type: "WorkingHistory" });
+  },
+});
+
 schema.queryType({
   definition(t) {
     t.crud.users({ filtering: true })
@@ -188,6 +196,49 @@ schema.queryType({
           data: results
         }
       },
+    });
+
+    t.field("getEmployeeHistories", {
+      type: "getEmployeeHistoriesArgs",
+      args: {
+        employeeId: stringArg({ required: true }),
+        startDate: dateTimeArg({ type: "DateTime", required: false }),
+        endDate: dateTimeArg({ type: "DateTime", required: false }),
+      },
+      resolve: async (_, args, ctx) => {
+        let whereDate = {}
+        if (args.startDate && args.endDate) {
+          whereDate = {
+            gte: moment(args.startDate).utcOffset(7).startOf('day').toDate(),
+            lte: moment(args.endDate).utcOffset(7).endOf('day').toDate()
+          }
+        }
+
+        const payrolls = await prisma.payroll.findMany({
+          where: {
+            employeeId: args.employeeId,
+            payrollDate: whereDate
+          },
+          orderBy: {
+            payrollDate: 'desc',
+          },
+        })
+
+        const workingHistories = await prisma.workingHistory.findMany({
+          where: {
+            employeeId: args.employeeId,
+            historyDate: whereDate
+          },
+          orderBy: {
+            historyDate: 'desc'
+          }
+        })
+
+        return {
+          payrolls: payrolls,
+          workingHistories: workingHistories
+        }
+      }
     });
   },
 })
