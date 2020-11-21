@@ -145,14 +145,18 @@ schema.mutationType({
       },
       nullable: true,
       resolve: async (_parent, { name, total, finishTime, countTime, userId, serverId }, ctx) => {
-
-        const count = await ctx.db.task.count()
+        let priority = 0;
+        if (serverId){
+          priority = parseInt(serverId)
+        }else {
+          priority = await ctx.db.task.count()
+        }
         return ctx.db.task.create({
           data: {
             countTime: countTime,
             finishTime: finishTime,
             name: name,
-            priority: count + 1,
+            priority: priority,
             status: 'PENDING',
             total: total,
             updatedBy: userId,
