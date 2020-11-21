@@ -191,7 +191,7 @@ schema.mutationType({
 
         if(task){
           console.log("task",task)
-          if(task.status && task.status == 'PENDING'){
+          if(task.status && (task.status == 'PENDING' || task.status == 'TIMEUP' || task.status == 'ONGOING')){
             console.log("task.status",task.status)
             const log = await ctx.db.taskLog.create({
               data: {

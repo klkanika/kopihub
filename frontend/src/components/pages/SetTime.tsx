@@ -154,7 +154,10 @@ const SetTime = () => {
       }
     }).then(
       res => {
-        updateSteamer(dbTaskId, selected)
+        if(newSelectedArray.length == 0)
+          history.push('/TaskView?userRole=CHEF')
+        else
+          updateSteamer(dbTaskId, selected)
       }
       , err => {
         console.log("Update task failed")
