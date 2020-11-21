@@ -481,7 +481,8 @@ schema.mutationType({
             id: id
           },
           data: {
-            ordered: true
+            ordered: true,
+            orderedAt: moment().utcOffset(7).toDate()
           },
         })
 

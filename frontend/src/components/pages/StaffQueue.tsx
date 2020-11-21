@@ -346,7 +346,7 @@ const StaffQueue = () => {
                                         โต๊ะ
                                     </div>
                                     <div className="w-1/3 md:text-2xl text-base pt-2 pb-2 flex justify-center text-white" style={{ borderTop: '1px solid black', borderLeft: '1px solid black', borderBottom: '1px solid black', borderRight: '1px solid black', backgroundColor: '#683830', borderTopRightRadius: '0.5rem' }}>
-                                        เข้าเมื่อ
+                                        สั่งอาหารเมื่อ
                                     </div>
                                 </div>
                                 {successQueues && successQueues.queues && successQueues.queues.map((q: any, idx: any) => {
@@ -359,7 +359,7 @@ const StaffQueue = () => {
                                                 {q.table && q.table.ochaTableName}
                                             </div>
                                             <div className="w-1/3 md:text-base text-xs pt-2 pb-2 md:pl-6 flex md:justify-start justify-center" style={{ borderLeft: '0.5px solid black', borderBottom: '1px solid black', borderRight: '1px solid black', borderTop: 'none' }}>
-                                                {parseInt(((moment().diff(moment(q.updateAt)) / 1000) / 60).toString())} นาทีก่อน
+                                                {parseInt(((moment().diff(moment(q.orderedAt)) / 1000) / 60).toString())} นาทีก่อน
                                             </div>
                                         </div>
                                     )

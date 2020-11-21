@@ -111,6 +111,7 @@ model Queue {
   id         Int         @id @default(autoincrement())
   createdAt  DateTime    @default(now())
   updateAt   DateTime    @updatedAt
+  orderedAt  DateTime?
   queueNo    String
   status     QueueStatus
   ordered    Boolean
