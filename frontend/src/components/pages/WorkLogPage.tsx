@@ -2,7 +2,7 @@ import { useMutation, useQuery } from "@apollo/react-hooks";
 import { Button, Layout, Table, Form, DatePicker, Modal, Select } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import React, { useState } from "react";
-import { GET_WORKLOGS, DELETE_WORKLOG } from "../../utils/graphql";
+import { GET_WORKLOGS, DELETE_WORKLOG, GET_EMPLOYEES } from "../../utils/graphql";
 import moment from "moment";
 
 const WorkLogPage = () => {
@@ -10,9 +10,39 @@ const WorkLogPage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [form] = useForm();
   const [editForm] = useForm();
+  const [selectedDate, setSelectedDate] = useState([])
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState('all');
+
+  let worklogVariable = {}
+
+  if (selectedDate && selectedDate[0] && selectedDate[1]) {
+    worklogVariable =
+    {
+      empId: selectedEmployeeId && selectedEmployeeId != 'all' ? selectedEmployeeId : null,
+      startDate: moment(selectedDate[0]).utcOffset(7).startOf('day').toDate(),
+      endDate: moment(selectedDate[1]).utcOffset(7).endOf('day').toDate()
+    }
+  } else {
+    worklogVariable =
+    {
+      empId: selectedEmployeeId && selectedEmployeeId != 'all' ? selectedEmployeeId : null,
+    }
+  }
 
   const { data: workLogData, loading: workLogLoading } = useQuery(
     GET_WORKLOGS,
+    {
+      fetchPolicy: "no-cache",
+      variables: worklogVariable,
+      pollInterval: 1000,
+      onError: (err: any) => {
+        window.alert(err);
+      },
+    }
+  );
+
+  const { data: employeesData, loading: employeesLoading } = useQuery(
+    GET_EMPLOYEES,
     {
       fetchPolicy: "no-cache",
       pollInterval: 1000,
@@ -92,17 +122,17 @@ const WorkLogPage = () => {
     },
   ];
 
-  // const datasource = workLogData && workLogData.workingHistories
-  const datasource = [
-    {
-      key: 1,
-      employee: {
-        id: "2ac5fe8c-eecc-42bb-90ce-dc614aba2cc8",
-        name: "Q",
-      },
-      earning: 150,
-    },
-  ];
+  const datasource = workLogData && workLogData.workingHistories
+  // const datasource = [
+  //   {
+  //     key: 1,
+  //     employee: {
+  //       id: "2ac5fe8c-eecc-42bb-90ce-dc614aba2cc8",
+  //       name: "Q",
+  //     },
+  //     earning: 150,
+  //   },
+  // ];
 
   const onFinish = (values: any) => {
     console.log(values);
@@ -133,12 +163,25 @@ const WorkLogPage = () => {
               <div>กรองด้วยวันที่</div>
               <DatePicker.RangePicker
                 placeholder={["วันเริ่ม", "วันสิ้นสุด"]}
+                onChange={(value: any) => {
+                  setSelectedDate(value)
+                }}
               />
             </div>
             <div>
               <div>กรองด้วยพนักงาน</div>
-              <Select defaultValue="-" className="w-32">
-                <Select.Option value="-">-</Select.Option>
+              <Select
+                defaultValue={'all'}
+                className="w-32"
+                onChange={(value: any) => {
+                  setSelectedEmployeeId(value)
+                }}>
+                <Select.Option value={'all'}>ทั้งหมด</Select.Option>
+                {
+                  employeesData && employeesData.employees && employeesData.employees.map((d: any, i: any) => {
+                    return <Select.Option value={d.id}>{d.name}</Select.Option>
+                  })
+                }
               </Select>
             </div>
           </div>
@@ -188,8 +231,13 @@ const WorkLogPage = () => {
             label="พนักงาน"
             rules={[{ required: true, message: "กรุณาเลือกพนักงาน" }]}
           >
-            <Select className="w-32">
-              <Select.Option value="-">-</Select.Option>
+            <Select defaultValue={'all'} className="w-32">
+              <Select.Option selected value={'all'}>ทั้งหมด</Select.Option>
+              {
+                employeesData && employeesData.employees && employeesData.employees.map((d: any, i: any) => {
+                  return <Select.Option value={d.id}>{d.name}</Select.Option>
+                })
+              }
             </Select>
           </Form.Item>
           <Form.Item

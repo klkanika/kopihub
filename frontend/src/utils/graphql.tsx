@@ -478,7 +478,37 @@ mutation deleteEmployee($id: String!){
 `
 
 export const GET_WORKLOGS = gql`
-  query getWorkLogs{
+  query getWorkLogs($empId: String, $startDate: DateTime, $endDate: DateTime){
+    workingHistories(where: {
+      employeeId: {
+        equals: $empId
+      },
+      AND: [
+        {
+          createdAt: {
+            gte: $startDate
+          }
+        },
+        {
+          createdAt: {
+            lte: $endDate
+          }
+        }
+      ],
+    }){
+      id
+      historyDate
+      employee {
+        name
+      }
+      hours
+      earning
+    }
+  }
+`
+
+export const GET_WORKLOG = gql`
+  query getWorkLog{
     workingHistories{
       id
       historyDate
@@ -569,6 +599,7 @@ export const GET_EMPLOYEE_HISTORIES = gql`
     }
   }
 `
+
 export const CREATE_NOTIFICATION = gql`
   mutation CreateNotification($message: String!,$hour: Int!,$minute:Int!,$token:String!,$userId:String!,$mon:Boolean!,$tue:Boolean!,$wed:Boolean!,$thu:Boolean!,$fri:Boolean!,$sat:Boolean!,$sun:Boolean!){
     createNotification(

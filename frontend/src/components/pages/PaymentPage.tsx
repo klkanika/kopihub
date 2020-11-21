@@ -220,7 +220,7 @@ const PayHistoryModal = ({ show, setShow, employee, employeeId, paidDataSource, 
       dataIndex: "payrollDate",
       key: "payrollDate",
       render: (payrollDate) => {
-        return moment(payrollDate).format('DD/MM/YYY')
+        return moment(payrollDate).utcOffset(7).format('DD/MM/YYY')
       }
     },
     {
@@ -253,7 +253,7 @@ const PayHistoryModal = ({ show, setShow, employee, employeeId, paidDataSource, 
       dataIndex: "historyDate",
       key: "historyDate",
       render: (historyDate) => {
-        return moment(historyDate).format('DD/MM/YYYY')
+        return moment(historyDate).utcOffset(7).format('DD/MM/YYYY')
       }
     },
     {
@@ -352,8 +352,8 @@ const PayHistoryModal = ({ show, setShow, employee, employeeId, paidDataSource, 
                 getEmployeeHistories({
                   variables: {
                     employeeId: employeeId,
-                    startDate: moment(startDate).toDate(),
-                    endDate: moment(endDate).toDate()
+                    startDate: moment(startDate).utcOffset(7).toDate(),
+                    endDate: moment(endDate).utcOffset(7).toDate()
                   }
                 })
               } else {

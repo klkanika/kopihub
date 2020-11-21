@@ -46,6 +46,7 @@ schema.mutationType({
       t.crud.createOneEmployee(),
       t.crud.updateOneEmployee(),
       t.crud.createOnePayroll(),
+      t.crud.deleteOneWorkingHistory(),
       t.crud.createOneTaskLog(),
 
       t.field('createUser', {
