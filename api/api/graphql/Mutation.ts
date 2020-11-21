@@ -169,7 +169,7 @@ schema.mutationType({
     })
 
     t.field('updateTaskOngoing', {
-      type: 'Task',
+      type: "Boolean",
       args: {
         finishTime: dateTimeArg({ type: 'DateTime' }),
         countTime: intArg({ nullable: false }),
@@ -178,89 +178,130 @@ schema.mutationType({
       },
       nullable: true,
       resolve: async (_parent, args, ctx) => {
-        const log = await ctx.db.taskLog.create({
-          data: {
-            status: 'PENDING',
-            updateStatus: 'ONGOING',
-            user: { connect: { id: args.userId } },
-            task: { connect: { id: args.taskId } },
-          },
-        })
-        return ctx.db.task.update({
+        let check = false
+        const task = await ctx.db.task.findOne({
           where: {
-            id: args.taskId
-          },
-          data: {
-            countTime: args.countTime,
-            finishTime: args.finishTime,
-            status: 'ONGOING',
-            priority: 0
-          },
-        }).finally(
-          () => {
-            // io.emit('taskUpdate','update')
-            // io.emit('pendingTaskUpdate','update')
+            id : args.taskId
           }
-        )
+        })
+
+        if(task){
+          console.log("task",task)
+          if(task.status && task.status == 'PENDING'){
+            console.log("task.status",task.status)
+            const log = await ctx.db.taskLog.create({
+              data: {
+                status: 'PENDING',
+                updateStatus: 'ONGOING',
+                user: { connect: { id: args.userId } },
+                task: { connect: { id: args.taskId } },
+              },
+            })
+
+            const updateTask = await ctx.db.task.update({
+              where: {
+                id: args.taskId
+              },
+              data: {
+                countTime: args.countTime,
+                finishTime: args.finishTime,
+                status: 'ONGOING',
+                priority: 0
+              },
+            })
+
+            check = updateTask ? true : false
+            console.log("check",check)
+          }
+        }
+        
+        console.log("check",check)
+        return check
       },
     })
 
     t.field('updateTaskTimeup', {
-      type: 'Task',
+      type: 'Boolean',
       args: {
         taskId: stringArg({ nullable: false }),
         userId: stringArg({ nullable: false }),
       },
       nullable: true,
       resolve: async (_parent, args, ctx) => {
-        const log = await ctx.db.taskLog.create({
-          data: {
-            status: 'ONGOING',
-            updateStatus: 'TIMEUP',
-            user: { connect: { id: args.userId } },
-            task: { connect: { id: args.taskId } },
-          },
-        })
-        return ctx.db.task.update({
+        let check = false
+        const task = await ctx.db.task.findOne({
           where: {
-            id: args.taskId
-          },
-          data: {
-            status: 'TIMEUP'
-          },
-        }).finally(
-          // () => io.emit('taskUpdate','update')
-        )
+            id : args.taskId
+          }
+        })
+
+        if(task){
+          if(task.status && task.status == 'ONGOING'){
+            const log = await ctx.db.taskLog.create({
+              data: {
+                status: 'ONGOING',
+                updateStatus: 'TIMEUP',
+                user: { connect: { id: args.userId } },
+                task: { connect: { id: args.taskId } },
+              },
+            })
+
+            const updateTask = await ctx.db.task.update({
+              where: {
+                id: args.taskId
+              },
+              data: {
+                status: 'TIMEUP'
+              },
+            })
+            
+            check = updateTask ? true : false
+          }
+        }
+        return check
       },
     })
 
     t.field('updateTaskComplete', {
-      type: 'Task',
+      type: 'Boolean',
       args: {
         taskId: stringArg({ nullable: false }),
         userId: stringArg({ nullable: false }),
       },
       nullable: true,
       resolve: async (_parent, args, ctx) => {
-        const log = await ctx.db.taskLog.create({
-          data: {
-            status: 'TIMEUP',
-            updateStatus: 'COMPLETED',
-            user: { connect: { id: args.userId } },
-            task: { connect: { id: args.taskId } },
-          },
+        let check = false
+        const task = await ctx.db.task.findOne({
+          where: {
+            id : args.taskId
+          }
         })
 
-        return ctx.db.task.update({
-          where: {
-            id: args.taskId
-          },
-          data: {
-            status: 'COMPLETED'
-          },
-        }).finally(
-          // () => io.emit('taskUpdate','update')
-        )
+        if(task){
+          if(task.status && task.status == 'TIMEUP'){
+            const log = await ctx.db.taskLog.create({
+              data: {
+                status: 'TIMEUP',
+                updateStatus: 'COMPLETED',
+                user: { connect: { id: args.userId } },
+                task: { connect: { id: args.taskId } },
+              },
+            })
+
+            const updateTask = await ctx.db.task.update({
+              where: {
+                id: args.taskId
+              },
+              data: {
+                status: 'COMPLETED'
+              },
+            })
+
+            check = updateTask ? true : false
+          }
+        }
+
+        return check
       },
     })
 

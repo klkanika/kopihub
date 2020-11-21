@@ -143,14 +143,6 @@ export const UPDATE_TASK_ONGOING = gql`
       taskId : $taskId
       userId : $userId
   )
-  {
-      id 
-      name
-      countTime
-      finishTime
-      status
-      priority
-  }
 } 
 `
 
@@ -160,14 +152,6 @@ export const UPDATE_TASK_TIMEUP = gql`
       taskId : $taskId
       userId : $userId
   )
-  {
-      id 
-      name
-      countTime
-      finishTime
-      status
-      priority
-  }
 } 
 `
 
@@ -177,14 +161,6 @@ export const UPDATE_TASK_COMPLETE = gql`
       taskId : $taskId
       userId : $userId
   )
-  {
-      id 
-      name
-      countTime
-      finishTime
-      status
-      priority
-  }
 } 
 `
 
