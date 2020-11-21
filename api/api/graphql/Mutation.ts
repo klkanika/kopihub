@@ -66,42 +66,42 @@ schema.mutationType({
         },
       })
 
-      t.field('createNotification', {
-        type: 'Notification',
-        args: {
-          message: stringArg({ nullable: false }),
-          hour : intArg({ nullable: false }),
-          minute : intArg({ nullable: false }),
-          token : stringArg({ nullable: false }),
-          userId: stringArg({ nullable: false }),
-          mon : booleanArg({ nullable: false }),
-          tue : booleanArg({ nullable: false }),
-          wed : booleanArg({ nullable: false }),
-          thu : booleanArg({ nullable: false }),
-          fri : booleanArg({ nullable: false }),
-          sat : booleanArg({ nullable: false }),
-          sun : booleanArg({ nullable: false }),
-        },
-        nullable: true,
-        resolve: async (_parent, { message, hour, minute, token, userId, mon, tue, wed, thu, fri, sat, sun }, ctx) => {
-          return ctx.db.notification.create({
-            data: {
-              message: message,
-              hour: hour,
-              minute: minute,
-              token: token,
-              mon : mon,
-              tue : tue,
-              wed : wed,
-              thu : thu,
-              fri : fri,
-              sat : sat,
-              sun : sun,
-              user: { connect: { id: userId } },
-            },
-          })
-        },
-      })
+    t.field('createNotification', {
+      type: 'Notification',
+      args: {
+        message: stringArg({ nullable: false }),
+        hour: intArg({ nullable: false }),
+        minute: intArg({ nullable: false }),
+        token: stringArg({ nullable: false }),
+        userId: stringArg({ nullable: false }),
+        mon: booleanArg({ nullable: false }),
+        tue: booleanArg({ nullable: false }),
+        wed: booleanArg({ nullable: false }),
+        thu: booleanArg({ nullable: false }),
+        fri: booleanArg({ nullable: false }),
+        sat: booleanArg({ nullable: false }),
+        sun: booleanArg({ nullable: false }),
+      },
+      nullable: true,
+      resolve: async (_parent, { message, hour, minute, token, userId, mon, tue, wed, thu, fri, sat, sun }, ctx) => {
+        return ctx.db.notification.create({
+          data: {
+            message: message,
+            hour: hour,
+            minute: minute,
+            token: token,
+            mon: mon,
+            tue: tue,
+            wed: wed,
+            thu: thu,
+            fri: fri,
+            sat: sat,
+            sun: sun,
+            user: { connect: { id: userId } },
+          },
+        })
+      },
+    })
 
     t.field('login', {
       type: 'LogUser',
@@ -319,18 +319,18 @@ schema.mutationType({
     t.field('updateNotification', {
       type: 'Notification',
       args: {
-        id : stringArg({ nullable: false }),
+        id: stringArg({ nullable: false }),
         message: stringArg({ nullable: false }),
-        hour : intArg({ nullable: false }),
-        minute : intArg({ nullable: false }),
-        token : stringArg({ nullable: false }),
-        mon : booleanArg({ nullable: false }),
-        tue : booleanArg({ nullable: false }),
-        wed : booleanArg({ nullable: false }),
-        thu : booleanArg({ nullable: false }),
-        fri : booleanArg({ nullable: false }),
-        sat : booleanArg({ nullable: false }),
-        sun : booleanArg({ nullable: false }),
+        hour: intArg({ nullable: false }),
+        minute: intArg({ nullable: false }),
+        token: stringArg({ nullable: false }),
+        mon: booleanArg({ nullable: false }),
+        tue: booleanArg({ nullable: false }),
+        wed: booleanArg({ nullable: false }),
+        thu: booleanArg({ nullable: false }),
+        fri: booleanArg({ nullable: false }),
+        sat: booleanArg({ nullable: false }),
+        sun: booleanArg({ nullable: false }),
       },
       nullable: true,
       resolve: async (_parent, { id, message, hour, minute, token, mon, tue, wed, thu, fri, sat, sun }, ctx) => {
@@ -340,17 +340,17 @@ schema.mutationType({
             id: id
           },
           data: {
-              message: message,
-              hour: hour,
-              minute: minute,
-              token: token,
-              mon : mon,
-              tue : tue,
-              wed : wed,
-              thu : thu,
-              fri : fri,
-              sat : sat,
-              sun : sun,
+            message: message,
+            hour: hour,
+            minute: minute,
+            token: token,
+            mon: mon,
+            tue: tue,
+            wed: wed,
+            thu: thu,
+            fri: fri,
+            sat: sat,
+            sun: sun,
           },
         }).finally(
           () => {
@@ -451,19 +451,21 @@ schema.mutationType({
                   id: tableId,
                 },
               },
-            },
+            }, include: {
+              table: true
+            }
           })
 
 
           if (updateFetchQueue && updateFetchQueue.userId) {
             await sendMessageToClient(updateFetchQueue.userId, {
               type: "text",
-              text: `ขอบคุณสำหรับการรอค่ะ คุณ${updateFetchQueue.name ? updateFetchQueue.name : 'ลูกค้า'} ถึงคิว ${updateFetchQueue.queueNo} ของคุณแล้ว กรุณาแจ้งพนักงาน`,
+              text: `ขอบคุณสำหรับการรอค่ะ คุณ${updateFetchQueue.name ? updateFetchQueue.name : 'ลูกค้า'} ถึงคิว ${updateFetchQueue.queueNo} ของคุณแล้วที่โต๊ะ ${updateFetchQueue.table?.ochaTableName} กรุณาแจ้งพนักงาน`,
             });
           }
 
           return updateFetchQueue ? true : false
-        }else{
+        } else {
           return false
         }
       },
