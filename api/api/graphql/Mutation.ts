@@ -161,8 +161,7 @@ schema.mutationType({
           },
         }).finally(
           () => {
-            // io.emit('taskUpdate','update')
-            // io.emit('pendingTaskUpdate','update')
+            console.log("created ServerID" + serverId + ", time :" + new Date())
           }
 
         )
