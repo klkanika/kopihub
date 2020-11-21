@@ -130,6 +130,7 @@ const SetTime = () => {
         }
       }).then(
         res => {
+          history.push('/TaskView?userRole=CHEF')
         }
         , err => {
           console.log("Update steamer failed")
@@ -143,7 +144,6 @@ const SetTime = () => {
       setFinishDate = new Date(finishDate);
     }
     setFinishDate.setHours(setFinishDate.getHours(), setFinishDate.getMinutes() + time, setFinishDate.getSeconds(), setFinishDate.getMilliseconds());
-    updateSteamer(dbTaskId, selected)
 
     UpdateTaskOngoing({
       variables: {
@@ -154,7 +154,7 @@ const SetTime = () => {
       }
     }).then(
       res => {
-        history.push('/TaskView?userRole=CHEF')
+        updateSteamer(dbTaskId, selected)
       }
       , err => {
         console.log("Update task failed")
