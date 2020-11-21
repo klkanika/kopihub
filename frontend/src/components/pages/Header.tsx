@@ -6,6 +6,7 @@ import icon_counter from '../../imgs/icon_counter.svg'
 import icon_queue from '../../imgs/icon_queue.svg';
 import { LogoutOutlined } from '@ant-design/icons';
 import icon_admin from '../../imgs/icon-admin.svg';
+import icon_payroll from '../../imgs/icon_payroll.svg';
 
 interface IHeaderProps {
   username: string
@@ -58,6 +59,16 @@ function Header(props: IHeaderProps) {
         >
           <img src={icon_admin} style={{ width: '25px' }} className="mr-4" />
           Admin
+        </a>
+      </Menu.Item>
+      <Menu.Item className={sessionStorage.getItem("loggedIsAdmin") && sessionStorage.getItem("loggedIsAdmin") == "Y" ? '' : 'hidden'}>
+        <a
+          href="/payroll/employee"
+          className="items-center"
+          style={{ borderBottom: '1px solid #ddd', padding: '1em 2em', fontSize: '16px', color: '#535050', display: 'flex' }}
+        >
+          <img src={icon_payroll} style={{ width: '25px' }} className="mr-4" />
+          Payroll
         </a>
       </Menu.Item>
       <Menu.Item>
