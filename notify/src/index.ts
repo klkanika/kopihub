@@ -55,7 +55,8 @@ const logTime = async (now: string, time: string, id: string, message: string,to
               variables: {
                 username: "root",
                 notifyId: id,
-                message: message
+                message: message,
+                token: token
               }
     
             })
@@ -153,6 +154,7 @@ mutation
             notification : 
                 {connect : {id: $notifyId }}
             message : $message
+            token : $token
         }
     ){
         id

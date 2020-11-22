@@ -711,3 +711,15 @@ export const GET_NOTIFICATION_BY_ID = gql`
     }
   }
 `
+
+export const DELETE_NOTIFICATION = gql`
+  mutation deleteNotification($id: String!){
+    deleteOneNotification(
+      where : {
+        id : $id
+      }
+    ){
+      id
+    }
+  } 
+`

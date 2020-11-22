@@ -174,7 +174,6 @@ model Notification {
   user            User      @relation(fields: [updatedBy], references: [id])
   updatedBy       String
   updatedAt       DateTime  @default(now()) @updatedAt
-  NotificationLog NotificationLog[]
   mon             Boolean      @default(value: false)
   tue             Boolean      @default(value: false)
   wed             Boolean      @default(value: false)
@@ -186,10 +185,10 @@ model Notification {
 
 model NotificationLog {
   id              String        @id @default(uuid())
-  notification    Notification  @relation(fields: [notificationId], references: [id])
   notificationId  String
   user            User          @relation(fields: [createdBy], references: [id])
   createdBy       String
   createdAt       DateTime      @default(now())
+  token           String?
   message         String?
 }

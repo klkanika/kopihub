@@ -10,8 +10,8 @@ import {
 import { Form, Input, Button, Checkbox, Table, Spin } from 'antd';
 import { SearchOutlined, CheckSquareOutlined } from '@ant-design/icons';
 import liffHelper from '../../utils/liffHelper';
-import { EditOutlined, CheckCircleOutlined,UploadOutlined, CheckOutlined, PictureTwoTone } from '@ant-design/icons';
-import { ALL_NOTIFICATION } from '../../utils/graphql';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { ALL_NOTIFICATION, DELETE_NOTIFICATION } from '../../utils/graphql';
 import Modal from 'antd/lib/modal/Modal';
 import moment from 'moment';
 import MenuList from './MenuList'
@@ -29,6 +29,8 @@ const Admin = () => {
       window.alert(err)
     }
   });
+
+  const [deleteNoticiation, { loading: deleteLoading }] = useMutation(DELETE_NOTIFICATION);
 
   const dataSource = data && data.notifications
   .map((ds: any, index: any) => {
@@ -78,6 +80,20 @@ const Admin = () => {
           <div className="text-center">
             <Button type="primary" icon={<EditOutlined />} onClick={() => { 
               history.push('/EditAdmin/'+record.id)
+            }}/>
+          </div>
+        );
+      }
+    },
+    {
+      title: 'ลบข้อความ',
+      key: 'deleted',
+      render: (record: any) => {
+        return (
+          <div className="text-center">
+            <Button type="primary" icon={<DeleteOutlined />} onClick={() => { 
+                deleteNoticiation({ variables: { id: record.id } });
+                window.location.reload()
             }}/>
           </div>
         );

@@ -43,6 +43,7 @@ schema.mutationType({
       t.crud.updateOneSteamer(),
       t.crud.createOneNotification(),
       t.crud.createOneNotificationLog(),
+      t.crud.deleteOneNotification(),
       t.crud.createOneEmployee(),
       t.crud.updateOneEmployee(),
       t.crud.createOnePayroll(),
