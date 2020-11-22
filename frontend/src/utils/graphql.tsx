@@ -521,6 +521,49 @@ export const GET_WORKLOG = gql`
   }
 `
 
+export const UPDATE_WORKLOG = gql`
+  mutation updateWorkLog($id: String!, $historyDate: DateTime!, $employeeId: String!, $hours: Float!, $earning: Float!){
+    updateOneWorkingHistory(
+      data : {
+        historyDate: $historyDate
+        employee: {
+          connect: {
+            id : $employeeId
+          }
+        }
+        hours: $hours
+        earning: $earning
+      }
+      where : {
+        id : $id
+      }
+    ){
+      id
+    }
+  } 
+`
+
+export const CREATE_WORKLOG = gql`
+  mutation createWorkLog($historyDate: DateTime!, $employeeId: String!, $hours: Float!, $earning: Float!, $hiringType: HiringType!, $earningRate: Float!){
+    createOneWorkingHistory(
+      data : {
+        historyDate: $historyDate
+        employee: {
+          connect: {
+            id : $employeeId
+          }
+        }
+        hours: $hours
+        earning: $earning
+        hiringType: $hiringType
+        earningRate: $earningRate
+      }
+    ){
+      id
+    }
+  } 
+`
+
 export const DELETE_WORKLOG = gql`
   mutation deleteWorkLog($id: String!){
     deleteOneWorkingHistory(
