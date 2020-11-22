@@ -146,6 +146,7 @@ mutation
     $username: String!
     $notifyId: String!
     $message: String!
+    $token: String!
   )
   {
     createOneNotificationLog(
