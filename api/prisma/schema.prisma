@@ -140,6 +140,8 @@ model Employee {
   status         EmployeeStatus
   WorkingHistory WorkingHistory[]
   Payroll        Payroll[]
+  university     String?
+  faculty        String?
 }
 
 model WorkingHistory {

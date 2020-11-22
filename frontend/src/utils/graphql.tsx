@@ -405,8 +405,12 @@ export const GET_EMPLOYEE = gql`
     employees(where:{
       id: {
         equals: $id
-      }
-    }){
+      },
+    },
+    orderBy : [
+      {createdAt:asc}
+    ]
+    ){
       id
       name
       hiringType

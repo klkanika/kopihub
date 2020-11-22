@@ -10,5 +10,7 @@ schema.objectType({
     t.model.hiringType()
     t.model.earning()
     t.model.status()
+    t.model.university()
+    t.model.facalty()
   },
 })
