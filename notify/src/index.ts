@@ -152,8 +152,7 @@ mutation
     createOneNotificationLog(
         data : {
             user : {connect : { userName : $username}}
-            notification : 
-                {connect : {id: $notifyId }}
+            notificationId : $notifyId
             message : $message
             token : $token
         }
