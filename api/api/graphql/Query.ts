@@ -280,9 +280,6 @@ schema.queryType({
 
         const jobs: any = (
           await prisma.notificationLog.findMany({
-            include: {
-              notification: true,
-            },
             orderBy: [
               {
                 createdAt: "desc",

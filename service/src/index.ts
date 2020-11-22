@@ -89,7 +89,7 @@ const AddTask = async (orders) => {
 
 const TASK_QUERY = `
 {
-  tasks{
+  tasks(where: {NOT : [{status:CANCELED}, {status:COMPLETED}]}){
     serverId
   }
 }
