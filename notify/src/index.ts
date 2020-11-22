@@ -110,7 +110,7 @@ const getNotifications = async () =>{
         const now = moment().utcOffset('+0700').format(timeFormat)
         const nowDay = moment().utcOffset('+0700').day()
         const isDayNotify = ((nowDay == 1 && t.mon == true) || (nowDay == 2 && t.tue == true) || (nowDay == 3 && t.wed == true) || (nowDay == 4 && t.thu == true)
-          || (nowDay == 5 && t.fri == true) || (nowDay == 6 && t.sat == true) || (nowDay == 7 && t.sun == true))
+          || (nowDay == 5 && t.fri == true) || (nowDay == 6 && t.sat == true) || (nowDay == 0 && t.sun == true))
         console.log( `Notifications id:${t.id}, message:${t.message}, token:${t.token}, time:${time} ,isDayNotify:${isDayNotify}` );
         console.log( `Log condition:${(moment(now,timeFormat).diff(moment(time,timeFormat)) == 0 && isDayNotify)}, now:${now} ` );
 
