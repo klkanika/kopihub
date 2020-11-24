@@ -1,17 +1,19 @@
 import express from "express";
+import bodyParser from 'body-parser'
 
 const { PORT } = process.env
 const app = express();
 
+app.use(bodyParser.json());
+
 // define a route handler for the default home page
-app.get( "/", ( req, res ) => {
-  res.send( "Hello world!" );
-});
+// app.get( "/", ( req, res ) => {
+//   res.send( "Hello world!" );
+// });
 
 app.post("/api/admin-message" , async (req,res) => {
-    console.log('call api/admin-message')
-    console.log('req', req)
-    res.send("ok")
+  console.log(req.body);      // your JSON
+  res.send(req.body);    // echo the result back
 } );
 
 // start the Express server
