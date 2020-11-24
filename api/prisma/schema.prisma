@@ -194,3 +194,12 @@ model NotificationLog {
   token           String?
   message         String?
 }
+
+model OTP {
+  id              String        @id @default(uuid())
+  user            User          @relation(fields: [createdBy], references: [id])
+  createdBy       String
+  createdAt       DateTime      @default(now())
+  message         String?
+  tel             String?
+}
