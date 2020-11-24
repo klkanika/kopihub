@@ -11,6 +11,6 @@ schema.objectType({
     t.model.earning()
     t.model.status()
     t.model.university()
-    t.model.facalty()
+    t.model.faculty()
   },
 })
