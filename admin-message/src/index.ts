@@ -1,5 +1,6 @@
 import express from "express";
 import bodyParser from 'body-parser'
+import fetch from 'node-fetch'
 
 const { API, PORT } = process.env
 const app = express();
