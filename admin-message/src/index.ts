@@ -13,11 +13,15 @@ app.use(bodyParser.json());
 
 app.post("/api/admin-message" , async (req,res) => {
   console.log(req.body);      // your JSON
-  res.send(req.body);    // echo the result back
   // if(req.body.tel)
-  if(req.body.tel==="ข้อความ<<|>>ออย"){
-    await insertMessage(req.body.msg,req.body.tel);
+  try{
+    if(req.body.tel==="ข้อความ<<|>>ออย"){
+      await insertMessage(req.body.msg,req.body.tel);
+    }
+  }catch(ex){
+      console.log(ex)
   }
+  res.send(req.body);    // echo the result back
 } );
 
 // start the Express server
@@ -26,7 +30,7 @@ app.listen( PORT || 3030, () => {
 } );
 
 const insertMessage = async (msg : string, tel : string) =>{
-  console.log( `insertMessage`,msg);
+  console.log( `insertMessage`,msg,tel);
   if(msg && msg !== ""){
     const res = await (await fetch(API, {
         method: 'POST',
