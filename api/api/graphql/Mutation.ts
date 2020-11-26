@@ -51,6 +51,7 @@ schema.mutationType({
       t.crud.updateOneWorkingHistory(),
       t.crud.createOneWorkingHistory(),
       t.crud.createOneTaskLog(),
+      t.crud.createOneOTP(),
 
       t.field('createUser', {
         type: 'User',

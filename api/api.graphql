@@ -47,21 +47,25 @@ input DateTimeNullableFilter {
 type Employee {
   createdAt: DateTime!
   earning: Float!
+  faculty: String
   hiringType: HiringType!
   id: String!
   name: String!
   status: EmployeeStatus!
+  university: String
   updateAt: DateTime!
 }
 
 input EmployeeCreateInput {
   createdAt: DateTime
   earning: Float!
+  faculty: String
   hiringType: HiringType!
   id: String
   name: String!
   Payroll: PayrollCreateManyWithoutEmployeeInput
   status: EmployeeStatus!
+  university: String
   updateAt: DateTime
   WorkingHistory: WorkingHistoryCreateManyWithoutEmployeeInput
 }
@@ -79,10 +83,12 @@ input EmployeeCreateOneWithoutWorkingHistoryInput {
 input EmployeeCreateWithoutPayrollInput {
   createdAt: DateTime
   earning: Float!
+  faculty: String
   hiringType: HiringType!
   id: String
   name: String!
   status: EmployeeStatus!
+  university: String
   updateAt: DateTime
   WorkingHistory: WorkingHistoryCreateManyWithoutEmployeeInput
 }
@@ -90,21 +96,25 @@ input EmployeeCreateWithoutPayrollInput {
 input EmployeeCreateWithoutWorkingHistoryInput {
   createdAt: DateTime
   earning: Float!
+  faculty: String
   hiringType: HiringType!
   id: String
   name: String!
   Payroll: PayrollCreateManyWithoutEmployeeInput
   status: EmployeeStatus!
+  university: String
   updateAt: DateTime
 }
 
 input EmployeeOrderByInput {
   createdAt: SortOrder
   earning: SortOrder
+  faculty: SortOrder
   hiringType: SortOrder
   id: SortOrder
   name: SortOrder
   status: SortOrder
+  university: SortOrder
   updateAt: SortOrder
 }
 
@@ -116,11 +126,13 @@ enum EmployeeStatus {
 input EmployeeUpdateInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   earning: FloatFieldUpdateOperationsInput
+  faculty: NullableStringFieldUpdateOperationsInput
   hiringType: HiringType
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   Payroll: PayrollUpdateManyWithoutEmployeeInput
   status: EmployeeStatus
+  university: NullableStringFieldUpdateOperationsInput
   updateAt: DateTimeFieldUpdateOperationsInput
   WorkingHistory: WorkingHistoryUpdateManyWithoutEmployeeInput
 }
@@ -135,11 +147,13 @@ input EmployeeUpdateOneRequiredWithoutWorkingHistoryInput {
 input EmployeeUpdateWithoutWorkingHistoryDataInput {
   createdAt: DateTimeFieldUpdateOperationsInput
   earning: FloatFieldUpdateOperationsInput
+  faculty: NullableStringFieldUpdateOperationsInput
   hiringType: HiringType
   id: StringFieldUpdateOperationsInput
   name: StringFieldUpdateOperationsInput
   Payroll: PayrollUpdateManyWithoutEmployeeInput
   status: EmployeeStatus
+  university: NullableStringFieldUpdateOperationsInput
   updateAt: DateTimeFieldUpdateOperationsInput
 }
 
@@ -152,6 +166,7 @@ input EmployeeWhereInput {
   AND: [EmployeeWhereInput!]
   createdAt: DateTimeFilter
   earning: FloatFilter
+  faculty: StringNullableFilter
   hiringType: HiringType
   id: StringFilter
   name: StringFilter
@@ -159,6 +174,7 @@ input EmployeeWhereInput {
   OR: [EmployeeWhereInput!]
   Payroll: PayrollListRelationFilter
   status: EmployeeStatus
+  university: StringNullableFilter
   updateAt: DateTimeFilter
   WorkingHistory: WorkingHistoryListRelationFilter
 }
@@ -379,6 +395,7 @@ type Mutation {
   createOneLogUser(data: LogUserCreateInput!): LogUser!
   createOneNotification(data: NotificationCreateInput!): Notification!
   createOneNotificationLog(data: NotificationLogCreateInput!): NotificationLog!
+  createOneOTP(data: OTPCreateInput!): OTP!
   createOnePayroll(data: PayrollCreateInput!): Payroll!
   createOneSteamer(data: SteamerCreateInput!): Steamer!
   createOneTask(data: TaskCreateInput!): Task!
@@ -770,6 +787,108 @@ input NotificationWhereUniqueInput {
 
 input NullableStringFieldUpdateOperationsInput {
   set: String
+}
+
+type OTP {
+  createdAt: DateTime!
+  id: String!
+  message: String
+  tel: String
+}
+
+input OTPCreateInput {
+  createdAt: DateTime
+  id: String
+  message: String
+  tel: String
+  user: UserCreateOneWithoutOTPInput!
+}
+
+input OTPCreateManyWithoutUserInput {
+  connect: [OTPWhereUniqueInput!]
+  create: [OTPCreateWithoutUserInput!]
+}
+
+input OTPCreateWithoutUserInput {
+  createdAt: DateTime
+  id: String
+  message: String
+  tel: String
+}
+
+input OTPListRelationFilter {
+  every: OTPWhereInput
+  none: OTPWhereInput
+  some: OTPWhereInput
+}
+
+input OTPScalarWhereInput {
+  AND: [OTPScalarWhereInput!]
+  createdAt: DateTimeFilter
+  createdBy: StringFilter
+  id: StringFilter
+  message: StringNullableFilter
+  NOT: [OTPScalarWhereInput!]
+  OR: [OTPScalarWhereInput!]
+  tel: StringNullableFilter
+}
+
+input OTPUpdateManyDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  message: NullableStringFieldUpdateOperationsInput
+  tel: NullableStringFieldUpdateOperationsInput
+}
+
+input OTPUpdateManyWithoutUserInput {
+  connect: [OTPWhereUniqueInput!]
+  create: [OTPCreateWithoutUserInput!]
+  delete: [OTPWhereUniqueInput!]
+  deleteMany: [OTPScalarWhereInput!]
+  disconnect: [OTPWhereUniqueInput!]
+  set: [OTPWhereUniqueInput!]
+  update: [OTPUpdateWithWhereUniqueWithoutUserInput!]
+  updateMany: [OTPUpdateManyWithWhereNestedInput!]
+  upsert: [OTPUpsertWithWhereUniqueWithoutUserInput!]
+}
+
+input OTPUpdateManyWithWhereNestedInput {
+  data: OTPUpdateManyDataInput!
+  where: OTPScalarWhereInput!
+}
+
+input OTPUpdateWithoutUserDataInput {
+  createdAt: DateTimeFieldUpdateOperationsInput
+  id: StringFieldUpdateOperationsInput
+  message: NullableStringFieldUpdateOperationsInput
+  tel: NullableStringFieldUpdateOperationsInput
+}
+
+input OTPUpdateWithWhereUniqueWithoutUserInput {
+  data: OTPUpdateWithoutUserDataInput!
+  where: OTPWhereUniqueInput!
+}
+
+input OTPUpsertWithWhereUniqueWithoutUserInput {
+  create: OTPCreateWithoutUserInput!
+  update: OTPUpdateWithoutUserDataInput!
+  where: OTPWhereUniqueInput!
+}
+
+input OTPWhereInput {
+  AND: [OTPWhereInput!]
+  createdAt: DateTimeFilter
+  createdBy: StringFilter
+  id: StringFilter
+  message: StringNullableFilter
+  NOT: [OTPWhereInput!]
+  OR: [OTPWhereInput!]
+  tel: StringNullableFilter
+  user: UserWhereInput
+}
+
+input OTPWhereUniqueInput {
+  id: String
 }
 
 type Payroll {
@@ -1638,6 +1757,7 @@ input UserCreateInput {
   name: String
   Notification: NotificationCreateManyWithoutUserInput
   NotificationLog: NotificationLogCreateManyWithoutUserInput
+  OTP: OTPCreateManyWithoutUserInput
   password: String!
   Task: TaskCreateManyWithoutUserInput
   TaskLog: TaskLogCreateManyWithoutUserInput
@@ -1660,6 +1780,11 @@ input UserCreateOneWithoutNotificationLogInput {
   create: UserCreateWithoutNotificationLogInput
 }
 
+input UserCreateOneWithoutOTPInput {
+  connect: UserWhereUniqueInput
+  create: UserCreateWithoutOTPInput
+}
+
 input UserCreateOneWithoutTaskInput {
   connect: UserWhereUniqueInput
   create: UserCreateWithoutTaskInput
@@ -1678,6 +1803,7 @@ input UserCreateWithoutLogUserInput {
   name: String
   Notification: NotificationCreateManyWithoutUserInput
   NotificationLog: NotificationLogCreateManyWithoutUserInput
+  OTP: OTPCreateManyWithoutUserInput
   password: String!
   Task: TaskCreateManyWithoutUserInput
   TaskLog: TaskLogCreateManyWithoutUserInput
@@ -1693,6 +1819,7 @@ input UserCreateWithoutNotificationInput {
   LogUser: LogUserCreateManyWithoutUserInput
   name: String
   NotificationLog: NotificationLogCreateManyWithoutUserInput
+  OTP: OTPCreateManyWithoutUserInput
   password: String!
   Task: TaskCreateManyWithoutUserInput
   TaskLog: TaskLogCreateManyWithoutUserInput
@@ -1708,6 +1835,23 @@ input UserCreateWithoutNotificationLogInput {
   LogUser: LogUserCreateManyWithoutUserInput
   name: String
   Notification: NotificationCreateManyWithoutUserInput
+  OTP: OTPCreateManyWithoutUserInput
+  password: String!
+  Task: TaskCreateManyWithoutUserInput
+  TaskLog: TaskLogCreateManyWithoutUserInput
+  updatedAt: DateTime
+  userName: String!
+}
+
+input UserCreateWithoutOTPInput {
+  createdAt: DateTime
+  enableStatus: EnableStatus!
+  id: String
+  is_admin: Boolean
+  LogUser: LogUserCreateManyWithoutUserInput
+  name: String
+  Notification: NotificationCreateManyWithoutUserInput
+  NotificationLog: NotificationLogCreateManyWithoutUserInput
   password: String!
   Task: TaskCreateManyWithoutUserInput
   TaskLog: TaskLogCreateManyWithoutUserInput
@@ -1724,6 +1868,7 @@ input UserCreateWithoutTaskInput {
   name: String
   Notification: NotificationCreateManyWithoutUserInput
   NotificationLog: NotificationLogCreateManyWithoutUserInput
+  OTP: OTPCreateManyWithoutUserInput
   password: String!
   TaskLog: TaskLogCreateManyWithoutUserInput
   updatedAt: DateTime
@@ -1739,6 +1884,7 @@ input UserCreateWithoutTaskLogInput {
   name: String
   Notification: NotificationCreateManyWithoutUserInput
   NotificationLog: NotificationLogCreateManyWithoutUserInput
+  OTP: OTPCreateManyWithoutUserInput
   password: String!
   Task: TaskCreateManyWithoutUserInput
   updatedAt: DateTime
@@ -1760,6 +1906,7 @@ input UserUpdateInput {
   name: NullableStringFieldUpdateOperationsInput
   Notification: NotificationUpdateManyWithoutUserInput
   NotificationLog: NotificationLogUpdateManyWithoutUserInput
+  OTP: OTPUpdateManyWithoutUserInput
   password: StringFieldUpdateOperationsInput
   Task: TaskUpdateManyWithoutUserInput
   TaskLog: TaskLogUpdateManyWithoutUserInput
@@ -1796,6 +1943,7 @@ input UserUpdateWithoutLogUserDataInput {
   name: NullableStringFieldUpdateOperationsInput
   Notification: NotificationUpdateManyWithoutUserInput
   NotificationLog: NotificationLogUpdateManyWithoutUserInput
+  OTP: OTPUpdateManyWithoutUserInput
   password: StringFieldUpdateOperationsInput
   Task: TaskUpdateManyWithoutUserInput
   TaskLog: TaskLogUpdateManyWithoutUserInput
@@ -1812,6 +1960,7 @@ input UserUpdateWithoutTaskDataInput {
   name: NullableStringFieldUpdateOperationsInput
   Notification: NotificationUpdateManyWithoutUserInput
   NotificationLog: NotificationLogUpdateManyWithoutUserInput
+  OTP: OTPUpdateManyWithoutUserInput
   password: StringFieldUpdateOperationsInput
   TaskLog: TaskLogUpdateManyWithoutUserInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -1827,6 +1976,7 @@ input UserUpdateWithoutTaskLogDataInput {
   name: NullableStringFieldUpdateOperationsInput
   Notification: NotificationUpdateManyWithoutUserInput
   NotificationLog: NotificationLogUpdateManyWithoutUserInput
+  OTP: OTPUpdateManyWithoutUserInput
   password: StringFieldUpdateOperationsInput
   Task: TaskUpdateManyWithoutUserInput
   updatedAt: DateTimeFieldUpdateOperationsInput
@@ -1860,6 +2010,7 @@ input UserWhereInput {
   Notification: NotificationListRelationFilter
   NotificationLog: NotificationLogListRelationFilter
   OR: [UserWhereInput!]
+  OTP: OTPListRelationFilter
   password: StringFilter
   Task: TaskListRelationFilter
   TaskLog: TaskLogListRelationFilter
