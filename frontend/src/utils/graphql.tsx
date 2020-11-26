@@ -415,6 +415,8 @@ export const GET_EMPLOYEE = gql`
       name
       hiringType
       earning
+      university
+      faculty
     }
   }
 `
@@ -433,13 +435,15 @@ export const GET_EMPLOYEES = gql`
 `
 
 export const CREATE_EMPLOYEE = gql`
-mutation createEmployee($name: String!, $hiringType: HiringType!, $earning: Float!){
+mutation createEmployee($name: String!, $hiringType: HiringType!, $earning: Float!, $university: String, $faculty: String){
   createOneEmployee(
     data: {
       name : $name
       hiringType : $hiringType
       earning : $earning
       status : ACTIVE
+      university: $university
+      faculty: $faculty
     }
   ){
     id
@@ -448,12 +452,14 @@ mutation createEmployee($name: String!, $hiringType: HiringType!, $earning: Floa
 `
 
 export const UPDATE_EMPLOYEE = gql`
-mutation updateEmployee($id: String!, $name: String!, $hiringType: HiringType!, $earning: Float!){
+mutation updateEmployee($id: String!, $name: String!, $hiringType: HiringType!, $earning: Float!, $university: String, $faculty: String){
   updateOneEmployee(
     data : {
       name : { set : $name }
       hiringType : $hiringType
       earning : { set : $earning }
+      university : { set : $university }
+      faculty : { set : $faculty }
     }
     where : {
       id : $id

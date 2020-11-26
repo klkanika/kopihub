@@ -20,6 +20,8 @@ const EmployeePage = () => {
         name: emp.name,
         type: emp.hiringType,
         earning: emp.earning,
+        university: emp.university,
+        faculty: emp.faculty
       })
     },
     onError: (err) => {
@@ -88,7 +90,9 @@ const EmployeePage = () => {
       variables: {
         name: values.name,
         hiringType: values.type,
-        earning: parseFloat(values.earning)
+        earning: parseFloat(values.earning),
+        university: values.university,
+        faculty: values.faculty
       }
     })
     form.resetFields();
@@ -102,7 +106,9 @@ const EmployeePage = () => {
         id: employee && employee.id,
         name: values.name,
         hiringType: values.type,
-        earning: parseFloat(values.earning)
+        earning: parseFloat(values.earning),
+        university: values.university ? values.university : null,
+        faculty: values.faculty ? values.faculty : null
       }
     })
     editForm.resetFields();
@@ -188,6 +194,18 @@ const EmployeePage = () => {
           >
             <Input type="number" placeholder="150" />
           </Form.Item>
+          <Form.Item
+            name="university"
+            label="มหาวิทยาลัย"
+          >
+            <Input placeholder="มหาวิทยาลัยบูรพา" />
+          </Form.Item>
+          <Form.Item
+            name="faculty"
+            label="คณะ"
+          >
+            <Input placeholder="คณะการจัดการ และการท่องเที่ยว" />
+          </Form.Item>
         </Form>
       </Modal>
 
@@ -245,6 +263,18 @@ const EmployeePage = () => {
             ]}
           >
             <Input type="number" placeholder="150" />
+          </Form.Item>
+          <Form.Item
+            name="university"
+            label="มหาวิทยาลัย"
+          >
+            <Input placeholder="มหาวิทยาลัยบูรพา" />
+          </Form.Item>
+          <Form.Item
+            name="faculty"
+            label="คณะ"
+          >
+            <Input placeholder="คณะการจัดการ และการท่องเที่ยว" />
           </Form.Item>
         </Form>
       </Modal>
