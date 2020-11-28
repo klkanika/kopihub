@@ -1,6 +1,6 @@
 import { useLazyQuery, useMutation, useQuery } from "@apollo/react-hooks";
-import { AppBar, BottomNavigation, BottomNavigationAction, MenuItem, MenuList, Paper, Tab, Tabs, Button as MaterialButton, TextField, InputAdornment, FormControl, Select as MaterialSelect, InputLabel, NativeSelect, InputBase, withStyles, Modal as MaterialModal } from "@material-ui/core";
-import { Button, Layout, Table, Form, Input, Select, Modal, Tag, Tooltip } from "antd";
+import { AppBar, BottomNavigation, BottomNavigationAction, MenuItem, MenuList, Paper, Tab, Tabs, Button as MaterialButton, TextField, InputAdornment, FormControl, Select as MaterialSelect, InputLabel, NativeSelect, InputBase, withStyles, Modal as MaterialModal, Popover } from "@material-ui/core";
+import { Button, Layout, Table, Form, Input, Select, Modal, Tag, Tooltip, Typography } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import React, { useState } from "react";
 import { CREATE_EMPLOYEE, GET_EMPLOYEE, GET_EMPLOYEES, DELETE_EMPLOYEE, UPDATE_EMPLOYEE } from "../../utils/graphql";
@@ -8,7 +8,7 @@ import PayrollHeader from "./PayrollHeader";
 import AddIcon from '@material-ui/icons/Add';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import SearchIcon from '@material-ui/icons/Search';
-import HourglassFullIcon from '@material-ui/icons/HourglassFull';
+import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
 import TodayIcon from '@material-ui/icons/Today';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
@@ -18,6 +18,7 @@ import bank_bbl from '../../imgs/bank_bbl.svg';
 import bank_kbank from '../../imgs/bank_kbank.svg';
 import bank_ktb from '../../imgs/bank_ktb.svg';
 import bank_scb from '../../imgs/bank_scb.svg';
+import default_profile from '../../imgs/profile.png';
 
 const EmployeePage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -52,6 +53,7 @@ const EmployeePage = () => {
       window.alert(err)
     }
   });
+
   const { data: employeesData, loading: employeesLoading } = useQuery(GET_EMPLOYEES, {
     fetchPolicy: 'no-cache',
     variables: {
@@ -62,13 +64,51 @@ const EmployeePage = () => {
       toCreatedDate: toCreatedDate ? toCreatedDate : undefined,
     },
     pollInterval: 1000,
-    onCompleted: (sre) => {
-      console.log('hello bitch')
-    },
     onError: (err) => {
       window.alert(err)
     }
   });
+
+  const MoreOptions = (props: any) => {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    let emp = props.emp
+    let empId = emp.id
+    const handleClick = (event: any) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
+    return (
+      <div>
+        <MoreVertIcon className="cursor-pointer" onClick={handleClick} />
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          <div className="w-24">
+            <MenuItem>แก้ไข</MenuItem>
+            {emp.status === 'ACTIVE' ? <MenuItem onClick={() => { deleteEmployee({ variables: { id: empId } }) }}>ลบ</MenuItem> : ''}
+          </div>
+        </Popover>
+      </div>
+    );
+  }
 
   const bank_list = [
     {
@@ -158,12 +198,29 @@ const EmployeePage = () => {
         <Tooltip title={status === 'ACTIVE' ? 'ทำงานอยู่' : 'เลิกจ้างแล้ว'} placement="bottom">
           <div className="rounded-full w-4 h-4 m-auto" style={{ backgroundColor: status === 'ACTIVE' ? '#4C6EE4' : '#D6D6D6' }}></div>
         </Tooltip>
-      )
+      ),
+      sorter: (a: any, b: any) => {
+        return b.hiringType.localeCompare(a.hiringType)
+      },
     },
     {
       title: "",
       dataIndex: "profilePictureUrl",
       key: "profilePictureUrl",
+      render: (profilePictureUrl: any) => {
+        return (
+          <Tooltip title={profilePictureUrl ? 'คลิกเพื่อดูรูป' : ''} placement="bottom">
+            <div className={`w-12 ${profilePictureUrl ? 'cursor-pointer' : ''}`} onClick={() => {
+              if (profilePictureUrl) {
+                setShowIdCardModal(true)
+                setIdCard(profilePictureUrl)
+              }
+            }}>
+              <img className="object-cover rounded-full" src={profilePictureUrl ? profilePictureUrl : default_profile} />
+            </div>
+          </Tooltip>
+        )
+      }
     },
     {
       title: "ชื่อเล่น",
@@ -218,9 +275,8 @@ const EmployeePage = () => {
     },
     {
       title: "ปีที่ทำงาน",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (createdAt: any) => {
+      render: (emp: any) => {
+        let createdAt = emp.createdAt
         var currentDate = moment();
         var createdAtDate = moment(createdAt);
 
@@ -233,13 +289,19 @@ const EmployeePage = () => {
         var days = currentDate.diff(createdAtDate, 'days');
 
         return (years ? years + ' ปี ' : '') + (months ? months + ' เดือน ' : '') + days + ' วัน'
-      }
+      },
+      sorter: (a: any, b: any) => {
+        return moment(b.createdAt).startOf('day').diff(moment(a.createdAt).startOf('day'))
+      },
     },
     {
       title: "รูปแบบ",
       dataIndex: "hiringType",
       key: "hiringType",
-      render: (hiringType: any) => <div>{hiringType === 'HOURLY' ? <HourglassFullIcon /> : <TodayIcon />} {hiringType === 'HOURLY' ? 'ชั่วโมง' : 'รายวัน'}</div>
+      render: (hiringType: any) => <div>{hiringType === 'HOURLY' ? <QueryBuilderIcon className="mr-1" /> : <TodayIcon />} {hiringType === 'HOURLY' ? 'ชั่วโมง' : 'รายวัน'}</div>,
+      sorter: (a: any, b: any) => {
+        return b.hiringType.localeCompare(a.hiringType)
+      },
     },
     {
       title: "เริ่มงานวันแรก",
@@ -247,13 +309,16 @@ const EmployeePage = () => {
       key: "createdAt",
       render: (createdAt: any) => {
         return moment(createdAt).utcOffset(7).format('DD/MM/YYYY')
-      }
+      },
+      sorter: (a: any, b: any) => {
+        return moment(a.createdAt).startOf('day').diff(moment(b.createdAt).startOf('day'))
+      },
     },
     {
       title: "",
-      dataIndex: "id",
-      key: "id",
-      render: (id: any) => <MoreVertIcon className="cursor-pointer" />
+      render: (emp: any) => {
+        return <MoreOptions emp={emp} />
+      }
     },
   ];
 
@@ -294,7 +359,7 @@ const EmployeePage = () => {
   return (
     <Layout.Content>
       <PayrollHeader value="employee" />
-      <div className="bg-white flex flex-col flex-1">
+      <div className="flex flex-col flex-1">
         <div className="h-16 w-full flex items-center text-base border-b border-gray-300 pl-6 pt-4">
           รายชื่อพนักงาน
         </div>
@@ -412,7 +477,15 @@ const EmployeePage = () => {
           <Table
             dataSource={datasource}
             columns={columns}
-            pagination={{ pageSize: 20 }}
+            pagination={{ position: ['bottomRight'], pageSize: 20 }}
+            className="ml-8 mr-8"
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: event => {
+                  console.log(record)
+                },
+              };
+            }}
           />
         </div>
       </div>

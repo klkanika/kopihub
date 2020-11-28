@@ -441,6 +441,7 @@ export const GET_EMPLOYEES = gql`
         hiringType: $hiringTypeSearch,
         OR: [
           { name: { contains: $textSearch } },
+          { fullName: { contains: $textSearch } },
           { tel: { contains: $textSearch } },
           { lineId: { contains: $textSearch } }
         ]
@@ -458,6 +459,7 @@ export const GET_EMPLOYEES = gql`
       bank
       bankAccount
       idCardPictureUrl
+      profilePictureUrl
       createdAt
     }
   }
