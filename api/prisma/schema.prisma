@@ -36,7 +36,6 @@ enum QueueStatus {
 enum HiringType {
   HOURLY
   DAILY
-  MONTHLY
 }
 
 enum EmployeeStatus {
@@ -44,17 +43,41 @@ enum EmployeeStatus {
   DELETED
 }
 
+enum BankName {
+  KBANK
+  BBL
+  KTB
+  BAY
+  KKP
+  CITI
+  CIMB
+  TMB
+  TISCO
+  SCB
+  TBANK
+  UOBT
+  LHBANK
+  BOC
+  GSB
+  GHB
+  ISBT
+}
+
 model User {
-  id           String       @id @default(uuid())
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  name         String?
-  userName     String       @unique
-  password     String
-  enableStatus EnableStatus
-  LogUser      LogUser[]
-  Task         Task[]
-  is_admin     Boolean      @default(value: false)
+  id              String            @id @default(uuid())
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  name            String?
+  userName        String            @unique
+  password        String
+  enableStatus    EnableStatus
+  LogUser         LogUser[]
+  Task            Task[]
+  is_admin        Boolean           @default(value: false)
+  TaskLog         TaskLog[]
+  Notification    Notification[]
+  NotificationLog NotificationLog[]
+  OTP             OTP[]
 }
 
 model LogUser {
@@ -83,18 +106,19 @@ model Task {
   Steamer    Steamer[]
   serverId   String?
 
+  TaskLog TaskLog[]
   @@index(createdBy)
 }
 
 model TaskLog {
-  id            String     @id @default(uuid())
-  taskId        String
-  task          Task       @relation(fields: [taskId], references: [id])
-  status        TaskStatus
-  updateStatus  TaskStatus
-  user          User       @relation(fields: [createdBy], references: [id])
-  createdBy     String
-  createdAt     DateTime   @default(now())
+  id           String     @id @default(uuid())
+  taskId       String
+  task         Task       @relation(fields: [taskId], references: [id])
+  status       TaskStatus
+  updateStatus TaskStatus
+  user         User       @relation(fields: [createdBy], references: [id])
+  createdBy    String
+  createdAt    DateTime   @default(now())
 }
 
 model Steamer {
@@ -131,30 +155,57 @@ model Table {
 }
 
 model Employee {
-  id             String           @id @default(uuid())
-  createdAt      DateTime         @default(now())
-  updateAt       DateTime         @updatedAt
-  name           String
-  hiringType     HiringType
-  earning        Float
-  status         EmployeeStatus
-  WorkingHistory WorkingHistory[]
-  Payroll        Payroll[]
-  university     String?
-  faculty        String?
+  id                String           @id @default(uuid())
+  createdAt         DateTime         @default(now())
+  updateAt          DateTime         @updatedAt
+  name              String
+  fullName          String
+  tel               String?
+  lineId            String?
+  bank              BankName?
+  bankAccount       String?
+  hiringType        HiringType
+  earning           Float
+  status            EmployeeStatus
+  WorkingHistory    WorkingHistory[]
+  Payroll           Payroll[]
+  universityId      String?
+  university        University?      @relation(fields: [universityId], references: [id])
+  facultyId         String?
+  faculty           Faculty?         @relation(fields: [facultyId], references: [id])
+  profilePictureUrl String?
+  idCardPictureUrl  String?
+  withdrawableMoney Float?
+  withdrawnMoney    Float?
+}
+
+model University {
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  updateAt  DateTime   @updatedAt
+  name      String
+  Employee  Employee[]
+}
+
+model Faculty {
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  updateAt  DateTime   @updatedAt
+  name      String
+  Employee  Employee[]
 }
 
 model WorkingHistory {
-  id                 String     @id @default(uuid())
-  createdAt          DateTime   @default(now())
-  updateAt           DateTime   @updatedAt
-  employee           Employee   @relation(fields: [employeeId], references: [id])
-  employeeId         String
-  historyDate        DateTime
-  hours              Float
-  hiringType         HiringType
-  earningRate        Float
-  earning            Float
+  id          String     @id @default(uuid())
+  createdAt   DateTime   @default(now())
+  updateAt    DateTime   @updatedAt
+  employee    Employee   @relation(fields: [employeeId], references: [id])
+  employeeId  String
+  historyDate DateTime
+  hours       Float
+  hiringType  HiringType
+  earningRate Float
+  earning     Float
 }
 
 model Payroll {
@@ -168,38 +219,38 @@ model Payroll {
 }
 
 model Notification {
-  id              String    @id @default(uuid())
-  message         String
-  hour            Int
-  minute          Int
-  token           String
-  user            User      @relation(fields: [updatedBy], references: [id])
-  updatedBy       String
-  updatedAt       DateTime  @default(now()) @updatedAt
-  mon             Boolean      @default(value: false)
-  tue             Boolean      @default(value: false)
-  wed             Boolean      @default(value: false)
-  thu             Boolean      @default(value: false)
-  fri             Boolean      @default(value: false)
-  sat             Boolean      @default(value: false)
-  sun             Boolean      @default(value: false)
+  id        String   @id @default(uuid())
+  message   String
+  hour      Int
+  minute    Int
+  token     String
+  user      User     @relation(fields: [updatedBy], references: [id])
+  updatedBy String
+  updatedAt DateTime @default(now()) @updatedAt
+  mon       Boolean  @default(value: false)
+  tue       Boolean  @default(value: false)
+  wed       Boolean  @default(value: false)
+  thu       Boolean  @default(value: false)
+  fri       Boolean  @default(value: false)
+  sat       Boolean  @default(value: false)
+  sun       Boolean  @default(value: false)
 }
 
 model NotificationLog {
-  id              String        @id @default(uuid())
-  notificationId  String
-  user            User          @relation(fields: [createdBy], references: [id])
-  createdBy       String
-  createdAt       DateTime      @default(now())
-  token           String?
-  message         String?
+  id             String   @id @default(uuid())
+  notificationId String
+  user           User     @relation(fields: [createdBy], references: [id])
+  createdBy      String
+  createdAt      DateTime @default(now())
+  token          String?
+  message        String?
 }
 
 model OTP {
-  id              String        @id @default(uuid())
-  user            User          @relation(fields: [createdBy], references: [id])
-  createdBy       String
-  createdAt       DateTime      @default(now())
-  message         String?
-  tel             String?
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [createdBy], references: [id])
+  createdBy String
+  createdAt DateTime @default(now())
+  message   String?
+  tel       String?
 }
