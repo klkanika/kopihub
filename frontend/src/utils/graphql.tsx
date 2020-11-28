@@ -422,14 +422,43 @@ export const GET_EMPLOYEE = gql`
 `
 
 export const GET_EMPLOYEES = gql`
-  query getEmployees{
-    employees(where:{
-      status : ACTIVE
-    }){
+  query getEmployees($textSearch: String, $statusSearch: EmployeeStatus, $hiringTypeSearch: HiringType, $fromCreatedDate: DateTime, $toCreatedDate: DateTime){
+    employees(
+      where: {
+        AND: [
+          {
+            createdAt: {
+              gte: $fromCreatedDate
+            }
+          },
+          {
+            createdAt: {
+              lte: $toCreatedDate
+            }
+          }
+        ],
+        status: $statusSearch,
+        hiringType: $hiringTypeSearch,
+        OR: [
+          { name: { contains: $textSearch } },
+          { tel: { contains: $textSearch } },
+          { lineId: { contains: $textSearch } }
+        ]
+      }
+      orderBy : [{createdAt:asc}]
+    ){
       id
       name
       hiringType
       earning
+      status
+      fullName
+      tel
+      lineId
+      bank
+      bankAccount
+      idCardPictureUrl
+      createdAt
     }
   }
 `

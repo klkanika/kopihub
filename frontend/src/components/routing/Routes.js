@@ -68,7 +68,10 @@ export default () => (
         <Route exact path="/staffqueue" component={StaffQueue} />
         <Route exact path="/customerqueue" component={CustomerQueue} />
         <Route exact path="/cancelqueue" component={CustomerCancelQueue} />
-        <Route path="/payroll" component={Payroll} />
+        <AdminRoute exact path="/payroll/worklog" component={WorkLogPage} />
+        <AdminRoute exact path="/payroll/payment" component={PaymentPage} />
+        <AdminRoute exact path="/payroll/employee" component={EmployeePage} />
+        <AdminRoute exact path="/payroll" component={EmployeePage} />
         {/* <Route exact path="*" component={Home} /> */}
       </Switch>
     </Fragment>

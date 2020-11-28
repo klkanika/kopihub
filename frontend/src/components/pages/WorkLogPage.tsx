@@ -4,6 +4,7 @@ import { useForm } from "antd/lib/form/Form";
 import React, { useState } from "react";
 import { GET_WORKLOGS, DELETE_WORKLOG, UPDATE_WORKLOG, GET_EMPLOYEES, GET_WORKLOG, CREATE_WORKLOG } from "../../utils/graphql";
 import moment from "moment";
+import PayrollHeader from "./PayrollHeader";
 
 const WorkLogPage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -198,6 +199,7 @@ const WorkLogPage = () => {
 
   return (
     <Layout.Content>
+      <PayrollHeader value="worklog" />
       <div className="m-4 bg-white flex flex-col flex-1">
         <div className="h-16 w-full flex items-center px-8 text-base border-b border-gray-300">
           ประวัติการทำงาน

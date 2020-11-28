@@ -44,23 +44,11 @@ enum EmployeeStatus {
 }
 
 enum BankName {
-  KBANK
+  SCB
   BBL
   KTB
   BAY
-  KKP
-  CITI
-  CIMB
-  TMB
-  TISCO
-  SCB
-  TBANK
-  UOBT
-  LHBANK
-  BOC
-  GSB
-  GHB
-  ISBT
+  KBANK
 }
 
 model User {

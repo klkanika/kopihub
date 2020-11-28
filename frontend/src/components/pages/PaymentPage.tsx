@@ -14,6 +14,7 @@ import { ColumnsType } from "antd/lib/table";
 import React, { useState } from "react";
 import { CREATE_PAYROLL, GET_EMLOYEES_EARNING, GET_EMPLOYEE_HISTORIES } from "../../utils/graphql";
 import moment from "moment";
+import PayrollHeader from "./PayrollHeader";
 
 const PaymentPage = () => {
   const [showPayModal, setShowPayModal] = useState(false);
@@ -131,6 +132,7 @@ const PaymentPage = () => {
 
   return (
     <Layout.Content>
+      <PayrollHeader value="payment" />
       <div className="m-4 bg-white flex flex-col flex-1">
         <div className="h-16 w-full flex items-center px-8 text-base border-b border-gray-300">
           การจ่ายเงิน

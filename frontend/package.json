@@ -4,7 +4,10 @@
   "private": true,
   "dependencies": {
     "@apollo/react-hooks": "^4.0.0",
+    "@emotion/core": "^10.0.35",
     "@line/liff": "^2.5.0",
+    "@material-ui/core": "^4.11.1",
+    "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -31,8 +34,7 @@
     "socket.io-client": "^2.3.0",
     "tailwindcss": "^1.6.2",
     "typescript": "~3.7.2",
-    "use-socketio": "^2.0.3",
-    "@emotion/core": "^10.0.35"
+    "use-socketio": "^2.0.3"
   },
   "scripts": {
     "build:style": "tailwind build src/styles/style.css  -o src/styles/tailwind.css",
