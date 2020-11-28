@@ -159,7 +159,7 @@ model Employee {
   createdAt         DateTime         @default(now())
   updateAt          DateTime         @updatedAt
   name              String
-  fullName          String
+  fullName          String           @default("")
   tel               String?
   lineId            String?
   bank              BankName?
