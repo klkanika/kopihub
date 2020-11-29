@@ -413,10 +413,29 @@ export const GET_EMPLOYEE = gql`
     ){
       id
       name
+      fullName
+      tel
+      lineId
+      bank
+      bankAccount
       hiringType
       earning
-      university
-      faculty
+      university{
+        id
+        name
+      }
+      faculty{
+        id
+        name
+      }
+      profilePictureUrl
+      idCardPictureUrl
+      employeeWatcher{
+        id
+        name
+        tel
+      }
+      address
     }
   }
 `
@@ -482,23 +501,26 @@ mutation createEmployee($name: String!, $hiringType: HiringType!, $earning: Floa
 }
 `
 
-export const UPDATE_EMPLOYEE = gql`
-mutation updateEmployee($id: String!, $name: String!, $hiringType: HiringType!, $earning: Float!, $university: String, $faculty: String){
-  updateOneEmployee(
-    data : {
-      name : { set : $name }
-      hiringType : $hiringType
-      earning : { set : $earning }
-      university : { set : $university }
-      faculty : { set : $faculty }
-    }
-    where : {
-      id : $id
-    }
+export const UPSERT_EMPLOYEE = gql`
+mutation upsertEmployee($id: String, $name: String!, $fullName: String!, $tel: String, $lineId: String, $address: String, $universityName: String, $facultyName: String, $hiringType: String!, $earning: Float!, $bank: String, $bankAccount: String, $employeeWatcherName: String, $employeeWatcherTel: String, $profilePictureUrl: String, $idCardPictureUrl: String){
+  upsertEmployee(
+    id: $id,
+    name: $name,
+    fullName: $fullName,
+    tel: $tel,
+    lineId: $lineId,
+    address: $address,
+    universityName: $universityName,
+    facultyName: $facultyName,
+    hiringType: $hiringType,
+    earning: $earning,
+    bank: $bank,
+    bankAccount: $bankAccount,
+    employeeWatcherName: $employeeWatcherName,
+    employeeWatcherTel: $employeeWatcherTel,
+    profilePictureUrl: $profilePictureUrl,
+    idCardPictureUrl: $idCardPictureUrl
   )
-  {
-      id 
-  }
 } 
 `
 
@@ -763,4 +785,32 @@ export const DELETE_NOTIFICATION = gql`
       id
     }
   } 
+`
+
+export const GET_UNIVERSITIES = gql`
+  query getUniversities{
+    universities{
+      id
+      name
+    }
+  }
+`
+
+export const GET_FACULTIES = gql`
+  query getFaculties{
+    faculties{
+      id
+      name
+    }
+  }
+`
+
+export const GET_EMPLOYEE_WATCHERS = gql`
+  query getEmployeeWatchers{
+    employeeWatchers{
+      id
+      name
+      tel
+    }
+  }
 `

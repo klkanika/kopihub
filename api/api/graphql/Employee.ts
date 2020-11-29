@@ -25,5 +25,8 @@ schema.objectType({
     t.model.idCardPictureUrl()
     t.model.withdrawableMoney()
     t.model.withdrawnMoney()
+    t.model.employeeWatcherId()
+    t.model.employeeWatcher()
+    t.model.address()
   },
 })

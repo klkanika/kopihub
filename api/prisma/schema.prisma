@@ -150,6 +150,7 @@ model Employee {
   fullName          String           @default("")
   tel               String?
   lineId            String?
+  address           String?
   bank              BankName?
   bankAccount       String?
   hiringType        HiringType
@@ -165,13 +166,24 @@ model Employee {
   idCardPictureUrl  String?
   withdrawableMoney Float?
   withdrawnMoney    Float?
+  employeeWatcherId String?
+  employeeWatcher   EmployeeWatcher? @relation(fields: [employeeWatcherId], references: [id])
+}
+
+model EmployeeWatcher {
+  id        String     @id @default(uuid())
+  createdAt DateTime   @default(now())
+  updateAt  DateTime   @updatedAt
+  name      String     @unique
+  tel       String
+  Employee  Employee[]
 }
 
 model University {
   id        String     @id @default(uuid())
   createdAt DateTime   @default(now())
   updateAt  DateTime   @updatedAt
-  name      String
+  name      String     @unique
   Employee  Employee[]
 }
 
@@ -179,7 +191,7 @@ model Faculty {
   id        String     @id @default(uuid())
   createdAt DateTime   @default(now())
   updateAt  DateTime   @updatedAt
-  name      String
+  name      String     @unique
   Employee  Employee[]
 }
 

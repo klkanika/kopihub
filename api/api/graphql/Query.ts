@@ -86,6 +86,10 @@ schema.queryType({
     t.crud.payrolls({ filtering: true, ordering: true, pagination: true })
     t.crud.notifications({ filtering: true })
     t.crud.notificationLogs({ filtering: true })
+    t.crud.universities({ filtering: true, ordering: true, pagination: true })
+    t.crud.faculties({ filtering: true, ordering: true, pagination: true })
+    t.crud.employeeWatchers({ filtering: true, ordering: true, pagination: true })
+
 
     t.field("checkAdmin", {
       type: "User",

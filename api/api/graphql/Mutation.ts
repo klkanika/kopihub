@@ -1,5 +1,5 @@
 import { schema } from 'nexus'
-import { intArg, stringArg, arg, core, booleanArg } from '@nexus/schema'
+import { intArg, stringArg, arg, core, booleanArg, floatArg } from '@nexus/schema'
 // import { compare, hash } from 'bcryptjs'
 import { compare, hash } from 'bcrypt'
 // import { io } from '../app'
@@ -154,9 +154,9 @@ schema.mutationType({
       nullable: true,
       resolve: async (_parent, { name, total, finishTime, countTime, userId, serverId }, ctx) => {
         let priority = 0;
-        if (serverId){
+        if (serverId) {
           priority = parseInt(serverId)
-        }else {
+        } else {
           priority = await ctx.db.task.count()
         }
         return ctx.db.task.create({
@@ -193,14 +193,14 @@ schema.mutationType({
         let check = false
         const task = await ctx.db.task.findOne({
           where: {
-            id : args.taskId
+            id: args.taskId
           }
         })
 
-        if(task){
-          console.log("task",task)
-          if(task.status && (task.status == 'PENDING' || task.status == 'TIMEUP' || task.status == 'ONGOING')){
-            console.log("task.status",task.status)
+        if (task) {
+          console.log("task", task)
+          if (task.status && (task.status == 'PENDING' || task.status == 'TIMEUP' || task.status == 'ONGOING')) {
+            console.log("task.status", task.status)
             const log = await ctx.db.taskLog.create({
               data: {
                 status: 'PENDING',
@@ -223,11 +223,11 @@ schema.mutationType({
             })
 
             check = updateTask ? true : false
-            console.log("check",check)
+            console.log("check", check)
           }
         }
-        
-        console.log("check",check)
+
+        console.log("check", check)
         return check
       },
     })
@@ -243,12 +243,12 @@ schema.mutationType({
         let check = false
         const task = await ctx.db.task.findOne({
           where: {
-            id : args.taskId
+            id: args.taskId
           }
         })
 
-        if(task){
-          if(task.status && task.status == 'ONGOING'){
+        if (task) {
+          if (task.status && task.status == 'ONGOING') {
             const log = await ctx.db.taskLog.create({
               data: {
                 status: 'ONGOING',
@@ -266,7 +266,7 @@ schema.mutationType({
                 status: 'TIMEUP'
               },
             })
-            
+
             check = updateTask ? true : false
           }
         }
@@ -285,12 +285,12 @@ schema.mutationType({
         let check = false
         const task = await ctx.db.task.findOne({
           where: {
-            id : args.taskId
+            id: args.taskId
           }
         })
 
-        if(task){
-          if(task.status && task.status == 'TIMEUP'){
+        if (task) {
+          if (task.status && task.status == 'TIMEUP') {
             const log = await ctx.db.taskLog.create({
               data: {
                 status: 'TIMEUP',
@@ -813,6 +813,175 @@ schema.mutationType({
         }
 
         return createBookQueue ? true : false
+      },
+    })
+
+    t.field('upsertEmployee', {
+      type: 'Boolean',
+      args: {
+        id: stringArg({ required: false }),
+        name: stringArg({ required: true }),
+        fullName: stringArg({ required: true }),
+        tel: stringArg({ required: false }),
+        lineId: stringArg({ required: false }),
+        address: stringArg({ required: false }),
+        universityName: stringArg({ required: false }),
+        facultyName: stringArg({ required: false }),
+        hiringType: stringArg({ required: true }),
+        earning: floatArg({ required: true }),
+        bank: stringArg({ required: false }),
+        bankAccount: stringArg({ required: false }),
+        employeeWatcherName: stringArg({ required: false }),
+        employeeWatcherTel: stringArg({ required: false }),
+        profilePictureUrl: stringArg({ required: false }),
+        idCardPictureUrl: stringArg({ required: false })
+      },
+      resolve: async (_, args, ctx) => {
+        let universityId = null
+        let facultyId = null
+        let employeeWatcherId = null
+
+        console.log(args)
+
+        if (args.universityName) {
+          const universityQuery = await ctx.db.university.findOne({
+            where: {
+              name: args.universityName
+            }
+          })
+
+          if (!universityQuery) {
+            const universityCreate = await ctx.db.university.create({
+              data: {
+                name: args.universityName.trim()
+              }
+            });
+            universityId = universityCreate.id
+          } else {
+            universityId = universityQuery.id
+          }
+        }
+
+        if (args.facultyName) {
+          const facultyQuery = await ctx.db.faculty.findOne({
+            where: {
+              name: args.facultyName
+            }
+          })
+
+          if (!facultyQuery) {
+            const facultyCreate = await ctx.db.faculty.create({
+              data: {
+                name: args.facultyName.trim()
+              }
+            });
+            facultyId = facultyCreate.id
+          } else {
+            facultyId = facultyQuery.id
+          }
+        }
+
+        if (args.employeeWatcherName) {
+          const employeeWatcherQuery = await ctx.db.employeeWatcher.findOne({
+            where: {
+              name: args.employeeWatcherName
+            }
+          })
+
+          if (!employeeWatcherQuery) {
+            const employeeWatcherCreate = await ctx.db.employeeWatcher.create({
+              data: {
+                name: args.employeeWatcherName.trim(),
+                tel: args.employeeWatcherTel ? args.employeeWatcherTel.trim() : ''
+              }
+            });
+            employeeWatcherId = employeeWatcherCreate.id
+          } else {
+            employeeWatcherId = employeeWatcherQuery.id
+          }
+        }
+
+        if (args.id) {
+          const emp = await ctx.db.employee.findOne({
+            where: {
+              id: args.id
+            }
+          })
+
+          let universityConnectObject = universityId ? {
+            connect: { id: universityId }
+          } : emp?.universityId ? {
+            disconnect: true
+          } : undefined
+
+          let facultyConnectObject = facultyId ? {
+            connect: { id: facultyId }
+          } : emp?.facultyId ? {
+            disconnect: true
+          } : undefined
+
+          let employeeWatcherConnectObject = employeeWatcherId ? {
+            connect: { id: employeeWatcherId }
+          } : emp?.employeeWatcherId ? {
+            disconnect: true
+          } : undefined
+
+          await ctx.db.employee.update({
+            data: {
+              name: args.name,
+              fullName: args.fullName,
+              tel: args.tel,
+              lineId: args.lineId,
+              address: args.address,
+              university: universityConnectObject,
+              faculty: facultyConnectObject,
+              employeeWatcher: employeeWatcherConnectObject,
+              hiringType: args.hiringType === "DAILY" ? "DAILY" : "HOURLY",
+              earning: args.earning,
+              bank: args.bank === "BAY" ? "BAY" : args.bank === "SCB" ? "SCB" : args.bank === "KBANK" ? "KBANK" : args.bank === "KTB" ? "KTB" : args.bank === "BBL" ? "BBL" : null,
+              bankAccount: args.bankAccount,
+              profilePictureUrl: args.profilePictureUrl,
+              idCardPictureUrl: args.idCardPictureUrl,
+            },
+            where: {
+              id: args.id
+            }
+          })
+        } else {
+          let universityConnectObject = universityId ? {
+            connect: { id: universityId }
+          } : undefined
+
+          let facultyConnectObject = facultyId ? {
+            connect: { id: facultyId }
+          } : undefined
+
+          let employeeWatcherConnectObject = employeeWatcherId ? {
+            connect: { id: employeeWatcherId }
+          } : undefined
+
+          await ctx.db.employee.create({
+            data: {
+              name: args.name,
+              fullName: args.fullName,
+              tel: args.tel,
+              lineId: args.lineId,
+              address: args.address,
+              university: universityConnectObject,
+              faculty: facultyConnectObject,
+              employeeWatcher: employeeWatcherConnectObject,
+              hiringType: args.hiringType === "DAILY" ? "DAILY" : "HOURLY",
+              earning: args.earning,
+              bank: args.bank === "BAY" ? "BAY" : args.bank === "SCB" ? "SCB" : args.bank === "KBANK" ? "KBANK" : args.bank === "KTB" ? "KTB" : args.bank === "BBL" ? "BBL" : null,
+              bankAccount: args.bankAccount,
+              profilePictureUrl: args.profilePictureUrl,
+              idCardPictureUrl: args.idCardPictureUrl,
+              status: 'ACTIVE'
+            }
+          })
+        }
+
+        return true
       },
     })
   },
