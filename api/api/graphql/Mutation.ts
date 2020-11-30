@@ -841,8 +841,6 @@ schema.mutationType({
         let facultyId = null
         let employeeWatcherId = null
 
-        console.log(args)
-
         if (args.universityName) {
           const universityQuery = await ctx.db.university.findOne({
             where: {

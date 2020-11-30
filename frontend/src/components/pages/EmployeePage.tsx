@@ -1,5 +1,5 @@
 import { useLazyQuery, useMutation, useQuery } from "@apollo/react-hooks";
-import { AppBar, BottomNavigation, BottomNavigationAction, MenuItem, MenuList, Paper, Tab, Tabs, Button as MaterialButton, TextField, InputAdornment, FormControl, Select as MaterialSelect, InputLabel, NativeSelect, InputBase, withStyles, Modal as MaterialModal, Popover } from "@material-ui/core";
+import { AppBar, BottomNavigation, BottomNavigationAction, MenuItem, MenuList, Paper, Tab, Tabs, Button as MaterialButton, TextField, InputAdornment, FormControl, Select as MaterialSelect, InputLabel, NativeSelect, InputBase, withStyles, Modal as MaterialModal, Popover, Snackbar, SnackbarContent } from "@material-ui/core";
 import { Button, Layout, Table, Form, Input, Select, Modal, Tag, Tooltip, Typography } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import React, { useState } from "react";
@@ -21,7 +21,7 @@ import bank_kbank from '../../imgs/bank_kbank.svg';
 import bank_ktb from '../../imgs/bank_ktb.svg';
 import bank_scb from '../../imgs/bank_scb.svg';
 import default_profile from '../../imgs/profile.png';
-import { Autocomplete } from "@material-ui/lab";
+import { Alert, Autocomplete } from "@material-ui/lab";
 
 const EmployeePage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -29,6 +29,7 @@ const EmployeePage = () => {
   const [showIdCardModal, setShowIdCardModal] = useState(false);
   const [showViewEmployeeModal, setShowViewEmployeeModal] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [idCard, setIdCard] = useState('');
   const [textSearch, setTextSearch] = useState();
   const [statusSearch, setStatusSearch] = useState('ACTIVE');
@@ -141,7 +142,7 @@ const EmployeePage = () => {
               }
               }
             >แก้ไข</MenuItem>
-            {emp.status === 'ACTIVE' ? <MenuItem onClick={() => { deleteEmployee({ variables: { id: empId } }) }}>ลบ</MenuItem> : ''}
+            {emp.status === 'ACTIVE' ? <MenuItem onClick={() => { let deleteEmployeeStatus = deleteEmployee({ variables: { id: empId } }); if (deleteEmployeeStatus) { setShowSuccessMessage(true); } }}>ลบ</MenuItem> : ''}
           </div>
         </Popover>
       </div >
@@ -407,6 +408,11 @@ const EmployeePage = () => {
 
   return (
     <Layout.Content>
+      <Snackbar className="w-full" open={showSuccessMessage} autoHideDuration={4000} onClose={() => { setShowSuccessMessage(false) }}>
+        <Alert onClose={() => { setShowSuccessMessage(false) }} severity="success">
+          ดำเนินการสำเร็จ!
+        </Alert>
+      </Snackbar>
       <PayrollHeader value="employee" />
       <div className="flex flex-col flex-1">
         <div className="h-16 w-full flex items-center text-base border-b border-gray-300 pl-6 pt-4">
@@ -567,6 +573,7 @@ const EmployeePage = () => {
         employeeWatchers={employeeWatchers}
         bank_list={bank_list}
         upsertEmployee={upsertEmployee}
+        setShowSuccessMessage={setShowSuccessMessage}
       />
       <Modal
         title="เพิ่มพนักงานใหม่"
@@ -720,381 +727,395 @@ const ViewEmployeeInfo = (props: any) => {
   const disabled = props.disabled
   const selectedEmployee = props.selectedEmployee
   const showViewEmployeeModal = props.showViewEmployeeModal
-  const [updatedObject, setUpdatedObject]: any = useState({})
-  return (
-    <MaterialModal
-      open={showViewEmployeeModal}
-      onClose={() => { props.setShowViewEmployeeModal(false) }}
-      aria-labelledby="employee-view"
-      aria-describedby="employee-view"
-    >
-      <div className="w-11/12 bg-white p-8 absolute border-gray-300 overflow-y-scroll" style={{ minHeight: '95%', maxHeight: '95%', borderRadius: '0.5rem', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
-        <div className="flex items-center border-b border-gray-300 pb-6">
-          <p className="mr-6 text-xl">{disabled ? '' : selectedEmployee ? 'แก้ไข' : 'เพิ่ม'}ข้อมูลพนักงาน</p>
-          {disabled ? <MaterialButton color="primary" startIcon={<EditIcon />} onClick={() => { props.setDisabled(false) }}>แก้ไขข้อมูล</MaterialButton> : ''}
-        </div>
-        <div className="p-4 flex w-full items-start">
-          <div id="employee-info" className="flex flex-wrap w-1/2 pr-4">
-            <div className="border-gray-300 border-b text-gray-600 text-base pb-4 mb-6 w-full">
-              ข้อมูลพนักงาน
-              </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <TextField
-                required
-                className="w-full"
-                label="ชื่อเล่น"
-                placeholder="ชื่อเล่นพนักงาน"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                defaultValue={selectedEmployee && selectedEmployee.name}
-                key={selectedEmployee && selectedEmployee.name}
-                disabled={disabled}
-                onChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    name: e.target.value
-                  })
-                }}
-              />
-            </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <TextField
-                required
-                className="w-full"
-                label="ชื่อ-นามสกุล"
-                placeholder="ชื่อ-นามสกุลพนักงาน"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                defaultValue={selectedEmployee && selectedEmployee.fullName}
-                key={selectedEmployee && selectedEmployee.fullName}
-                disabled={disabled}
-                onChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    fullName: e.target.value
-                  })
-                }}
-              />
-            </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <TextField
-                className="w-full"
-                label="เบอร์โทรศัพท์"
-                placeholder="เบอร์โทรศัพท์พนักงาน"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                defaultValue={selectedEmployee && selectedEmployee.tel}
-                key={selectedEmployee && selectedEmployee.tel}
-                disabled={disabled}
-                onChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    tel: e.target.value
-                  })
-                }}
-              />
-            </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <TextField
-                className="w-full"
-                label="Line ID"
-                placeholder="ไลน์ไอดีพนักงาน"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                defaultValue={selectedEmployee && selectedEmployee.lineId}
-                key={selectedEmployee && selectedEmployee.lineId}
-                disabled={disabled}
-                onChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    lineId: e.target.value
-                  })
-                }}
-              />
-            </div>
-            <div className="pr-4 mb-6 w-full">
-              <TextField
-                className="w-full"
-                label="ที่อยู่"
-                placeholder="ที่อยู่พนักงาน"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                defaultValue={selectedEmployee && selectedEmployee.address}
-                key={selectedEmployee && selectedEmployee.address}
-                disabled={disabled}
-                onChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    address: e.target.value
-                  })
-                }}
-              />
-            </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <Autocomplete
-                freeSolo
-                options={props.universities && props.universities.universities && props.universities.universities.map((option: any) => option.name)}
-                renderInput={(params) => <TextField {...params} label="มหาวิทยาลัย" placeholder="ชื่อมหาวิทยาลัย" variant="outlined" InputLabelProps={{ shrink: true, }} />}
-                defaultValue={selectedEmployee && selectedEmployee.university && selectedEmployee.university.name}
-                key={selectedEmployee && selectedEmployee.university && selectedEmployee.university.name}
-                disabled={disabled}
-                onInputChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    university: e && e.target && e.target.value
-                  })
-                }}
-                onChange={(e: any, data: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    universityName: data
-                  })
-                }}
-              />
-            </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <Autocomplete
-                freeSolo
-                options={props.faculties && props.faculties.faculties && props.faculties.faculties.map((option: any) => option.name)}
-                renderInput={(params) => <TextField {...params} label="คณะ" placeholder="ชื่อคณะ" variant="outlined" InputLabelProps={{ shrink: true, }} />}
-                defaultValue={selectedEmployee && selectedEmployee.faculty && selectedEmployee.faculty.name}
-                key={selectedEmployee && selectedEmployee.faculty && selectedEmployee.faculty.name}
-                disabled={disabled}
-                onInputChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    faculty: e && e.target && e.target.value
-                  })
-                }}
-                onChange={(e: any, data: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    facultyName: data
-                  })
-                }}
-              />
-            </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <FormControl required variant="outlined" className="w-full">
-                <InputLabel htmlFor="outlined-hiring-type-native-simple">รูปแบบ</InputLabel>
-                <MaterialSelect
-                  label="รูปแบบ"
-                  inputProps={{
-                    name: 'hiring-type-view',
-                  }}
-                  defaultValue={selectedEmployee && selectedEmployee.hiringType === 'DAILY' ? 'DAILY' : 'HOURLY'}
-                  key={selectedEmployee && selectedEmployee.hiringType === 'DAILY' ? 'DAILY' : 'HOURLY'}
-                  disabled={disabled}
-                  onChange={(e: any) => {
-                    setUpdatedObject({
-                      ...updatedObject,
-                      hiringType: e.target.value
-                    })
-                  }}
-                >
-                  <MenuItem value={'HOURLY'}>รายชั่วโมง</MenuItem>
-                  <MenuItem value={'DAILY'}>รายวัน</MenuItem>
-                </MaterialSelect>
-              </FormControl>
-            </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <TextField
-                required
-                className="w-full"
-                label="ค่าจ้าง"
-                placeholder="ค่าจ้าง (บาท)"
-                type="number"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                defaultValue={selectedEmployee && selectedEmployee.earning}
-                key={selectedEmployee && selectedEmployee.earning}
-                disabled={disabled}
-                onChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    earning: parseFloat(e.target.value)
-                  })
-                }}
-              />
-            </div>
-            <div className={`flex mt-12 ${disabled ? 'hidden' : ''}`}>
-              <div className="mr-4">
-                <MaterialButton
-                  variant="contained"
-                  color="primary"
-                  startIcon={<DoneIcon />}
-                  onClick={async () => {
-                    const variables = {
-                      hiringType: 'HOURLY',
-                      ...selectedEmployee,
-                      universityName: selectedEmployee && selectedEmployee.university && selectedEmployee.university.name,
-                      facultyName: selectedEmployee && selectedEmployee.faculty && selectedEmployee.faculty.name,
-                      employeeWatcherName: selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.name,
-                      employeeWatcherTel: selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel,
-                      ...updatedObject
-                    }
+  const [updatedObject, setUpdatedObject]: any = useState(null)
 
-                    console.log(variables.name, variables.fullName, variables.hiringType, variables.earning)
-                    if (variables.name && variables.fullName && variables.hiringType && variables.earning) {
-                      props.setShowViewEmployeeModal(false)
-                      await props.upsertEmployee({
-                        variables: variables
-                      })
-                    } else {
-                      alert('กรุณากรอกข้อมูลให้ครบถ้วน')
-                    }
-                  }}
-                >
-                  ตกลง
-                </MaterialButton>
-              </div>
-              <div>
-                <MaterialButton
-                  variant="contained"
-                  onClick={() => {
-                    props.setShowViewEmployeeModal(false)
-                  }}
-                >
-                  ยกเลิก
-                </MaterialButton>
-              </div>
-            </div>
+  return (
+    <div>
+      <MaterialModal
+        open={showViewEmployeeModal}
+        onClose={() => { props.setShowViewEmployeeModal(false) }}
+        aria-labelledby="employee-view"
+        aria-describedby="employee-view"
+      >
+        <div className="w-11/12 bg-white p-8 absolute border-gray-300 overflow-y-scroll" style={{ minHeight: '95%', maxHeight: '95%', borderRadius: '0.5rem', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
+          <div className="flex items-center border-b border-gray-300 pb-6">
+            <p className="mr-6 text-xl">{disabled ? '' : selectedEmployee ? 'แก้ไข' : 'เพิ่ม'}ข้อมูลพนักงาน</p>
+            {disabled ? <MaterialButton color="primary" startIcon={<EditIcon />} onClick={() => { props.setDisabled(false) }}>แก้ไขข้อมูล</MaterialButton> : ''}
           </div>
-          <div id="other-info" className="flex flex-wrap w-1/2 pl-4">
-            <div className="border-gray-300 border-b text-gray-600 text-base pb-4 mb-6 w-full">
-              ข้อมูลธนาคาร
+          <div className="p-4 flex w-full items-start">
+            <div id="employee-info" className="flex flex-wrap w-1/2 pr-4">
+              <div className="border-gray-300 border-b text-gray-600 text-base pb-4 mb-6 w-full">
+                ข้อมูลพนักงาน
               </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <FormControl variant="outlined" className="w-full">
-                <InputLabel htmlFor="outlined-hiring-type-native-simple">ธนาคาร</InputLabel>
-                <MaterialSelect
-                  label="ธนาคาร"
-                  inputProps={{
-                    name: 'hiring-type-view',
+              <div className="pr-4 mb-6 w-1/2">
+                <TextField
+                  required
+                  className="w-full"
+                  label="ชื่อเล่น"
+                  placeholder="ชื่อเล่นพนักงาน"
+                  InputLabelProps={{
+                    shrink: true,
                   }}
-                  defaultValue={selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'SCB' ? 'SCB' :
-                    selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'KTB' ? 'KTB' :
-                      selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'BAY' ? 'BAY' :
-                        selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'KBANK' ? 'KBANK' :
-                          selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'BBL' ? 'BBL' : ''}
-                  key={selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'SCB' ? 'SCB' :
-                    selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'KTB' ? 'KTB' :
-                      selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'BAY' ? 'BAY' :
-                        selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'KBANK' ? 'KBANK' :
-                          selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'BBL' ? 'BBL' : ''}
+                  variant="outlined"
+                  defaultValue={selectedEmployee && selectedEmployee.name}
+                  key={selectedEmployee && selectedEmployee.name}
                   disabled={disabled}
                   onChange={(e: any) => {
                     setUpdatedObject({
                       ...updatedObject,
-                      bank: e.target.value
+                      name: e.target.value
                     })
                   }}
-                >
-                  {
-                    props.bank_list && props.bank_list.map((value: any, idx: any) => {
-                      return <MenuItem key={idx} value={value.bank}><div className="flex items-center">{value.img} {value.name}</div></MenuItem>
+                />
+              </div>
+              <div className="pr-4 mb-6 w-1/2">
+                <TextField
+                  required
+                  className="w-full"
+                  label="ชื่อ-นามสกุล"
+                  placeholder="ชื่อ-นามสกุลพนักงาน"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                  defaultValue={selectedEmployee && selectedEmployee.fullName}
+                  key={selectedEmployee && selectedEmployee.fullName}
+                  disabled={disabled}
+                  onChange={(e: any) => {
+                    setUpdatedObject({
+                      ...updatedObject,
+                      fullName: e.target.value
                     })
-                  }
-                </MaterialSelect>
-              </FormControl>
-            </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <TextField
-                className="w-full"
-                label="เลขที่บัญชี"
-                placeholder="เลขที่บัญชีพนักงาน"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                defaultValue={selectedEmployee && selectedEmployee.bankAccount}
-                key={selectedEmployee && selectedEmployee.bankAccount}
-                disabled={disabled}
-                onChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    bankAccount: e.target.value
-                  })
-                }}
-              />
-            </div>
-            <div className="border-gray-300 border-b text-gray-600 text-base pb-4 mb-6 w-full">
-              ข้อมูลผู้ดูแล
+                  }}
+                />
               </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <Autocomplete
-                freeSolo
-                id="controllable-watcher-demo"
-                options={props.employeeWatchers && props.employeeWatchers.employeeWatchers && props.employeeWatchers.employeeWatchers.map((option: any) => option.name)}
-                renderInput={(params) => <TextField {...params} label="ชื่อผู้ดูแล" placeholder="ชื่อผู้ดูแล" variant="outlined" InputLabelProps={{ shrink: true, }} />}
-                defaultValue={selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.name}
-                key={selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.name}
-                disabled={disabled}
-                onInputChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    employeeWatcherName: e && e.target && e.target.value
-                  })
-                }}
-                onChange={(e: any, data: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    employeeWatcherName: data
-                  })
-                }}
-              />
-            </div>
-            <div className="pr-4 mb-6 w-1/2">
-              <TextField
-                className="w-full"
-                label="เบอร์โทรศัพท์ผู้ดูแล"
-                placeholder="เบอร์โทรศัพท์ผู้ดูแล"
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                variant="outlined"
-                defaultValue={selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel}
-                key={selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel}
-                disabled={disabled}
-                onChange={(e: any) => {
-                  setUpdatedObject({
-                    ...updatedObject,
-                    employeeWatcherTel: e.target.value
-                  })
-                }}
-              />
-            </div>
-            <div className="border-gray-300 border-b text-gray-600 text-base pb-4 mb-6 w-full">
-              ข้อมูลรูปภาพ
+              <div className="pr-4 mb-6 w-1/2">
+                <TextField
+                  className="w-full"
+                  label="เบอร์โทรศัพท์"
+                  placeholder="เบอร์โทรศัพท์พนักงาน"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                  defaultValue={selectedEmployee && selectedEmployee.tel}
+                  key={selectedEmployee && selectedEmployee.tel}
+                  disabled={disabled}
+                  onChange={(e: any) => {
+                    setUpdatedObject({
+                      ...updatedObject,
+                      tel: e.target.value
+                    })
+                  }}
+                />
               </div>
-            <div className="pr-4 mb-6 w-1/2">
-              รูปบัตรประชาชน
+              <div className="pr-4 mb-6 w-1/2">
+                <TextField
+                  className="w-full"
+                  label="Line ID"
+                  placeholder="ไลน์ไอดีพนักงาน"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                  defaultValue={selectedEmployee && selectedEmployee.lineId}
+                  key={selectedEmployee && selectedEmployee.lineId}
+                  disabled={disabled}
+                  onChange={(e: any) => {
+                    setUpdatedObject({
+                      ...updatedObject,
+                      lineId: e.target.value
+                    })
+                  }}
+                />
+              </div>
+              <div className="pr-4 mb-6 w-full">
+                <TextField
+                  className="w-full"
+                  label="ที่อยู่"
+                  placeholder="ที่อยู่พนักงาน"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                  defaultValue={selectedEmployee && selectedEmployee.address}
+                  key={selectedEmployee && selectedEmployee.address}
+                  disabled={disabled}
+                  onChange={(e: any) => {
+                    setUpdatedObject({
+                      ...updatedObject,
+                      address: e.target.value
+                    })
+                  }}
+                />
+              </div>
+              <div className="pr-4 mb-6 w-1/2">
+                <Autocomplete
+                  freeSolo
+                  options={props.universities && props.universities.universities && props.universities.universities.map((option: any) => option.name)}
+                  renderInput={(params) => <TextField {...params} label="มหาวิทยาลัย" placeholder="ชื่อมหาวิทยาลัย" variant="outlined" InputLabelProps={{ shrink: true, }} />}
+                  defaultValue={selectedEmployee && selectedEmployee.university && selectedEmployee.university.name}
+                  key={selectedEmployee && selectedEmployee.university && selectedEmployee.university.name}
+                  disabled={disabled}
+                  onInputChange={(e: any) => {
+                    if (e && e.target && e.target.value) {
+                      setUpdatedObject({
+                        ...updatedObject,
+                        universityName: e.target.value
+                      })
+                    }
+                  }}
+                  onChange={(e: any, data: any) => {
+                    setUpdatedObject({
+                      ...updatedObject,
+                      universityName: data
+                    })
+                  }}
+                />
+              </div>
+              <div className="pr-4 mb-6 w-1/2">
+                <Autocomplete
+                  freeSolo
+                  options={props.faculties && props.faculties.faculties && props.faculties.faculties.map((option: any) => option.name)}
+                  renderInput={(params) => <TextField {...params} label="คณะ" placeholder="ชื่อคณะ" variant="outlined" InputLabelProps={{ shrink: true, }} />}
+                  defaultValue={selectedEmployee && selectedEmployee.faculty && selectedEmployee.faculty.name}
+                  key={selectedEmployee && selectedEmployee.faculty && selectedEmployee.faculty.name}
+                  disabled={disabled}
+                  onInputChange={(e: any) => {
+                    if (e && e.target && e.target.value) {
+                      setUpdatedObject({
+                        ...updatedObject,
+                        facultyName: e.target.value
+                      })
+                    }
+                  }}
+                  onChange={(e: any, data: any) => {
+                    setUpdatedObject({
+                      ...updatedObject,
+                      facultyName: data
+                    })
+                  }}
+                />
+              </div>
+              <div className="pr-4 mb-6 w-1/2">
+                <FormControl required variant="outlined" className="w-full">
+                  <InputLabel htmlFor="outlined-hiring-type-native-simple">รูปแบบ</InputLabel>
+                  <MaterialSelect
+                    label="รูปแบบ"
+                    inputProps={{
+                      name: 'hiring-type-view',
+                    }}
+                    defaultValue={selectedEmployee && selectedEmployee.hiringType === 'DAILY' ? 'DAILY' : 'HOURLY'}
+                    key={selectedEmployee && selectedEmployee.hiringType === 'DAILY' ? 'DAILY' : 'HOURLY'}
+                    disabled={disabled}
+                    onChange={(e: any) => {
+                      setUpdatedObject({
+                        ...updatedObject,
+                        hiringType: e.target.value
+                      })
+                    }}
+                  >
+                    <MenuItem value={'HOURLY'}>รายชั่วโมง</MenuItem>
+                    <MenuItem value={'DAILY'}>รายวัน</MenuItem>
+                  </MaterialSelect>
+                </FormControl>
+              </div>
+              <div className="pr-4 mb-6 w-1/2">
+                <TextField
+                  required
+                  className="w-full"
+                  label="ค่าจ้าง"
+                  placeholder="ค่าจ้าง (บาท)"
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                  defaultValue={selectedEmployee && selectedEmployee.earning}
+                  key={selectedEmployee && selectedEmployee.earning}
+                  disabled={disabled}
+                  onChange={(e: any) => {
+                    setUpdatedObject({
+                      ...updatedObject,
+                      earning: parseFloat(e.target.value)
+                    })
+                  }}
+                />
+              </div>
+              <div className={`flex mt-12 ${disabled ? 'hidden' : ''}`}>
+                <div className="mr-4">
+                  <MaterialButton
+                    variant="contained"
+                    color="primary"
+                    startIcon={<DoneIcon />}
+                    onClick={async () => {
+                      const variables = {
+                        hiringType: 'HOURLY',
+                        ...selectedEmployee,
+                        universityName: selectedEmployee && selectedEmployee.university && selectedEmployee.university.name,
+                        facultyName: selectedEmployee && selectedEmployee.faculty && selectedEmployee.faculty.name,
+                        employeeWatcherTel: selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel,
+                        employeeWatcherName: selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.name,
+                        ...updatedObject
+                      }
+
+                      setUpdatedObject(null)
+
+                      if (variables.name && variables.fullName && variables.hiringType && variables.earning) {
+                        props.setShowViewEmployeeModal(false)
+                        let upsertEmployeeStatus = await props.upsertEmployee({
+                          variables: variables
+                        })
+
+                        if (upsertEmployeeStatus) {
+                          props.setShowSuccessMessage(true)
+                        }
+                      } else {
+                        alert('กรุณากรอกข้อมูลให้ครบถ้วน')
+                      }
+                    }}
+                  >
+                    ตกลง
+                </MaterialButton>
+                </div>
+                <div>
+                  <MaterialButton
+                    variant="contained"
+                    onClick={() => {
+                      props.setShowViewEmployeeModal(false)
+                      setUpdatedObject(null)
+                    }}
+                  >
+                    ยกเลิก
+                </MaterialButton>
+                </div>
+              </div>
+            </div>
+            <div id="other-info" className="flex flex-wrap w-1/2 pl-4">
+              <div className="border-gray-300 border-b text-gray-600 text-base pb-4 mb-6 w-full">
+                ข้อมูลธนาคาร
+              </div>
+              <div className="pr-4 mb-6 w-1/2">
+                <FormControl variant="outlined" className="w-full">
+                  <InputLabel htmlFor="outlined-hiring-type-native-simple">ธนาคาร</InputLabel>
+                  <MaterialSelect
+                    label="ธนาคาร"
+                    inputProps={{
+                      name: 'hiring-type-view',
+                    }}
+                    defaultValue={selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'SCB' ? 'SCB' :
+                      selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'KTB' ? 'KTB' :
+                        selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'BAY' ? 'BAY' :
+                          selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'KBANK' ? 'KBANK' :
+                            selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'BBL' ? 'BBL' : ''}
+                    key={selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'SCB' ? 'SCB' :
+                      selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'KTB' ? 'KTB' :
+                        selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'BAY' ? 'BAY' :
+                          selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'KBANK' ? 'KBANK' :
+                            selectedEmployee && selectedEmployee.bank && selectedEmployee.bank === 'BBL' ? 'BBL' : ''}
+                    disabled={disabled}
+                    onChange={(e: any) => {
+                      setUpdatedObject({
+                        ...updatedObject,
+                        bank: e.target.value
+                      })
+                    }}
+                  >
+                    {
+                      props.bank_list && props.bank_list.map((value: any, idx: any) => {
+                        return <MenuItem key={idx} value={value.bank}><div className="flex items-center">{value.img} {value.name}</div></MenuItem>
+                      })
+                    }
+                  </MaterialSelect>
+                </FormControl>
+              </div>
+              <div className="pr-4 mb-6 w-1/2">
+                <TextField
+                  className="w-full"
+                  label="เลขที่บัญชี"
+                  placeholder="เลขที่บัญชีพนักงาน"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                  defaultValue={selectedEmployee && selectedEmployee.bankAccount}
+                  key={selectedEmployee && selectedEmployee.bankAccount}
+                  disabled={disabled}
+                  onChange={(e: any) => {
+                    setUpdatedObject({
+                      ...updatedObject,
+                      bankAccount: e.target.value
+                    })
+                  }}
+                />
+              </div>
+              <div className="border-gray-300 border-b text-gray-600 text-base pb-4 mb-6 w-full">
+                ข้อมูลผู้ดูแล
+              </div>
+              <div className="pr-4 mb-6 w-1/2">
+                <Autocomplete
+                  freeSolo
+                  options={props.employeeWatchers && props.employeeWatchers.employeeWatchers && props.employeeWatchers.employeeWatchers.map((option: any) => option.name)}
+                  renderInput={(params) => <TextField {...params} label="ชื่อผู้ดูแล" placeholder="ชื่อผู้ดูแล" variant="outlined" InputLabelProps={{ shrink: true, }} />}
+                  defaultValue={selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.name}
+                  key={selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.name}
+                  disabled={disabled}
+                  onInputChange={(e: any) => {
+                    if (e && e.target && e.target.value) {
+                      setUpdatedObject({
+                        ...updatedObject,
+                        employeeWatcherName: e.target.value
+                      })
+                    }
+                  }}
+                  onChange={(e: any, data: any) => {
+                    setUpdatedObject({
+                      ...updatedObject,
+                      employeeWatcherName: data
+                    })
+                  }}
+                />
+              </div>
+              <div className="pr-4 mb-6 w-1/2">
+                <TextField
+                  className="w-full"
+                  label="เบอร์โทรศัพท์ผู้ดูแล"
+                  placeholder="เบอร์โทรศัพท์ผู้ดูแล"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  variant="outlined"
+                  defaultValue={selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel}
+                  key={selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel}
+                  disabled={disabled}
+                  onChange={(e: any) => {
+                    setUpdatedObject({
+                      ...updatedObject,
+                      employeeWatcherTel: e.target.value
+                    })
+                  }}
+                />
+              </div>
+              <div className="border-gray-300 border-b text-gray-600 text-base pb-4 mb-6 w-full">
+                ข้อมูลรูปภาพ
+              </div>
+              <div className="pr-4 mb-6 w-1/2">
+                รูปบัตรประชาชน
                 <div className="w-64 mt-5">
-                <img className="object-cover" src={'https://lifestyle.campus-star.com/app/uploads/2017/03/id-cover.jpg'} />
+                  <img className="object-cover" src={'https://lifestyle.campus-star.com/app/uploads/2017/03/id-cover.jpg'} />
+                </div>
               </div>
-            </div>
-            <div className="pr-4 mb-6 w-1/2">
-              รูปโปรไฟล์
+              <div className="pr-4 mb-6 w-1/2">
+                รูปโปรไฟล์
                 <div className="w-64 mt-5">
-                <img className="object-cover" src={default_profile} />
+                  <img className="object-cover" src={default_profile} />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </MaterialModal>
+      </MaterialModal>
+    </div>
   )
 }
 
