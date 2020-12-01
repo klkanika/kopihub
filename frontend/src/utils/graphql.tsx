@@ -572,14 +572,22 @@ export const GET_WORKLOGS = gql`
 
 export const GET_WORKLOG = gql`
   query getWorkLog{
-    workingHistories{
+    workingHistories(
+      orderBy : [{historyDate:desc}]
+      ){
       id
       historyDate
       employee {
+        id
         name
+        tel
+        profilePictureUrl
       }
       hours
       earning
+      earningRate
+      createdAt
+      sourceType
     }
   }
 `

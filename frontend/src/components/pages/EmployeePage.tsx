@@ -724,7 +724,7 @@ const EmployeePage = () => {
   );
 };
 
-const ViewEmployeeInfo = (props: any) => {
+export const ViewEmployeeInfo = (props: any) => {
   const disabled = props.disabled
   const selectedEmployee = props.selectedEmployee
   const showViewEmployeeModal = props.showViewEmployeeModal
@@ -1105,13 +1105,13 @@ const ViewEmployeeInfo = (props: any) => {
                 <div className="pr-4 mb-6 w-1/2">
                   รูปบัตรประชาชน
                 <div className="w-64 mt-5">
-                    <img className="object-cover" src={selectedEmployee && selectedEmployee.profilePictureUrl ? selectedEmployee.profilePictureUrl : 'https://lifestyle.campus-star.com/app/uploads/2017/03/id-cover.jpg'} />
+                    <img className="object-cover" src={selectedEmployee && selectedEmployee.idCardPictureUrl ? selectedEmployee.idCardPictureUrl : 'https://lifestyle.campus-star.com/app/uploads/2017/03/id-cover.jpg'} />
                   </div>
                 </div>
                 <div className="pr-4 mb-6 w-1/2">
                   รูปโปรไฟล์
                 <div className="w-64 mt-5">
-                    <img className="object-cover" src={selectedEmployee && selectedEmployee.idCardPictureUrl ? selectedEmployee.idCardPictureUrl : default_profile} />
+                    <img className="object-cover" src={selectedEmployee && selectedEmployee.profilePictureUrl ? selectedEmployee.profilePictureUrl : default_profile} />
                   </div>
                 </div>
               </div>

@@ -38,6 +38,11 @@ enum HiringType {
   DAILY
 }
 
+enum SourceType {
+  MANUAL
+  FACESCAN
+}
+
 enum EmployeeStatus {
   ACTIVE
   DELETED
@@ -146,7 +151,7 @@ model Employee {
   id                String           @id @default(uuid())
   createdAt         DateTime         @default(now())
   updateAt          DateTime         @updatedAt
-  name              String
+  name              String           @unique
   fullName          String           @default("")
   tel               String?
   lineId            String?
@@ -204,6 +209,7 @@ model WorkingHistory {
   historyDate DateTime
   hours       Float
   hiringType  HiringType
+  sourceType  SourceType
   earningRate Float
   earning     Float
 }

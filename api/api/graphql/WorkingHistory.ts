@@ -13,5 +13,6 @@ schema.objectType({
     t.model.hiringType()
     t.model.earningRate()
     t.model.earning()
+    t.model.sourceType()
   },
 })
