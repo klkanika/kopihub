@@ -5,6 +5,7 @@ import { compare, hash } from 'bcrypt'
 // import { io } from '../app'
 import moment from "moment"
 import 'moment/locale/th'
+import { getEmployeeHistoriesArgs } from './Query'
 
 moment.locale("th");
 
@@ -979,6 +980,53 @@ schema.mutationType({
           })
         }
 
+        return true
+      },
+    })
+
+    t.field('createWorkLogs', {
+      type: 'Boolean',
+      args: {
+        workLogs: arg({ type: 'WorkingHistoryCreateInput', list: true, required: true })
+      },
+      resolve: async (_parent, args, ctx) => {
+        const workLogs = args.workLogs
+        for (let workLog of workLogs) {
+          let createWorkLogStatus = await ctx.db.workingHistory.create({
+            data: {
+              earning: workLog.earning,
+              earningRate: workLog.earningRate,
+              employee: {
+                connect: {
+                  id: workLog.employee.connect?.id || undefined
+                }
+              },
+              hiringType: workLog.hiringType,
+              historyDate: workLog.historyDate,
+              hours: workLog.hours,
+              sourceType: workLog.sourceType,
+            }
+          })
+
+          if (createWorkLogStatus) {
+            let selectedEmployee = await ctx.db.employee.findOne({
+              where: {
+                id: workLog.employee.connect?.id || undefined
+              }
+            })
+
+            if (selectedEmployee) {
+              let updateEmployeeStatus = await ctx.db.employee.update({
+                data: {
+                  withdrawableMoney: selectedEmployee.withdrawableMoney + workLog.earning
+                },
+                where: {
+                  id: workLog.employee.connect?.id || undefined
+                }
+              })
+            }
+          }
+        }
         return true
       },
     })

@@ -169,8 +169,8 @@ model Employee {
   faculty           Faculty?         @relation(fields: [facultyId], references: [id])
   profilePictureUrl String?
   idCardPictureUrl  String?
-  withdrawableMoney Float?
-  withdrawnMoney    Float?
+  withdrawableMoney Float            @default(0)
+  withdrawnMoney    Float            @default(0)
   employeeWatcherId String?
   employeeWatcher   EmployeeWatcher? @relation(fields: [employeeWatcherId], references: [id])
 }

@@ -2,7 +2,7 @@ import { useLazyQuery, useMutation, useQuery } from "@apollo/react-hooks";
 import { MenuItem, Button as MaterialButton, TextField, InputAdornment, Modal as MaterialModal, Popover, Snackbar, CircularProgress } from "@material-ui/core";
 import { Layout, Table, Tooltip } from "antd";
 import React, { useRef, useState } from "react";
-import { GET_EMPLOYEE, GET_EMPLOYEES, UPSERT_EMPLOYEE, GET_UNIVERSITIES, GET_FACULTIES, GET_EMPLOYEE_WATCHERS, GET_WORKLOG, DELETE_WORKLOG } from "../../utils/graphql";
+import { GET_EMPLOYEE, GET_EMPLOYEES, UPSERT_EMPLOYEE, GET_UNIVERSITIES, GET_FACULTIES, GET_EMPLOYEE_WATCHERS, GET_WORKLOG, DELETE_WORKLOG, CREATE_WORKLOGS } from "../../utils/graphql";
 import PayrollHeader from "./PayrollHeader";
 import AddIcon from '@material-ui/icons/Add';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -23,6 +23,13 @@ import bank_scb from '../../imgs/bank_scb.svg';
 import default_profile from '../../imgs/profile.png';
 import { Alert, Autocomplete } from "@material-ui/lab";
 import { ViewEmployeeInfo } from "./EmployeePage";
+import { css, Global } from "@emotion/core";
+import {
+  DateRangePicker,
+  DateRangeDelimiter,
+  LocalizationProvider
+} from "@material-ui/pickers";
+import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
 
 const WorkLogPage = () => {
   const [showIdCardModal, setShowIdCardModal] = useState(false);
@@ -30,8 +37,9 @@ const WorkLogPage = () => {
   const [showViewEmployeeModal, setShowViewEmployeeModal] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [selectedDate, handleDateChange]: any = React.useState([null, null]);
   const [idCard, setIdCard] = useState('');
-  const [textSearch, setTextSearch] = useState();
+  const [textSearch, setTextSearch] = useState('');
   const [selectedEmployee, setSelectedEmployee]: any = useState();
   const [deleteWorkLog] = useMutation(DELETE_WORKLOG);
   const [upsertEmployee] = useMutation(UPSERT_EMPLOYEE);
@@ -53,11 +61,14 @@ const WorkLogPage = () => {
       window.alert(err)
     }
   });
+  console.log('render')
 
   const { data: workLogsData, loading: workLogsLoading } = useQuery(GET_WORKLOG, {
     fetchPolicy: 'no-cache',
     variables: {
-      textSearch: textSearch,
+      textSearch: textSearch ? textSearch.trim() : '',
+      fromDate: selectedDate[0] ? moment(selectedDate[0], 'MM/DD/YYYY').toDate() : undefined,
+      toDate: selectedDate[1] ? moment(selectedDate[1], 'MM/DD/YYYY').toDate() : undefined
     },
     pollInterval: 1000,
     onError: (err) => {
@@ -292,7 +303,7 @@ const WorkLogPage = () => {
             </div>
           </div>
           <div className="flex flex-wrap pr-6 w-4/5 items-center justify-end">
-            <div className="w-1/4">
+            <div className="w-1/4 mr-6">
               <TextField
                 className="w-full"
                 label="ค้นหา"
@@ -307,6 +318,12 @@ const WorkLogPage = () => {
                 onChange={(e: any) => {
                   setTextSearch(e.target.value)
                 }}
+              />
+            </div>
+            <div className="w-1/3">
+              <BasicDateRangePicker
+                selectedDate={selectedDate}
+                handleDateChange={handleDateChange}
               />
             </div>
           </div>
@@ -342,6 +359,7 @@ const WorkLogPage = () => {
       <AddWorkLogModal
         showAddWorkLog={showAddWorkLog}
         setShowAddWorkLog={setShowAddWorkLog}
+        setShowSuccessMessage={setShowSuccessMessage}
       />
       <ViewEmployeeInfo
         disabled={disabled}
@@ -370,8 +388,8 @@ const AddWorkLogModal = (props: any) => {
       tmp.push({
         key: i,
         no: i + 1,
-        hiringDate: undefined,
-        employeeId: undefined,
+        historyDate: undefined,
+        employee: undefined,
         hours: undefined,
         earning: undefined,
         earningRate: undefined,
@@ -394,10 +412,8 @@ const AddWorkLogModal = (props: any) => {
 
   let employees = employeesData && employeesData.employees
 
-  console.log('render')
-
   const validate = (fields: any) => {
-    if (fields.hiringDate && fields.employeeId && fields.hours && fields.earning) {
+    if (fields.historyDate && fields.employee && fields.hours && fields.earning) {
       return true
     } else {
       return false
@@ -415,15 +431,17 @@ const AddWorkLogModal = (props: any) => {
     },
     {
       title: "วันที่",
+      className: "w-1/8",
       render: (workLog: any) => {
         return <TextField
+          className="w-full"
           label="วันที่ทำงาน"
           type="date"
           InputLabelProps={{
             shrink: true,
           }}
-          defaultValue={workLog && workLog.hiringDate}
-          key={workLog && workLog.hiringDate}
+          defaultValue={workLog && workLog.historyDate}
+          key={workLog && workLog.historyDate}
           onChange={(e: any) => {
             if (e.target.value) {
               if (parseInt(e.target.value.substr(0, 4)) >= 2020) {
@@ -434,10 +452,10 @@ const AddWorkLogModal = (props: any) => {
           onBlur={(e: any) => {
             dataSource[workLog.key] = {
               ...workLog,
-              hiringDate: e.target.value,
+              historyDate: e.target.value,
               validate: validate({
                 ...workLog,
-                hiringDate: e.target.value,
+                historyDate: e.target.value,
               })
             }
             setDataSource([...dataSource])
@@ -445,10 +463,10 @@ const AddWorkLogModal = (props: any) => {
           }}
           onFocus={async (e: any) => {
             if (myRefs.current[workLog.key - 1]) {
-              if (dataSource[workLog.key - 1].hiringDate) {
+              if (dataSource[workLog.key - 1].historyDate) {
                 dataSource[workLog.key] = {
                   ...dataSource[workLog.key],
-                  hiringDate: dataSource[workLog.key - 1].hiringDate
+                  historyDate: dataSource[workLog.key - 1].historyDate
                 }
               }
             }
@@ -461,11 +479,13 @@ const AddWorkLogModal = (props: any) => {
     },
     {
       title: "พนักงาน",
+      className: "w-1/6",
       render: (workLog: any) => {
         return employees ? <Autocomplete
           options={employees && employees.map((option: any) => option.name)}
           renderInput={(params) => (
             <TextField {...params}
+              className="w-full"
               ref={el => (myRefs.current[workLog.key] = el)}
               autoFocus={workLog.autoFocus}
               label="พนักงาน"
@@ -486,13 +506,13 @@ const AddWorkLogModal = (props: any) => {
                     }
                     dataSource[workLog.key] = {
                       ...workLog,
-                      employeeId: e.target.value,
+                      employee: e.target.value,
                       hiringType: emp && emp.hiringType,
                       earningRate: emp && emp.earning,
                       earning: calculatedEarning,
                       validate: validate({
                         ...workLog,
-                        employeeId: e.target.value,
+                        employee: e.target.value,
                         hiringType: emp && emp.hiringType,
                         earningRate: emp && emp.earning,
                         earning: calculatedEarning,
@@ -506,16 +526,18 @@ const AddWorkLogModal = (props: any) => {
               }
             />
           )}
-          key={workLog && workLog.employeeId}
-          defaultValue={workLog && workLog.employeeId}
+          key={workLog && workLog.employee}
+          defaultValue={workLog && workLog.employee}
         /> : <CircularProgress />
       }
     },
     {
       title: "ชม. ทำงาน",
       key: "hours",
+      className: "w-1/8",
       render: (workLog: any) => {
         return <TextField
+          className="w-full"
           label="จำนวน ชม. (Enter)"
           type="number"
           InputLabelProps={{
@@ -551,10 +573,10 @@ const AddWorkLogModal = (props: any) => {
 
               if (myRefs.current[workLog.key + 1]) {
                 myRefs.current[workLog.key + 1].click()
-                if (dataSource[workLog.key].hiringDate) {
+                if (dataSource[workLog.key].historyDate) {
                   dataSource[workLog.key + 1] = {
                     ...dataSource[workLog.key + 1],
-                    hiringDate: dataSource[workLog.key].hiringDate
+                    historyDate: dataSource[workLog.key].historyDate
                   }
                 }
               }
@@ -593,8 +615,10 @@ const AddWorkLogModal = (props: any) => {
     },
     {
       title: "ค่าจ้าง",
+      className: "w-1/8",
       render: (workLog: any) => {
         return <TextField
+          className="w-full"
           label="ค่าจ้าง"
           type="number"
           InputLabelProps={{
@@ -620,6 +644,7 @@ const AddWorkLogModal = (props: any) => {
     },
     {
       title: "รูปแบบ",
+      className: "w-1/8",
       dataIndex: "hiringType",
       key: "hiringType",
       render: (hiringType: any) => {
@@ -628,11 +653,13 @@ const AddWorkLogModal = (props: any) => {
     },
     {
       title: "อัตราค่าจ้าง",
+      className: "w-1/8",
       dataIndex: "earningRate",
       key: "earningRate"
     },
     {
       title: "",
+      className: "w-1/8",
       dataIndex: "validate",
       key: "validate",
       render: (validate: any) => {
@@ -646,8 +673,8 @@ const AddWorkLogModal = (props: any) => {
         return <CancelOutlinedIcon onClick={(e: any) => {
           dataSource[workLog.key] = {
             ...workLog,
-            hiringDate: undefined,
-            employeeId: undefined,
+            historyDate: undefined,
+            employee: undefined,
             hours: undefined,
             earning: undefined,
             hiringType: undefined,
@@ -668,8 +695,8 @@ const AddWorkLogModal = (props: any) => {
       tmpDataSource.push({
         key: i,
         no: i + 1,
-        hiringDate: null,
-        employeeId: null,
+        historyDate: null,
+        employee: null,
         hours: null,
         earning: null,
         earningRate: null,
@@ -687,8 +714,8 @@ const AddWorkLogModal = (props: any) => {
         tmp.push({
           key: i,
           no: i + 1,
-          hiringDate: undefined,
-          employeeId: undefined,
+          historyDate: undefined,
+          employee: undefined,
           hours: undefined,
           earning: undefined,
           earningRate: undefined,
@@ -698,6 +725,8 @@ const AddWorkLogModal = (props: any) => {
       return tmp
     })
   }
+
+  const [createWorkLogs, { loading: createWorkLogsLoading }] = useMutation(CREATE_WORKLOGS);
 
   return (
     <MaterialModal
@@ -721,6 +750,36 @@ const AddWorkLogModal = (props: any) => {
               color="primary"
               startIcon={<DoneIcon />}
               size="large"
+              disabled={createWorkLogsLoading}
+              onClick={(e: any) => {
+                let validatedWorkLog = dataSource && dataSource.filter((obj: any) => {
+                  return obj.validate
+                })
+
+                validatedWorkLog = validatedWorkLog && validatedWorkLog.map((obj: any) => {
+                  let emp = employees.find((element: any) => element.name === obj.employee)
+                  return {
+                    earning: obj.earning,
+                    earningRate: obj.earningRate,
+                    employee: {
+                      connect: {
+                        id: emp.id
+                      }
+                    },
+                    hiringType: obj.hiringType,
+                    historyDate: moment(obj.historyDate, "YYYY-MM-DD").toDate(),
+                    hours: obj.hours,
+                    sourceType: 'MANUAL',
+                  }
+                })
+
+                createWorkLogs({ variables: { workLogs: validatedWorkLog } })
+                handleClose()
+
+                if (!createWorkLogsLoading) {
+                  props.setShowSuccessMessage(true)
+                }
+              }}
             >
               ตกลง (เพิ่ม {dataSource && dataSource.filter((ds: any) => {
               return ds.validate === true
@@ -729,6 +788,16 @@ const AddWorkLogModal = (props: any) => {
           </div>
         </div>
         <div className="overflow-y-scroll" style={{ maxHeight: '80vh' }}>
+          <Global
+            styles={css`
+            .w-1/8 {
+              width: 12.5%;
+            }
+            .w-1/10 {
+              width: 10%;
+            }
+            `}
+          />
           <Table
             dataSource={dataSource}
             columns={columns}
@@ -736,8 +805,62 @@ const AddWorkLogModal = (props: any) => {
           />
         </div>
       </div>
-    </MaterialModal>
+    </MaterialModal >
   )
+}
+
+const BasicDateRangePicker = (props: any) => {
+  const [open, setOpen]: any = useState(false)
+
+  return (
+    <LocalizationProvider dateAdapter={DateFnsUtils}>
+      <DateRangePicker
+        startText="วันที่ทำงานเริ่มงาน"
+        endText="วันที่ทำงานสิ้นสุด"
+        value={props.selectedDate}
+        open={open}
+        onClose={() => { setOpen(false) }}
+        onChange={date => {
+          if (date[0] && date[1]) {
+            props.handleDateChange(date)
+            if (date[0].getTime() === date[1].getTime()) {
+              setOpen(false)
+            }
+          }
+        }}
+        renderInput={(startProps, endProps) => {
+          return (
+            <>
+              <TextField
+                {...startProps}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                placeholder="DD/MM/YYYY"
+                helperText=""
+                value={startProps.value ? moment(startProps.value + '').format('DD/MM/YYYY') : ''}
+                onClick={() => { setOpen(true) }}
+                error={false}
+              />
+              <DateRangeDelimiter> ถึง </DateRangeDelimiter>
+              <TextField
+                {...endProps}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                placeholder="DD/MM/YYYY"
+                helperText=""
+                value={endProps.value ? moment(endProps.value + '').format('DD/MM/YYYY') : ''}
+                onClick={() => { setOpen(true) }}
+                error={false}
+              />
+            </>
+          )
+        }
+        }
+      />
+    </LocalizationProvider>
+  );
 }
 
 export default WorkLogPage;

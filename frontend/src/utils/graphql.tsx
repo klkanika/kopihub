@@ -569,11 +569,36 @@ export const GET_WORKLOGS = gql`
     }
   }
 `
-
 export const GET_WORKLOG = gql`
-  query getWorkLog{
+  query getWorkLog($textSearch: String, $fromDate: DateTime, $toDate: DateTime){
     workingHistories(
-      orderBy : [{historyDate:desc}]
+      where: {
+        employee: {
+          OR: [
+            { name : { contains: $textSearch } },
+            { fullName: { contains: $textSearch } },
+            { tel: { contains: $textSearch } },
+            { lineId: { contains: $textSearch } }
+          ],
+          status: ACTIVE
+        },
+        AND: [
+          {
+            historyDate: {
+              gte: $fromDate
+            }
+          },
+          {
+            historyDate: {
+              lte: $toDate
+            }
+          }
+        ],
+      },
+      orderBy: [
+        {historyDate:desc},
+        {createdAt:desc}
+      ]
       ){
       id
       historyDate
@@ -614,24 +639,9 @@ export const UPDATE_WORKLOG = gql`
   } 
 `
 
-export const CREATE_WORKLOG = gql`
-  mutation createWorkLog($historyDate: DateTime!, $employeeId: String!, $hours: Float!, $earning: Float!, $hiringType: HiringType!, $earningRate: Float!){
-    createOneWorkingHistory(
-      data : {
-        historyDate: $historyDate
-        employee: {
-          connect: {
-            id : $employeeId
-          }
-        }
-        hours: $hours
-        earning: $earning
-        hiringType: $hiringType
-        earningRate: $earningRate
-      }
-    ){
-      id
-    }
+export const CREATE_WORKLOGS = gql`
+  mutation createWorkLogs($workLogs: [WorkingHistoryCreateInput!]!){
+    createWorkLogs(workLogs: $workLogs)
   } 
 `
 
