@@ -1,9 +1,12 @@
+import { useQuery } from "@apollo/react-hooks";
 import React from "react";
 import { FormControl, InputLabel, Paper, Select, Tab, Tabs, MenuItem, Button, Popover } from "@material-ui/core";
 import PeopleIcon from '@material-ui/icons/People';
 import UpdateIcon from '@material-ui/icons/Update';
 import MoneyIcon from '@material-ui/icons/AttachMoney';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import { GET_EMPLOYEES } from "../../utils/graphql";
+
 
 const PayrollHeader = (props: any) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -15,12 +18,27 @@ const PayrollHeader = (props: any) => {
         setAnchorEl(null);
     };
 
+    const { data: employeesData, loading: employeesLoading } = useQuery(GET_EMPLOYEES, {
+        fetchPolicy: 'no-cache',
+        variables: {
+            statusSearch: 'ACTIVE'
+        },
+        pollInterval: 1000,
+        onError: (err: any) => {
+            window.alert(err)
+        }
+    });
+
+    let withdrawableEmployeeCount = employeesData && employeesData.employees && employeesData.employees.filter((data: any) => {
+        return (data.withdrawableMoney - data.withdrawnMoney) > 0
+    }).length
+
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
     return (
         <Paper>
             <div className="flex">
-                <div className="mr-12 w-1/6">
+                <div className="w-1/6">
                     <Button
                         variant="contained"
                         color="primary"
@@ -61,7 +79,7 @@ const PayrollHeader = (props: any) => {
                         >
                             <Tab label={<div><PeopleIcon style={{ verticalAlign: 'middle' }} /> พนักงาน </div>} value='employee' href="/payroll/employee" className="h-16" />
                             <Tab label={<div><UpdateIcon style={{ verticalAlign: 'middle' }} /> บันทึกการทำงาน </div>} value='worklog' href="/payroll/worklog" className="h-16" />
-                            <Tab label={<div><MoneyIcon style={{ verticalAlign: 'middle' }} /> การจ่ายเงิน </div>} value='payment' href="/payroll/payment" className="h-16" />
+                            <Tab label={<div className="flex"><MoneyIcon style={{ verticalAlign: 'middle' }} />การจ่ายเงิน <div style={{ backgroundColor: '#DA394C' }} className="text-white rounded-full w-10 ml-2">{withdrawableEmployeeCount}</div> </div>} value='payment' href="/payroll/payment" className="h-16" />
                         </Tabs>
                     </div>
                     <div className="flex items-center">

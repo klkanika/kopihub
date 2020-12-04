@@ -14,5 +14,7 @@ schema.objectType({
     t.model.earningRate()
     t.model.earning()
     t.model.sourceType()
+    t.model.paid()
+    t.model.status()
   },
 })

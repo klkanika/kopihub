@@ -10,5 +10,6 @@ schema.objectType({
     t.model.employeeId()
     t.model.payrollDate()
     t.model.paid()
+    t.model.WorkingHistory_Payroll()
   },
 })

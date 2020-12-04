@@ -1018,7 +1018,8 @@ schema.mutationType({
             if (selectedEmployee) {
               let updateEmployeeStatus = await ctx.db.employee.update({
                 data: {
-                  withdrawableMoney: selectedEmployee.withdrawableMoney + workLog.earning
+                  withdrawableMoney: selectedEmployee.withdrawableMoney + workLog.earning,
+                  withdrawableHours: selectedEmployee.withdrawableHours + workLog.hours
                 },
                 where: {
                   id: workLog.employee.connect?.id || undefined
@@ -1027,6 +1028,162 @@ schema.mutationType({
             }
           }
         }
+        return true
+      },
+    })
+
+    t.field('deleteWorkLog', {
+      type: 'Boolean',
+      args: {
+        id: stringArg({ required: true })
+      },
+      resolve: async (_parent, args, ctx) => {
+        const id = args.id
+        let deletedWorkLog = await ctx.db.workingHistory.delete({
+          where: {
+            id: id
+          },
+          include: {
+            employee: true
+          }
+        })
+
+        if (deletedWorkLog) {
+          let selectedEmployee = await ctx.db.employee.findOne({
+            where: {
+              id: deletedWorkLog.employeeId
+            }
+          })
+
+          if (selectedEmployee) {
+            let updateEmployeeStatus = await ctx.db.employee.update({
+              data: {
+                withdrawableMoney: selectedEmployee.withdrawableMoney - deletedWorkLog.earning,
+                withdrawableHours: selectedEmployee.withdrawableHours - deletedWorkLog.hours
+              },
+              where: {
+                id: deletedWorkLog.employeeId
+              }
+            })
+          }
+        }
+        return true
+      },
+    })
+
+    t.field('createPayroll', {
+      type: 'Boolean',
+      args: {
+        employeeId: stringArg({ required: true }),
+        payrollDate: dateTimeArg({ type: 'DateTime', required: true }),
+        paid: floatArg({ required: true })
+      },
+      resolve: async (_parent, args, ctx) => {
+        let selectedEmployee = await ctx.db.employee.findOne({
+          where: {
+            id: args.employeeId
+          }
+        })
+
+        if (selectedEmployee) {
+          if (args.paid > selectedEmployee?.withdrawableMoney - selectedEmployee?.withdrawnMoney) {
+            return false
+          }
+        } else {
+          return false
+        }
+
+        let createdPayroll = await ctx.db.payroll.create({
+          data: {
+            employee: { connect: { id: args.employeeId } },
+            payrollDate: args.payrollDate,
+            paid: args.paid
+          },
+          include: {
+            employee: true
+          }
+        })
+
+        let paid = args.paid
+        let sumPaidHours = 0
+
+        if (createdPayroll) {
+          let remainingWorkingHistory = await ctx.db.workingHistory.findMany({
+            where: {
+              OR: [
+                { status: 'NOT_PAID' },
+                { status: 'PARTIAL_PAID' }
+              ]
+            },
+            orderBy: {
+              historyDate: 'asc'
+            }
+          })
+
+          for (let workLog of remainingWorkingHistory) {
+            let workLogStatus = 'NOT_PAID'
+            let workLogPaid = 0
+
+            let remainingPaid = workLog.earning - workLog.paid
+            if (paid >= remainingPaid) {
+              workLogStatus = 'FULL_PAID'
+              paid = paid - remainingPaid
+              workLogPaid = remainingPaid
+              sumPaidHours += workLog.hours
+            } else {
+              workLogStatus = 'PARTIAL_PAID'
+              workLogPaid = paid
+              paid = 0
+            }
+
+            let updatedWorkLog = await ctx.db.workingHistory.update({
+              data: {
+                paid: workLog.paid + workLogPaid,
+                status: workLogStatus === 'NOT_PAID' ? 'NOT_PAID' : workLogStatus === 'FULL_PAID' ? 'FULL_PAID' : 'PARTIAL_PAID'
+              },
+              where: {
+                id: workLog.id
+              }
+            })
+
+            await ctx.db.workingHistory_Payroll.create({
+              data: {
+                paid: workLogPaid,
+                allMoney: remainingPaid,
+                Employee: {
+                  connect: {
+                    id: args.employeeId
+                  }
+                },
+                Payroll: {
+                  connect: {
+                    id: createdPayroll.id
+                  }
+                },
+                WorkingHistory: {
+                  connect: {
+                    id: updatedWorkLog.id
+                  }
+                }
+              }
+            })
+
+            if (paid <= 0) {
+              break
+            }
+          }
+
+          let updatedEmployee = await ctx.db.employee.update({
+            data: {
+              withdrawnHours: createdPayroll.employee.withdrawnHours + sumPaidHours,
+              withdrawnMoney: createdPayroll.employee.withdrawnMoney + args.paid
+            },
+            where: {
+              id: args.employeeId
+            }
+          })
+        }
+
         return true
       },
     })

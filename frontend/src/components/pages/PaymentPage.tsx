@@ -1,389 +1,689 @@
 import { useLazyQuery, useMutation, useQuery } from "@apollo/react-hooks";
-import {
-  Button,
-  DatePicker,
-  Form,
-  Input,
-  Layout,
-  Modal,
-  Table,
-  Tag,
-} from "antd";
-import { useForm } from "antd/lib/form/Form";
-import { ColumnsType } from "antd/lib/table";
-import React, { useState } from "react";
-import { CREATE_PAYROLL, GET_EMLOYEES_EARNING, GET_EMPLOYEE_HISTORIES } from "../../utils/graphql";
-import moment from "moment";
+import { MenuItem, Button as MaterialButton, TextField, InputAdornment, Modal as MaterialModal, Popover, Snackbar, CircularProgress, Tab, Tabs, SnackbarContent } from "@material-ui/core";
+import { Layout, Table, Tooltip } from "antd";
+import React, { useRef, useState } from "react";
+import { GET_EMPLOYEE, GET_EMPLOYEES, UPSERT_EMPLOYEE, GET_UNIVERSITIES, GET_PAYMENT_HISTORY, GET_FACULTIES, GET_EMPLOYEE_WATCHERS, GET_WORKLOG, DELETE_WORKLOG, CREATE_WORKLOGS, CREATE_PAYROLL } from "../../utils/graphql";
 import PayrollHeader from "./PayrollHeader";
+import AddIcon from '@material-ui/icons/Add';
+import GetAppIcon from '@material-ui/icons/GetApp';
+import SearchIcon from '@material-ui/icons/Search';
+import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
+import TodayIcon from '@material-ui/icons/Today';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import MoneyIcon from '@material-ui/icons/AttachMoney';
+import PostAddIcon from '@material-ui/icons/PostAdd';
+import CancelOutlinedIcon from '@material-ui/icons/CancelOutlined';
+import CheckIcon from '@material-ui/icons/Check';
+import DoneIcon from '@material-ui/icons/Done';
+import moment from "moment"
+import bank_bay from '../../imgs/bank_bay.svg';
+import bank_bbl from '../../imgs/bank_bbl.svg';
+import bank_kbank from '../../imgs/bank_kbank.svg';
+import bank_ktb from '../../imgs/bank_ktb.svg';
+import bank_scb from '../../imgs/bank_scb.svg';
+import default_profile from '../../imgs/profile.png';
+import { Alert, Autocomplete } from "@material-ui/lab";
+import { ViewEmployeeInfo } from "./EmployeePage";
+import { css, Global } from "@emotion/core";
+import {
+  DateRangePicker,
+  DateRangeDelimiter,
+  LocalizationProvider
+} from "@material-ui/pickers";
+import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
 
-const PaymentPage = () => {
-  const [showPayModal, setShowPayModal] = useState(false);
-  const [showPayHistoryModal, setShowPayHistoryModal] = useState(false);
-  const [paidDataSource, setPaidDataSource] = useState();
-  const [workingHistoriesDataSource, setWorkingHistoriesDataSource] = useState();
-  const [payEmpId, setPayEmpId] = useState();
-  const [employeeId, setEmployeeId] = useState();
-  const [form] = useForm();
-
+const WorkLogPage = () => {
+  const [showIdCardModal, setShowIdCardModal] = useState(false);
+  const [showViewPayment, setShowViewPayment] = useState(false);
+  const [showViewEmployeeModal, setShowViewEmployeeModal] = useState(false);
+  const [payModal, setPayModal] = useState(false);
+  const [payModel, setPayModel] = useState({});
+  const [disabled, setDisabled] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+  const [idCard, setIdCard] = useState('');
+  const [textSearch, setTextSearch] = useState('');
+  const [selectedTab, setSelectedTab] = useState('withdrawable');
+  const [selectedEmployee, setSelectedEmployee]: any = useState();
+  const [deleteWorkLog] = useMutation(DELETE_WORKLOG);
+  const [upsertEmployee] = useMutation(UPSERT_EMPLOYEE);
   const [createPayroll, { loading: createPayrollLoading }] = useMutation(CREATE_PAYROLL);
 
-  const [getEmployeeHistories, { called, loading: employeeHistoriesLoading, data: employeeHistories }] = useLazyQuery(GET_EMPLOYEE_HISTORIES, {
+  const [getEmployee, { called, loading: employeeLoading, data: employeeData }] = useLazyQuery(GET_EMPLOYEE, {
     fetchPolicy: 'network-only',
-    onCompleted: (sre) => {
-      let object = sre && sre.getEmployeeHistories
-      let payrolls = object && object.payrolls
-      let workingHistories = object && object.workingHistories
-      setPaidDataSource(payrolls)
-      setWorkingHistoriesDataSource(workingHistories)
+    onCompleted: (src) => {
+      const emp = src && src.employees && src.employees[0]
+      setSelectedEmployee(emp)
+      setPayModel({
+        employeeId: emp.id,
+        employeeName: emp.name,
+        payrollDate: moment().format('YYYY-MM-DD'),
+        paid: emp.withdrawableMoney - emp.withdrawnMoney,
+        allMoney: emp.withdrawableMoney - emp.withdrawnMoney
+      })
+      // editForm.setFieldsValue({
+      //   name: emp.name,
+      //   type: emp.hiringType,
+      //   earning: emp.earning,
+      //   university: emp.university,
+      //   faculty: emp.faculty
+      // })
     },
     onError: (err) => {
       window.alert(err)
     }
   });
 
-  const { data: workLogData, loading: workLogLoading } = useQuery(
-    GET_EMLOYEES_EARNING,
-    {
-      fetchPolicy: "no-cache",
-      pollInterval: 1000,
-      onError: (err: any) => {
-        window.alert(err);
-      },
+  const [getPaymentHistory, { loading: paymentHistoryLoading, data: paymentHistoryData }] = useLazyQuery(GET_PAYMENT_HISTORY, {
+    fetchPolicy: 'network-only',
+    onError: (err) => {
+      window.alert(err)
     }
-  );
+  });
+  console.log('render')
 
-  let dataSource =
-    workLogData &&
-    workLogData.getEmployeesEarning &&
-    workLogData.getEmployeesEarning.data &&
-    workLogData.getEmployeesEarning.data.slice().sort(function (a: any, b: any) { return b.remainingEarning - a.remainingEarning });
+  const { data: employeesData, loading: employeesLoading } = useQuery(GET_EMPLOYEES, {
+    fetchPolicy: 'no-cache',
+    variables: {
+      statusSearch: 'ACTIVE',
+      textSearch: textSearch ? textSearch.trim() : '',
+    },
+    pollInterval: 1000,
+    onError: (err) => {
+      window.alert(err)
+    }
+  });
 
-  const columns = [
+  let withdrawableEmployee = employeesData && employeesData.employees && employeesData.employees
+    .slice()
+    .filter((data: any) => {
+      return data.withdrawableMoney - data.withdrawnMoney > 0
+    })
+    .sort((a: any, b: any) => {
+      return (b.withdrawableMoney - b.withdrawnMoney) - (a.withdrawableMoney - a.withdrawnMoney)
+    })
+
+  let withdrawableEmployeeCount = withdrawableEmployee && withdrawableEmployee.length
+
+  if (selectedTab === 'withdrawn') {
+    withdrawableEmployee = employeesData && employeesData.employees && employeesData.employees
+      .slice()
+      .filter((data: any) => {
+        return data.withdrawableMoney - data.withdrawnMoney <= 0
+      }).sort((a: any, b: any) => {
+        return (b.withdrawnMoney) - (a.withdrawnMoney)
+      })
+  } else if (selectedTab === 'all') {
+    withdrawableEmployee = employeesData && employeesData.employees.slice().sort((a: any, b: any) => {
+      return (((b.withdrawableMoney - b.withdrawnMoney) - (a.withdrawableMoney - a.withdrawnMoney)) * 1000000) + (b.withdrawnMoney) - (a.withdrawnMoney)
+    })
+  }
+
+  const { data: workLogsData, loading: workLogsLoading } = useQuery(GET_WORKLOG, {
+    fetchPolicy: 'no-cache',
+    variables: {
+      textSearch: textSearch ? textSearch.trim() : '',
+    },
+    pollInterval: 1000,
+    onError: (err) => {
+      window.alert(err)
+    }
+  });
+
+  const { data: universities, loading: universitiesLoading } = useQuery(GET_UNIVERSITIES, {
+    fetchPolicy: 'no-cache',
+    pollInterval: 1000,
+    onError: (err) => {
+      window.alert(err)
+    }
+  });
+
+  const { data: faculties, loading: facultiesLoading } = useQuery(GET_FACULTIES, {
+    fetchPolicy: 'no-cache',
+    pollInterval: 1000,
+    onError: (err) => {
+      window.alert(err)
+    }
+  });
+
+  const { data: employeeWatchers, loading: employeeWatchersLoading } = useQuery(GET_EMPLOYEE_WATCHERS, {
+    fetchPolicy: 'no-cache',
+    pollInterval: 1000,
+    onError: (err) => {
+      window.alert(err)
+    }
+  });
+
+  const MoreOptions = (props: any) => {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    let workLog = props.workLog
+    let workLogId = workLog.id
+    const handleClick = (event: any) => {
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+
+    return (
+      <div onClick={(e: any) => { e.stopPropagation() }}>
+        <MoreVertIcon className="cursor-pointer" onClick={handleClick} />
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          <div className="w-24">
+            <MenuItem onClick={() => { let deleteWorkLogStatus = deleteWorkLog({ variables: { id: workLogId } }); if (deleteWorkLogStatus) { setShowSuccessMessage(true); } }}>ลบ</MenuItem>
+          </div>
+        </Popover>
+      </div >
+    );
+  }
+
+  const bank_list = [
     {
-      title: "ชื่อ",
-      dataIndex: "name",
-      key: "name",
-      width: "20%",
+      bank: 'SCB',
+      img: <div style={{ width: '20px', backgroundColor: '#4f2a81' }} className="rounded-full p-1 m-2">
+        <img src={bank_scb} />
+      </div>,
+      name: 'ธนาคารไทยพาณิชย์'
     },
     {
-      title: "ค่าจ้างคงเหลือที่เบิกได้",
-      dataIndex: "remainingEarning",
-      key: "remainingEarning",
-      width: "20%",
-      render: (wage: any) => (
-        <div className="text-center">
-          {wage
-            .toFixed(2)
-            .toString()
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
-          บาท
-        </div>
-      ),
+      bank: 'KBANK',
+      img: <div style={{ width: '20px', backgroundColor: '#FFFFFF' }} className="rounded-full m-2">
+        <img src={bank_kbank} />
+      </div>,
+      name: 'ธนาคารกสิกรไทย'
     },
     {
-      title: "ตัวเลือก",
-      width: "60%",
-      render: (emp: any) => (
-        <div>
-          <Button
-            type="primary"
-            className="mr-4"
-            onClick={() => {
-              // set form data
-              form.setFieldsValue({
-                employee: emp.name,
-                date: moment().utcOffset(7),
-                amount: ''
-              });
-              setPayEmpId(emp.id)
-              setShowPayModal(true);
-            }}
-          >
-            จ่ายเงิน
-          </Button>
-          <Button
-            onClick={() => {
-              getEmployeeHistories({
-                variables: {
-                  employeeId: emp.id
+      bank: 'BAY',
+      img: <div style={{ width: '20px', backgroundColor: '#6f5f5e' }} className="rounded-full p-1 m-2">
+        <img src={bank_bay} />
+      </div>,
+      name: 'ธนาคารกรุงศรี'
+    },
+    {
+      bank: 'BBL',
+      img: <div style={{ width: '20px', backgroundColor: '#16087f' }} className="rounded-full p-1 m-2">
+        <img src={bank_bbl} />
+      </div>,
+      name: 'ธนาคารกรุงเทพ'
+    },
+    {
+      bank: 'KTB',
+      img: <div style={{ width: '20px', backgroundColor: '#04a5e3' }} className="rounded-full p-1 m-2">
+        <img src={bank_ktb} />
+      </div>,
+      name: 'ธนาคารกรุงไทย'
+    },
+  ]
+
+  let columns = [
+    {
+      title: "พนักงาน",
+      render: (emp: any) => {
+        return (
+          <div className="flex items-center">
+            <Tooltip title={emp && emp.profilePictureUrl ? 'คลิกเพื่อดูรูป' : ''} placement="bottom">
+              <div className={`w-12 h-12 ${emp && emp.profilePictureUrl ? 'cursor-pointer' : ''}`} onClick={(e: any) => {
+                e.stopPropagation()
+                if (emp.profilePictureUrl) {
+                  setShowIdCardModal(true)
+                  setIdCard(emp && emp.profilePictureUrl)
                 }
-              })
-              setEmployeeId(emp.id)
-              setShowPayHistoryModal(true);
-            }}
-          >
-            ประวัติการจ่ายเงิน
-          </Button>
-        </div>
-      ),
+              }}
+              >
+                <img className="object-cover rounded-full" src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
+              </div>
+            </Tooltip>
+            <div className="ml-6">{emp && emp.name}</div>
+          </div>
+        )
+      }
+    },
+    {
+      title: "ชม. ทำงานที่เบิกได้",
+      render: (emp: any) => {
+        return emp.withdrawableHours - emp.withdrawnHours
+      }
+    },
+    {
+      title: "ชม. ทำงานที่เบิกแล้ว",
+      render: (emp: any) => {
+        return emp.withdrawnHours
+      }
+    },
+    {
+      title: `ค่าจ้างที่เบิกได้`,
+      render: (emp: any) => {
+        let remainingMoney = emp.withdrawableMoney - emp.withdrawnMoney
+        return '฿ ' + (remainingMoney.toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ","))
+      }
+    },
+    {
+      title: `ค่าจ้างที่เบิกแล้ว`,
+      render: (emp: any) => {
+        let remainingMoney = emp.withdrawnMoney
+        return '฿ ' + (remainingMoney.toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ","))
+      }
+    },
+    {
+      title: "จ่ายเงิน",
+      render: (emp: any) => {
+        return <MoneyIcon
+          color="primary"
+          style={{ verticalAlign: 'middle' }}
+          className="cursor-pointer"
+          onClick={(e: any) => {
+            e.stopPropagation()
+            getEmployee({ variables: { id: emp.id } })
+            setPayModal(true)
+          }}
+        />
+      }
+    },
+    {
+      title: "ดูประวัติการจ่าย",
+      render: (emp: any) => {
+        return <SearchIcon className="cursor-pointer" onClick={(e) => {
+          e.stopPropagation()
+          setShowViewPayment(true)
+          getEmployee({ variables: { id: emp.id } })
+          getPaymentHistory({ variables: { employeeId: emp.id } })
+        }} />
+      }
     },
   ];
 
-  const onPay = (values: any) => {
-    createPayroll({
-      variables: {
-        employeeId: payEmpId,
-        payrollDate: moment(values.date).utcOffset(7).toDate(),
-        paid: parseFloat(values.amount)
-      }
+  if (selectedTab === 'withdrawable') {
+    columns = columns.filter((data: any) => {
+      return data.title != 'ชม. ทำงานที่เบิกแล้ว' && data.title != 'ค่าจ้างที่เบิกแล้ว'
     })
-    setShowPayModal(false);
-  };
+  } else if (selectedTab === 'withdrawn') {
+    columns = columns.filter((data: any) => {
+      return data.title != 'ชม. ทำงานที่เบิกได้' && data.title != 'ค่าจ้างที่เบิกได้'
+    })
+  }
+
+  const datasource = workLogsData && workLogsData.workingHistories && workLogsData.workingHistories.map((obj: any, idx: any) => {
+    return {
+      ...obj,
+      key: idx
+    }
+  })
+  const employee = employeeData && employeeData.employees && employeeData.employees[0]
 
   return (
     <Layout.Content>
+      <Snackbar className="w-full" open={showSuccessMessage} autoHideDuration={4000} onClose={() => { setShowSuccessMessage(false) }}>
+        <Alert onClose={() => { setShowSuccessMessage(false) }} severity="success">
+          ดำเนินการสำเร็จ!
+        </Alert>
+      </Snackbar>
       <PayrollHeader value="payment" />
-      <div className="m-4 bg-white flex flex-col flex-1">
-        <div className="h-16 w-full flex items-center px-8 text-base border-b border-gray-300">
-          การจ่ายเงิน
+      <div className="flex flex-col flex-1">
+        <div className="h-16 w-full flex items-center text-base border-b border-gray-300 pl-6 pt-4">
+          <div className="w-1/6">
+            การจ่ายเงิน
+          </div>
+          <div className="w-5/6">
+            <Tabs
+              value={selectedTab}
+              indicatorColor="primary"
+              textColor="primary"
+            >
+              <Tab label={<div className="flex">เบิกได้ <div style={{ backgroundColor: '#DA394C' }} className="text-white rounded-full w-10 ml-2">{withdrawableEmployeeCount}</div> </div>} value='withdrawable' onClick={() => {
+                setSelectedTab('withdrawable')
+              }} />
+              <Tab label={<div className="flex">เบิกแล้ว </div>} value='withdrawn' onClick={() => {
+                setSelectedTab('withdrawn')
+              }} />
+              <Tab label={<div className="flex">ทั้งหมด </div>} value='all' onClick={() => {
+                setSelectedTab('all')
+              }} />
+            </Tabs>
+          </div>
         </div>
-        <div className="px-8 py-6">
+        <div className="flex items-center justify-between text-lg pt-6 pb-6">
+          <div className="flex pl-4 w-1/5">
+            <div>
+              <MaterialButton color="primary" style={{ textTransform: "none" }}><GetAppIcon className="pr-1" /> Export</MaterialButton>
+            </div>
+          </div>
+          <div className="flex flex-wrap pr-6 w-4/5 items-center justify-end">
+            <div className="w-1/4 mr-6">
+              <TextField
+                className="w-full"
+                label="ค้นหา"
+                placeholder="ชื่อพนักงาน / เบอร์ / Line"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                variant="outlined"
+                InputProps={{
+                  startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment>,
+                }}
+                onChange={(e: any) => {
+                  setTextSearch(e.target.value)
+                }}
+              />
+            </div>
+          </div>
+        </div>
+        <div>
           <Table
-            dataSource={dataSource}
+            dataSource={withdrawableEmployee}
             columns={columns}
-            pagination={{ pageSize: 20 }}
-          />
-          <PayModal
-            show={showPayModal}
-            setShow={setShowPayModal}
-            form={form}
-            onFinish={onPay}
-          />
-          <PayHistoryModal
-            show={showPayHistoryModal}
-            setShow={setShowPayHistoryModal}
-            paidDataSource={paidDataSource}
-            workingHistoriesDataSource={workingHistoriesDataSource}
-            getEmployeeHistories={getEmployeeHistories}
-            employee={{}}
-            employeeId={employeeId}
+            pagination={{ position: ['bottomRight'], pageSize: 20 }}
+            className="ml-8 mr-8"
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: event => {
+                  getEmployee({ variables: { id: record && record.id } });
+                  setDisabled(true)
+                  setShowViewEmployeeModal(true)
+                },
+              };
+            }}
           />
         </div>
       </div>
-    </Layout.Content>
-  );
-};
-
-export default PaymentPage;
-const PayModal = ({ show, setShow, form, onFinish }: any) => {
-  return (
-    <Modal
-      title="จ่ายเงิน"
-      visible={show}
-      onCancel={() => { setShow(false) }}
-      footer={[
-        <Button key="cancel" onClick={() => setShow(false)}>
-          ยกเลิก
-        </Button>,
-        <Button
-          key="submit"
-          type="primary"
-          onClick={() =>
-            form
-              .validateFields()
-              .then((values: any) => onFinish(values))
-              .catch((info: any) => console.log(info))
-          }
-        >
-          เพิ่ม
-        </Button>,
-      ]}
-    >
-      <Form
-        form={form}
-        onFinish={onFinish}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 14 }}
+      <MaterialModal
+        open={showIdCardModal}
+        onClose={() => { setShowIdCardModal(false) }}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
       >
-        <Form.Item name="employee" label="พนักงาน">
-          <Input disabled />
-        </Form.Item>
-        <Form.Item name="date" label="วันที่จ่ายเงิน">
-          <DatePicker format={'DD/MM/YYYY'} />
-        </Form.Item>
-        <Form.Item
-          name="amount"
-          label="จำนวนเงิน"
-          rules={[{ required: true, message: "กรุณาระบุจำนวนเงิน" }]}
-        >
-          <Input placeholder="1000" />
-        </Form.Item>
-      </Form>
-    </Modal>
+        <div>
+          <img className="absolute" style={{ width: '500px', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} src={idCard} />
+        </div>
+      </MaterialModal>
+      <ViewPaymentModal
+        showViewPayment={showViewPayment}
+        setShowViewPayment={setShowViewPayment}
+        setShowSuccessMessage={setShowSuccessMessage}
+        setPayModal={setPayModal}
+        payModel={payModel}
+        setPayModel={setPayModel}
+        paymentHistoryData={paymentHistoryData}
+        selectedEmployee={selectedEmployee}
+      />
+      <ViewEmployeeInfo
+        disabled={disabled}
+        setDisabled={setDisabled}
+        selectedEmployee={selectedEmployee}
+        setSelectedEmployee={setSelectedEmployee}
+        showViewEmployeeModal={showViewEmployeeModal}
+        setShowViewEmployeeModal={setShowViewEmployeeModal}
+        universities={universities}
+        faculties={faculties}
+        employeeWatchers={employeeWatchers}
+        bank_list={bank_list}
+        upsertEmployee={upsertEmployee}
+        setShowSuccessMessage={setShowSuccessMessage}
+        employeeLoading={employeeLoading}
+      />
+      <PayModal
+        payModal={payModal}
+        setPayModal={setPayModal}
+        payModel={payModel}
+        setPayModel={setPayModel}
+        createPayroll={createPayroll}
+        createPayrollLoading={createPayrollLoading}
+        setShowSuccessMessage={setShowSuccessMessage}
+        selectedEmployee={selectedEmployee}
+        getEmployee={getEmployee}
+      />
+    </Layout.Content >
   );
 };
 
-const PayHistoryModal = ({ show, setShow, employee, employeeId, paidDataSource, workingHistoriesDataSource, getEmployeeHistories }: any) => {
-  //employe for fetch data
+const PayModal = (props: any) => {
+  return (<MaterialModal
+    open={props.payModal}
+    onClose={() => { props.setPayModal(false) }}
+  >
+    <div className="w-1/3 bg-white p-8 absolute border-gray-300 overflow-y-scroll" style={{ maxHeight: '50%', borderRadius: '0.5rem', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
+      <div className="flex items-center border-b border-gray-300 pb-6 text-base">
+        จ่ายเงินให้กับ {props.payModel.employeeName}
+      </div>
+      <div className="pt-6">
+        <div className="mb-6">
+          <TextField
+            className="w-full"
+            label="วันที่จ่ายเงิน"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            variant="outlined"
+            type="date"
+            defaultValue={props.payModel.payrollDate}
+            key={props.payModel.payrollDate}
+            onChange={(e: any) => {
+              props.setPayModel({
+                ...props.payModel,
+                payrollDate: e.target.value
+              })
+            }}
+          />
+        </div>
+        <div>
+          <TextField
+            autoFocus
+            className="w-full"
+            label="จำนวนเงิน (บาท)"
+            InputLabelProps={{
+              shrink: true,
+            }}
+            variant="outlined"
+            type="number"
+            defaultValue={props.payModel.paid}
+            key={props.payModel.paid}
+            onChange={(e: any) => {
+              props.setPayModel({
+                ...props.payModel,
+                paid: e.target.value ? parseFloat(e.target.value) : undefined
+              })
+            }}
+          />
+        </div>
 
-  const paidCol: ColumnsType<any> = [
+        <div className="flex items-center justify-end mt-6">
+          <div className="mr-4">
+            <MaterialButton
+              variant="contained"
+              color="primary"
+              startIcon={<DoneIcon />}
+              disabled={props.createPayrollLoading}
+              onClick={async () => {
+                if (props && props.payModel && props.payModel.paid && props.payModel.payrollDate && props.payModel.paid <= props.payModel.allMoney && props.payModel.paid > 0) {
+                  let createPayrollStatus = await props.createPayroll(
+                    {
+                      variables: {
+                        ...props.payModel,
+                        payrollDate: moment(props.payModel.payrollDate, 'YYYY-MM-DD').toDate()
+                      }
+                    }
+                  )
+
+                  if (!props.createPayrollLoading) {
+                    if (createPayrollStatus.data.createPayroll) {
+                      await props.setPayModal(false)
+                      await props.setShowSuccessMessage(true)
+                      await props.getEmployee({
+                        variables: {
+                          id: props.selectedEmployee.id
+                        }
+                      })
+                    } else {
+                      alert('ไม่สามารถดำเนินการได้')
+                    }
+                  }
+
+                } else {
+                  alert('ไม่ใช่ยอดเงินที่จะจ่ายได้')
+                }
+              }}
+            >
+              ตกลง
+          </MaterialButton>
+          </div>
+          <div>
+            <MaterialButton
+              variant="contained"
+              onClick={() => {
+                props.setPayModal(false)
+              }}
+            >
+              ยกเลิก
+      </MaterialButton>
+          </div>
+        </div>
+      </div>
+    </div>
+  </MaterialModal >)
+}
+
+const ViewPaymentModal = (props: any) => {
+
+  const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.']
+
+  let dataSource = props && props.paymentHistoryData && props.paymentHistoryData.payrolls.map((obj: any, idx: any) => {
+    return {
+      ...obj,
+      no: `#${idx + 1}`
+    }
+  }).reverse()
+
+  const columns = [
+    {
+      title: "ครั้งที่",
+      dataIndex: "no",
+      key: "no",
+      className: "w-1/12"
+    },
     {
       title: "วันที่จ่ายเงิน",
       dataIndex: "payrollDate",
       key: "payrollDate",
-      render: (payrollDate) => {
-        return moment(payrollDate).utcOffset(7).format('DD/MM/YYY')
+      className: "w-1/6",
+      render: (payrollDate: any) => {
+        return moment(payrollDate).format('DD/MM/YYYY')
       }
     },
     {
       title: "ยอดชำระ",
       dataIndex: "paid",
       key: "paid",
-      align: "right",
-      render: (paid) => <div>{paid.toFixed(2)
-        .toString()
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท</div>,
-    },
-  ];
-  const historyCol: ColumnsType<any> = [
-    {
-      title: "สถานะการจ่าย",
-      dataIndex: "paidStatus",
-      key: "paidStatus",
-      render: (status) => {
-        return status === "part" ? (
-          <Tag color="orange">จ่ายแล้วบางส่วน</Tag>
-        ) : status === "full" ? (
-          <Tag color="green">จ่ายแล้วเต็มจำนวน</Tag>
-        ) : (
-              <Tag color="red">ยังไม่จ่าย</Tag>
-            );
+      className: "w-1/6",
+      render: (paid: any) => {
+        return '฿ ' + (paid.toFixed(2)
+          .toString()
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ","))
       }
     },
     {
-      title: "วันที่ทำงาน",
-      dataIndex: "historyDate",
-      key: "historyDate",
-      render: (historyDate) => {
-        return moment(historyDate).utcOffset(7).format('DD/MM/YYYY')
-      }
-    },
-    {
-      title: "ชั่วโมงทำงาน",
-      dataIndex: "hours",
-      key: "hours",
-      render: (text) => <div>{text} ชั่วโมง</div>,
-    },
-    {
-      title: "ค่าจ้าง (ยอดรวม)",
-      dataIndex: "earning",
-      key: "earning",
-      align: "right",
-      render: (earning) => <div>{earning.toFixed(2)
-        .toString()
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท</div>,
-    },
-  ];
-
-  let sumPayroll = 0
-  let sumWorkingHistories = 0
-  let formattedWorkingHistoriesDataSource: any = []
-
-  if (paidDataSource && paidDataSource.length > 0) {
-    for (let pd of paidDataSource) {
-      sumPayroll += pd.paid
-    }
-  }
-  if (workingHistoriesDataSource && workingHistoriesDataSource.length > 0) {
-    let tmpSumPayroll = sumPayroll
-    let alreadyPart = false
-    for (let whds of workingHistoriesDataSource.slice().reverse()) {
-      sumWorkingHistories += whds.earning
-      tmpSumPayroll -= whds.earning
-      let status
-      if (!alreadyPart) {
-        if (tmpSumPayroll >= 0) {
-          status = 'full'
-        } else {
-          status = 'part'
-          alreadyPart = true
+      title: "จ่ายให้กับ",
+      dataIndex: "WorkingHistory_Payroll",
+      key: "WorkingHistory_Payroll",
+      className: "w-7/12",
+      render: (obj: any) => {
+        let description: any = []
+        let i = 1
+        for (let o of obj) {
+          description.push(
+            <Tooltip title={`เวลาทำงาน ${o.WorkingHistory.hours} ชม.`} placement="bottom">
+              <div className="flex hover:text-red-700">
+                <div className="mr-4">{i}) {moment(o.WorkingHistory.historyDate).format(`DD`)} {months[parseInt(moment(o.WorkingHistory.historyDate).format(`MM`)) - 1]} {moment(o.WorkingHistory.historyDate).format(`YYYY`)}</div> {o.paid}/{o.allMoney} บาท {o.paid < o.allMoney ? `(ขาด ${o.allMoney - o.paid} บาท)` : ''}
+              </div>
+            </Tooltip>
+          )
+          i++
         }
-      } else {
-        status = 'none'
+        return (
+          <div className="flex w-full">
+            <div className="mr-4">วันทำงาน {obj.length} วัน</div>
+            <div>
+              {description}
+            </div>
+          </div>
+        )
       }
-      formattedWorkingHistoriesDataSource.push({
-        ...whds,
-        paidStatus: status
-      })
-    }
-    formattedWorkingHistoriesDataSource.reverse()
+    },
+  ]
+
+
+  const handleClose = () => {
+    props.setShowViewPayment(false)
   }
+
+  const [createWorkLogs, { loading: createWorkLogsLoading }] = useMutation(CREATE_WORKLOGS);
+
+  const emp = props.selectedEmployee
 
   return (
-    <Modal
-      width="95%"
-      title="ประวัติการจ่ายเงิน"
-      visible={show}
-      onCancel={() => setShow(false)}
-      style={{ top: 20 }}
-      footer={null}
+    <MaterialModal
+      open={props.showViewPayment}
+      onClose={() => { handleClose() }}
     >
-      <div className="px-4" style={{ height: "80vh" }}>
-        <div className="text-center mb-8">การจ่ายเงินโดยภาพรวม</div>
-        <div className="flex items-center justify-around mb-8">
-          <div>
-            ยอดที่ต้องชำระ <br />
-            {sumWorkingHistories
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท
+      <>
+        <div className="bg-white p-8 absolute border-gray-300" style={{ minHeight: '95%', maxHeight: '95%', borderRadius: '0.5rem', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', width: '95%' }}>
+          <div className="flex justify-between items-center  border-b border-gray-300 pb-6">
+            <div className="flex items-center">
+              <p className="mr-6 text-xl">ประวัติการจ่ายเงิน</p>
+              <MaterialButton color="primary" onClick={() => {
+                props.setPayModal(true)
+              }} startIcon={<MoneyIcon />}>จ่ายเงิน</MaterialButton>
+            </div>
           </div>
-          <div>
-            ยอดที่ชำระไปแล้ว <br />
-            {sumPayroll
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท
-          </div>
-          <div>
-            ยอดคงเหลือ <br />
-            {(sumWorkingHistories - sumPayroll)
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")} บาท
+          <div className="overflow-y-scroll" style={{ maxHeight: '80vh' }}>
+            <Table
+              dataSource={dataSource}
+              columns={columns}
+            />
           </div>
         </div>
-        <div className="flex items-center justify-between">
-          <DatePicker.RangePicker
-            placeholder={["วันเริ่ม", "วันสิ้นสุด"]}
-            format={'DD/MM/YYYY'}
-            onChange={(value: any) => {
-              if (value) {
-                let startDate = value[0]
-                let endDate = value[1]
-                getEmployeeHistories({
-                  variables: {
-                    employeeId: employeeId,
-                    startDate: moment(startDate).utcOffset(7).toDate(),
-                    endDate: moment(endDate).utcOffset(7).toDate()
-                  }
-                })
-              } else {
-                getEmployeeHistories({
-                  variables: {
-                    employeeId: employeeId
-                  }
-                })
-              }
-            }}
-          />
-        </div>
-        <div className="flex mt-4">
-          <Table
-            className="flex-1"
-            scroll={{ y: 300 }}
-            columns={paidCol}
-            dataSource={paidDataSource}
-          />
-          <div className="w-4" />
-          <Table
-            className="flex-1"
-            scroll={{ y: 300 }}
-            columns={historyCol}
-            dataSource={formattedWorkingHistoriesDataSource}
-          />
-        </div>
-      </div>
-    </Modal>
-  );
-};
+        <SnackbarContent
+          className="absolute bottom-0 lef-0 w-full"
+          message={
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center">
+                <div className={`w-12 h-12 ml-4`}>
+                  <img className="object-cover rounded-full" src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
+                </div>
+                <div className="ml-4">
+                  {emp && emp.name} ({emp && emp.fullName}) {emp && emp.tel}
+                </div>
+                <div className="ml-12">
+                  สรุปยอดทั้งหมด {emp && emp.withdrawnMoney} / {emp && emp.withdrawableMoney}
+                </div>
+              </div>
+              <div onClick={() => { props.setPayModal(true) }} className="ml-64 rounded-full pl-6 pr-6 pt-4 pb-4 cursor-pointer" style={{ backgroundColor: '#DA394C' }}>
+                ค้างชำระ {emp && (emp.withdrawableMoney - emp.withdrawnMoney)} บาท
+              </div>
+            </div>
+          }
+        />
+      </>
+    </MaterialModal >
+  )
+}
+
+export default WorkLogPage;

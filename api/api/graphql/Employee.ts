@@ -28,5 +28,7 @@ schema.objectType({
     t.model.employeeWatcherId()
     t.model.employeeWatcher()
     t.model.address()
+    t.model.withdrawableHours()
+    t.model.withdrawnHours()
   },
 })

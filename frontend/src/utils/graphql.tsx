@@ -436,6 +436,10 @@ export const GET_EMPLOYEE = gql`
         tel
       }
       address
+      withdrawableMoney
+      withdrawnMoney
+      withdrawableHours
+      withdrawnHours
     }
   }
 `
@@ -480,9 +484,15 @@ export const GET_EMPLOYEES = gql`
       idCardPictureUrl
       profilePictureUrl
       createdAt
+      withdrawableMoney
+      withdrawnMoney
+      withdrawableHours
+      withdrawnHours
     }
   }
 `
+
+
 
 export const CREATE_EMPLOYEE = gql`
 mutation createEmployee($name: String!, $hiringType: HiringType!, $earning: Float!, $university: String, $faculty: String){
@@ -613,6 +623,7 @@ export const GET_WORKLOG = gql`
       earningRate
       createdAt
       sourceType
+      status
     }
   }
 `
@@ -647,13 +658,7 @@ export const CREATE_WORKLOGS = gql`
 
 export const DELETE_WORKLOG = gql`
   mutation deleteWorkLog($id: String!){
-    deleteOneWorkingHistory(
-      where : {
-        id : $id
-      }
-    ){
-      id
-    }
+    deleteWorkLog(id : $id)
   } 
 `
 
@@ -670,20 +675,12 @@ export const GET_EMLOYEES_EARNING = gql`
 `
 
 export const CREATE_PAYROLL = gql`
-  mutation createPayroll($employeeId: String, $payrollDate: DateTime!, $paid: Float!){
-    createOnePayroll(
-      data: {
-        payrollDate: $payrollDate,
-        paid: $paid
-        employee: {
-          connect: {
-            id : $employeeId
-          }
-        }
-      }
-    ){
-      id
-    }
+  mutation createPayroll($employeeId: String!, $payrollDate: DateTime!, $paid: Float!){
+    createPayroll(
+      employeeId: $employeeId,
+      payrollDate: $payrollDate,
+      paid: $paid
+    )
   }
 `
 
@@ -829,6 +826,30 @@ export const GET_EMPLOYEE_WATCHERS = gql`
       id
       name
       tel
+    }
+  }
+`
+
+export const GET_PAYMENT_HISTORY = gql`
+  query getPaymentHistory ($employeeId: String!){
+    payrolls(
+      where: {
+        employeeId:{
+          equals: $employeeId
+        }
+      },
+      orderBy : [{payrollDate:asc}]
+    ){
+      payrollDate
+      paid
+      WorkingHistory_Payroll{
+        allMoney
+        paid
+        WorkingHistory{
+          historyDate
+          hours
+        }
+      }
     }
   }
 `

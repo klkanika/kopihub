@@ -118,24 +118,24 @@ const WorkLogPage = () => {
     return (
       <div onClick={(e: any) => { e.stopPropagation() }}>
         <MoreVertIcon className="cursor-pointer" onClick={handleClick} />
-        <Popover
-          id={id}
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-        >
-          <div className="w-24">
-            <MenuItem onClick={() => { let deleteWorkLogStatus = deleteWorkLog({ variables: { id: workLogId } }); if (deleteWorkLogStatus) { setShowSuccessMessage(true); } }}>ลบ</MenuItem>
-          </div>
-        </Popover>
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+          >
+            <div className="w-24">
+              <MenuItem disabled={props.workLog.status != 'NOT_PAID'} onClick={() => { let deleteWorkLogStatus = deleteWorkLog({ variables: { id: workLogId } }); if (deleteWorkLogStatus) { setShowSuccessMessage(true); } }}>ลบ</MenuItem>
+            </div>
+          </Popover>
       </div >
     );
   }
@@ -815,7 +815,7 @@ const BasicDateRangePicker = (props: any) => {
   return (
     <LocalizationProvider dateAdapter={DateFnsUtils}>
       <DateRangePicker
-        startText="วันที่ทำงานเริ่มงาน"
+        startText="วันที่ทำงานเริ่มต้น"
         endText="วันที่ทำงานสิ้นสุด"
         value={props.selectedDate}
         open={open}
