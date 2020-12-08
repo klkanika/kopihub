@@ -324,24 +324,24 @@ const EmployeePage = () => {
       }
     },
     {
-      title: "ปีที่ทำงาน",
+      title: "ทำงานมา",
       render: (emp: any) => {
-        let createdAt = emp.createdAt
+        let hiringDate = emp.hiringDate
         var currentDate = moment();
-        var createdAtDate = moment(createdAt);
+        var hiringDateDate = moment(hiringDate);
 
-        var years = currentDate.diff(createdAtDate, 'year');
-        createdAtDate.add(years, 'years');
+        var years = currentDate.diff(hiringDateDate, 'year');
+        hiringDateDate.add(years, 'years');
 
-        var months = currentDate.diff(createdAtDate, 'months');
-        createdAtDate.add(months, 'months');
+        var months = currentDate.diff(hiringDateDate, 'months');
+        hiringDateDate.add(months, 'months');
 
-        var days = currentDate.diff(createdAtDate, 'days');
+        var days = currentDate.diff(hiringDateDate, 'days');
 
         return (years ? years + ' ปี ' : '') + (months ? months + ' เดือน ' : '') + days + ' วัน'
       },
       sorter: (a: any, b: any) => {
-        return moment(b.createdAt).startOf('day').diff(moment(a.createdAt).startOf('day'))
+        return moment(b.hiringDate).startOf('day').diff(moment(a.hiringDate).startOf('day'))
       },
     },
     {
@@ -355,13 +355,13 @@ const EmployeePage = () => {
     },
     {
       title: "เริ่มงานวันแรก",
-      dataIndex: "createdAt",
-      key: "createdAt",
-      render: (createdAt: any) => {
-        return moment(createdAt).utcOffset(7).format('DD/MM/YYYY')
+      dataIndex: "hiringDate",
+      key: "hiringDate",
+      render: (hiringDate: any) => {
+        return moment(hiringDate).utcOffset(7).format('DD/MM/YYYY')
       },
       sorter: (a: any, b: any) => {
-        return moment(a.createdAt).startOf('day').diff(moment(b.createdAt).startOf('day'))
+        return moment(a.hiringDate).startOf('day').diff(moment(b.hiringDate).startOf('day'))
       },
     },
     {
@@ -537,7 +537,7 @@ const EmployeePage = () => {
           <Table
             dataSource={datasource}
             columns={columns}
-            pagination={{ position: ['bottomRight'], pageSize: 20 }}
+            pagination={{ position: ['bottomRight'], pageSize: 100 }}
             className="ml-8 mr-8"
             onRow={(record, rowIndex) => {
               return {
@@ -726,7 +726,10 @@ const EmployeePage = () => {
 
 export const ViewEmployeeInfo = (props: any) => {
   const disabled = props.disabled
-  const selectedEmployee = props.selectedEmployee
+  const selectedEmployee = {
+    ...props.selectedEmployee,
+    hiringDate: props && props.selectedEmployee && props.selectedEmployee.hiringDate ? props.selectedEmployee.hiringDate : moment().toDate()
+  }
   const showViewEmployeeModal = props.showViewEmployeeModal
   const [updatedObject, setUpdatedObject]: any = useState(null)
 
@@ -773,7 +776,6 @@ export const ViewEmployeeInfo = (props: any) => {
                 </div>
                 <div className="pr-4 mb-6 w-1/2">
                   <TextField
-                    required
                     className="w-full"
                     label="ชื่อ-นามสกุล"
                     placeholder="ชื่อ-นามสกุลพนักงาน"
@@ -832,7 +834,7 @@ export const ViewEmployeeInfo = (props: any) => {
                     }}
                   />
                 </div>
-                <div className="pr-4 mb-6 w-full">
+                <div className="pr-4 mb-6 w-1/2">
                   <TextField
                     className="w-full"
                     label="ที่อยู่"
@@ -848,6 +850,28 @@ export const ViewEmployeeInfo = (props: any) => {
                       setUpdatedObject({
                         ...updatedObject,
                         address: e.target.value
+                      })
+                    }}
+                  />
+                </div>
+                <div className="pr-4 mb-6 w-1/2">
+                  <TextField
+                    required
+                    className="w-full"
+                    label="วันเริ่มทำงาน"
+                    placeholder="วันที่พนักงานเริ่มงาน"
+                    type="date"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    variant="outlined"
+                    defaultValue={selectedEmployee && selectedEmployee.hiringDate && moment(selectedEmployee.hiringDate).format('YYYY-MM-DD')}
+                    key={selectedEmployee && selectedEmployee.hiringDate && moment(selectedEmployee.hiringDate).format('YYYY-MM-DD')}
+                    disabled={disabled}
+                    onChange={(e: any) => {
+                      setUpdatedObject({
+                        ...updatedObject,
+                        hiringDate: e.target.value
                       })
                     }}
                   />
@@ -959,12 +983,11 @@ export const ViewEmployeeInfo = (props: any) => {
                           facultyName: selectedEmployee && selectedEmployee.faculty && selectedEmployee.faculty.name,
                           employeeWatcherTel: selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel,
                           employeeWatcherName: selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.name,
-                          ...updatedObject
+                          ...updatedObject,
+                          hiringDate: (updatedObject && updatedObject.hiringDate ? moment(updatedObject.hiringDate).toDate() : selectedEmployee && selectedEmployee.hiringDate ? moment(selectedEmployee.hiringDate).toDate() : null),
                         }
 
-                        setUpdatedObject(null)
-
-                        if (variables.name && variables.fullName && variables.hiringType && variables.earning) {
+                        if (variables.name && variables.hiringType && variables.earning && variables.hiringDate) {
                           props.setShowViewEmployeeModal(false)
                           let upsertEmployeeStatus = await props.upsertEmployee({
                             variables: variables
@@ -973,6 +996,7 @@ export const ViewEmployeeInfo = (props: any) => {
                           if (upsertEmployeeStatus) {
                             props.setShowSuccessMessage(true)
                           }
+                          setUpdatedObject(null)
                         } else {
                           alert('กรุณากรอกข้อมูลให้ครบถ้วน')
                         }

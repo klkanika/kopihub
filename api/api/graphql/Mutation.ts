@@ -822,7 +822,7 @@ schema.mutationType({
       args: {
         id: stringArg({ required: false }),
         name: stringArg({ required: true }),
-        fullName: stringArg({ required: true }),
+        fullName: stringArg({ required: false }),
         tel: stringArg({ required: false }),
         lineId: stringArg({ required: false }),
         address: stringArg({ required: false }),
@@ -835,7 +835,8 @@ schema.mutationType({
         employeeWatcherName: stringArg({ required: false }),
         employeeWatcherTel: stringArg({ required: false }),
         profilePictureUrl: stringArg({ required: false }),
-        idCardPictureUrl: stringArg({ required: false })
+        idCardPictureUrl: stringArg({ required: false }),
+        hiringDate: dateTimeArg({ type: 'DateTime', required: true }),
       },
       resolve: async (_, args, ctx) => {
         let universityId = null
@@ -928,7 +929,7 @@ schema.mutationType({
           await ctx.db.employee.update({
             data: {
               name: args.name,
-              fullName: args.fullName,
+              fullName: args.fullName ? args.fullName : '',
               tel: args.tel,
               lineId: args.lineId,
               address: args.address,
@@ -941,6 +942,7 @@ schema.mutationType({
               bankAccount: args.bankAccount,
               profilePictureUrl: args.profilePictureUrl,
               idCardPictureUrl: args.idCardPictureUrl,
+              hiringDate: args.hiringDate,
             },
             where: {
               id: args.id
@@ -962,7 +964,7 @@ schema.mutationType({
           await ctx.db.employee.create({
             data: {
               name: args.name,
-              fullName: args.fullName,
+              fullName: args.fullName ? args.fullName : '',
               tel: args.tel,
               lineId: args.lineId,
               address: args.address,
