@@ -929,7 +929,7 @@ schema.mutationType({
           await ctx.db.employee.update({
             data: {
               name: args.name,
-              fullName: args.fullName,
+              fullName: args.fullName ? args.fullName : '',
               tel: args.tel,
               lineId: args.lineId,
               address: args.address,
@@ -964,7 +964,7 @@ schema.mutationType({
           await ctx.db.employee.create({
             data: {
               name: args.name,
-              fullName: args.fullName,
+              fullName: args.fullName ? args.fullName : '',
               tel: args.tel,
               lineId: args.lineId,
               address: args.address,
