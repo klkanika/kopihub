@@ -76,6 +76,13 @@ const WorkLogPage = () => {
     }
   });
 
+  let sumMoney = 0
+  if (workLogsData) {
+    for (let wl of workLogsData.workingHistories) {
+      sumMoney += wl.earning
+    }
+  }
+
   const { data: universities, loading: universitiesLoading } = useQuery(GET_UNIVERSITIES, {
     fetchPolicy: 'no-cache',
     pollInterval: 1000,
@@ -118,24 +125,24 @@ const WorkLogPage = () => {
     return (
       <div onClick={(e: any) => { e.stopPropagation() }}>
         <MoreVertIcon className="cursor-pointer" onClick={handleClick} />
-          <Popover
-            id={id}
-            open={open}
-            anchorEl={anchorEl}
-            onClose={handleClose}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right',
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right',
-            }}
-          >
-            <div className="w-24">
-              <MenuItem disabled={props.workLog.status != 'NOT_PAID'} onClick={() => { let deleteWorkLogStatus = deleteWorkLog({ variables: { id: workLogId } }); if (deleteWorkLogStatus) { setShowSuccessMessage(true); } }}>ลบ</MenuItem>
-            </div>
-          </Popover>
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+        >
+          <div className="w-24">
+            <MenuItem disabled={props.workLog.status != 'NOT_PAID'} onClick={() => { let deleteWorkLogStatus = deleteWorkLog({ variables: { id: workLogId } }); if (deleteWorkLogStatus) { setShowSuccessMessage(true); } }}>ลบ</MenuItem>
+          </div>
+        </Popover>
       </div >
     );
   }
@@ -216,22 +223,22 @@ const WorkLogPage = () => {
         return employee && employee.name
       }
     },
-    {
-      title: "รูปแบบ",
-      dataIndex: "hiringType",
-      key: "hiringType",
-      render: (hiringType: any) => <div>{hiringType === 'HOURLY' ? <QueryBuilderIcon className="mr-1" /> : <TodayIcon />} {hiringType === 'HOURLY' ? 'ชั่วโมง' : 'รายวัน'}</div>,
-    },
+    // {
+    //   title: "รูปแบบ",
+    //   dataIndex: "hiringType",
+    //   key: "hiringType",
+    //   render: (hiringType: any) => <div>{hiringType === 'HOURLY' ? <QueryBuilderIcon className="mr-1" /> : <TodayIcon />} {hiringType === 'HOURLY' ? 'ชั่วโมง' : 'รายวัน'}</div>,
+    // },
     {
       title: "ชม. ทำงาน",
       dataIndex: "hours",
       key: "hours",
     },
-    {
-      title: "อัตราค่าจ้าง",
-      dataIndex: "earningRate",
-      key: "earningRate",
-    },
+    // {
+    //   title: "อัตราค่าจ้าง",
+    //   dataIndex: "earningRate",
+    //   key: "earningRate",
+    // },
     {
       title: "ค่าจ้างทั้งหมด",
       dataIndex: "earning",
@@ -253,14 +260,14 @@ const WorkLogPage = () => {
         return moment(createdAt).utcOffset(7).format('DD/MM/YYYY HH:mm')
       },
     },
-    {
-      title: "เบอร์โทรศัพท์",
-      dataIndex: "employee",
-      key: "employee",
-      render: (employee: any) => {
-        return employee && employee.tel
-      }
-    },
+    // {
+    //   title: "เบอร์โทรศัพท์",
+    //   dataIndex: "employee",
+    //   key: "employee",
+    //   render: (employee: any) => {
+    //     return employee && employee.tel
+    //   }
+    // },
     {
       title: "",
       render: (workLog: any) => {
@@ -286,8 +293,15 @@ const WorkLogPage = () => {
       </Snackbar>
       <PayrollHeader value="worklog" />
       <div className="flex flex-col flex-1">
-        <div className="h-16 w-full flex items-center text-base border-b border-gray-300 pl-6 pt-4">
-          บันทึกการทำงาน
+        <div className="h-16 w-full flex items-center justify-between text-base border-b border-gray-300 pl-6 pt-4 pr-6">
+          <div>
+            บันทึกการทำงาน
+          </div>
+          <div className="font-bold">
+            ยอดเงินรวม : ฿ {sumMoney.toFixed(2)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+          </div>
         </div>
         <div className="flex items-center justify-between text-lg pt-6 pb-6">
           <div className="flex pl-4 w-1/5">
@@ -483,6 +497,7 @@ const AddWorkLogModal = (props: any) => {
       render: (workLog: any) => {
         return employees ? <Autocomplete
           options={employees && employees.map((option: any) => option.name)}
+          autoHighlight={true}
           renderInput={(params) => (
             <TextField {...params}
               className="w-full"

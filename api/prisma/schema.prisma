@@ -180,6 +180,7 @@ model Employee {
   withdrawableHours      Float                    @default(0)
   withdrawnHours         Float                    @default(0)
   employeeWatcherId      String?
+  hiringDate             DateTime                 @default(now())
   employeeWatcher        EmployeeWatcher?         @relation(fields: [employeeWatcherId], references: [id])
   WorkingHistory_Payroll WorkingHistory_Payroll[]
 }

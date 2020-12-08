@@ -30,5 +30,6 @@ schema.objectType({
     t.model.address()
     t.model.withdrawableHours()
     t.model.withdrawnHours()
+    t.model.hiringDate()
   },
 })
