@@ -1,6 +1,6 @@
 import { useLazyQuery, useMutation, useQuery } from "@apollo/react-hooks";
 import { AppBar, BottomNavigation, BottomNavigationAction, MenuItem, MenuList, Paper, Tab, Tabs, Button as MaterialButton, TextField, InputAdornment, FormControl, Select as MaterialSelect, InputLabel, NativeSelect, InputBase, withStyles, Modal as MaterialModal, Popover, Snackbar, SnackbarContent, CircularProgress, LinearProgress } from "@material-ui/core";
-import { Button, Layout, Table, Form, Input, Select, Modal, Tag, Tooltip, Typography } from "antd";
+import { Button, Layout, Table, Form, Input, Select, Modal, Tag, Tooltip, Typography, Col } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import React, { useState } from "react";
 import { CREATE_EMPLOYEE, GET_EMPLOYEE, GET_EMPLOYEES, DELETE_EMPLOYEE, UPSERT_EMPLOYEE, GET_UNIVERSITIES, GET_FACULTIES, GET_EMPLOYEE_WATCHERS } from "../../utils/graphql";
@@ -22,6 +22,8 @@ import bank_ktb from '../../imgs/bank_ktb.svg';
 import bank_scb from '../../imgs/bank_scb.svg';
 import default_profile from '../../imgs/profile.png';
 import { Alert, Autocomplete } from "@material-ui/lab";
+import * as XLSX from 'xlsx'
+import * as FileSaver from 'file-saver'
 
 const EmployeePage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -406,6 +408,35 @@ const EmployeePage = () => {
     setShowEditModal(false);
   };
 
+  const exportedData = employeesData && employeesData.employees && employeesData.employees.map((d: any, i: any) => {
+    let hiringDate = d.hiringDate
+    let currentDate = moment();
+    let hiringDateDate = moment(hiringDate);
+
+    let years = currentDate.diff(hiringDateDate, 'year');
+    hiringDateDate.add(years, 'years');
+
+    let months = currentDate.diff(hiringDateDate, 'months');
+    hiringDateDate.add(months, 'months');
+
+    let days = currentDate.diff(hiringDateDate, 'days');
+
+    let workDuration = (years ? years + ' ปี ' : '') + (months ? months + ' เดือน ' : '') + days + ' วัน'
+    return {
+      ลำดับ: i + 1,
+      สถานะ: d.status === 'ACTIVE' ? 'ทำงานอยู่' : 'เลิกจ้าง',
+      ชื่อเล่น: d.name,
+      ชื่อนามสกุล: d.fullName,
+      เบอร์โทรศัพท์: d.tel,
+      ไลน์: d.lineId,
+      ธนาคาร: d.bank,
+      บัญชีธนาคาร: d.bankAccount,
+      ทำงานมา: workDuration,
+      รูปแบบ: d.hiringType === 'HOURLY' ? 'รายชั่วโมง' : 'รายวัน',
+      เริ่มงานวันแรก: moment(d.hiringDate).format('DD/MM/YYYY')
+    }
+  })
+
   return (
     <Layout.Content>
       <Snackbar className="w-full" open={showSuccessMessage} autoHideDuration={4000} onClose={() => { setShowSuccessMessage(false) }}>
@@ -430,7 +461,10 @@ const EmployeePage = () => {
               ><AddIcon className="pr-1" /> เพิ่มข้อมูลพนักงาน</MaterialButton>
             </div>
             <div>
-              <MaterialButton color="primary" style={{ textTransform: "none" }}><GetAppIcon className="pr-1" /> Export</MaterialButton>
+              <ExportExcelData
+                data={exportedData}
+                date={moment().format('DD-MM-YYYY')}
+              />
             </div>
           </div>
           <div className="flex flex-wrap pr-6 w-4/5 items-center justify-end">
@@ -1144,6 +1178,49 @@ export const ViewEmployeeInfo = (props: any) => {
         }
       </MaterialModal>
     </div >
+  )
+}
+
+
+const ExportExcelData = (props: any) => {
+  const [clickExport, setClickExport] = useState(false)
+
+  const data = props.data
+  const date = props.date
+
+  if (clickExport) {
+    setClickExport(false)
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+    let fileName = 'Employee_' + date
+    if (!fileName) {
+      fileName = 'export_' + window.location.pathname
+    }
+    try {
+      const ws = XLSX.utils.json_to_sheet(data || []);
+      const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const b = new Blob([excelBuffer], { type: fileType });
+      FileSaver.saveAs(b, fileName + fileExtension);
+    } catch (ex) {
+      const ws = XLSX.utils.json_to_sheet([]);
+      const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const b = new Blob([excelBuffer], { type: fileType });
+      FileSaver.saveAs(b, fileName + fileExtension);
+    }
+  }
+  return (
+    <MaterialButton
+      color="primary"
+      style={{ textTransform: "none" }}
+      onClick={() => {
+        setClickExport(true)
+      }}
+    >
+      <GetAppIcon className="pr-1" />
+      Export
+    </MaterialButton>
   )
 }
 

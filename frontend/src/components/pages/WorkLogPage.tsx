@@ -30,6 +30,8 @@ import {
   LocalizationProvider
 } from "@material-ui/pickers";
 import DateFnsUtils from "@material-ui/pickers/adapter/date-fns";
+import * as XLSX from 'xlsx'
+import * as FileSaver from 'file-saver'
 
 const WorkLogPage = () => {
   const [showIdCardModal, setShowIdCardModal] = useState(false);
@@ -284,6 +286,19 @@ const WorkLogPage = () => {
   })
   const employee = employeeData && employeeData.employees && employeeData.employees[0]
 
+  const exportedData = workLogsData && workLogsData.workingHistories && workLogsData.workingHistories.map((d: any, i: any) => {
+    return {
+      ลำดับ: i + 1,
+      'วันที่ทำงาน': moment(d.historyDate).format('DD/MM/YYYY'),
+      พนักงาน: d.employee.name,
+      'ชม. ทำงาน': d.hours,
+      'ค่าจ้างทั้งหมด': d.earning,
+      'ที่มา': d.sourceType,
+      'กรอกเมื่อ': moment(d.createdAt).format('DD/MM/YYYY HH:mm')
+    }
+  })
+
+
   return (
     <Layout.Content>
       <Snackbar className="w-full" open={showSuccessMessage} autoHideDuration={4000} onClose={() => { setShowSuccessMessage(false) }}>
@@ -313,7 +328,10 @@ const WorkLogPage = () => {
               ><AddIcon className="pr-1" /> เพิ่มบันทึกการทำงาน</MaterialButton>
             </div>
             <div>
-              <MaterialButton color="primary" style={{ textTransform: "none" }}><GetAppIcon className="pr-1" /> Export</MaterialButton>
+              <ExportExcelData
+                data={exportedData}
+                date={moment().format('DD-MM-YYYY')}
+              />
             </div>
           </div>
           <div className="flex flex-wrap pr-6 w-4/5 items-center justify-end">
@@ -876,6 +894,48 @@ const BasicDateRangePicker = (props: any) => {
       />
     </LocalizationProvider>
   );
+}
+
+const ExportExcelData = (props: any) => {
+  const [clickExport, setClickExport] = useState(false)
+
+  const data = props.data
+  const date = props.date
+
+  if (clickExport) {
+    setClickExport(false)
+    const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+    let fileName = 'WorkLog_' + date
+    if (!fileName) {
+      fileName = 'export_' + window.location.pathname
+    }
+    try {
+      const ws = XLSX.utils.json_to_sheet(data || []);
+      const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const b = new Blob([excelBuffer], { type: fileType });
+      FileSaver.saveAs(b, fileName + fileExtension);
+    } catch (ex) {
+      const ws = XLSX.utils.json_to_sheet([]);
+      const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+      const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const b = new Blob([excelBuffer], { type: fileType });
+      FileSaver.saveAs(b, fileName + fileExtension);
+    }
+  }
+  return (
+    <MaterialButton
+      color="primary"
+      style={{ textTransform: "none" }}
+      onClick={() => {
+        setClickExport(true)
+      }}
+    >
+      <GetAppIcon className="pr-1" />
+      Export
+    </MaterialButton>
+  )
 }
 
 export default WorkLogPage;
