@@ -712,7 +712,7 @@ const ExportExcelData = (props: any) => {
     setClickExport(false)
     const fileType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
     const fileExtension = '.xlsx';
-    let fileName = 'WorkLog_' + date
+    let fileName = 'Payment_' + date
     if (!fileName) {
       fileName = 'export_' + window.location.pathname
     }
