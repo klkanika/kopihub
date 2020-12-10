@@ -1115,7 +1115,8 @@ schema.mutationType({
               OR: [
                 { status: 'NOT_PAID' },
                 { status: 'PARTIAL_PAID' }
-              ]
+              ],
+              employeeId: args.employeeId
             },
             orderBy: {
               historyDate: 'asc'
