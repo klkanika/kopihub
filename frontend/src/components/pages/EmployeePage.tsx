@@ -1,6 +1,6 @@
 import { useLazyQuery, useMutation, useQuery } from "@apollo/react-hooks";
 import { AppBar, BottomNavigation, BottomNavigationAction, MenuItem, MenuList, Paper, Tab, Tabs, Button as MaterialButton, TextField, InputAdornment, FormControl, Select as MaterialSelect, InputLabel, NativeSelect, InputBase, withStyles, Modal as MaterialModal, Popover, Snackbar, SnackbarContent, CircularProgress, LinearProgress } from "@material-ui/core";
-import { Button, Layout, Table, Form, Input, Select, Modal, Tag, Tooltip, Typography, Col } from "antd";
+import { Button, Layout, Table, Form, Input, Select, Modal, Tag, Tooltip, Typography, Col, Upload } from "antd";
 import { useForm } from "antd/lib/form/Form";
 import React, { useState } from "react";
 import { CREATE_EMPLOYEE, GET_EMPLOYEE, GET_EMPLOYEES, DELETE_EMPLOYEE, UPSERT_EMPLOYEE, GET_UNIVERSITIES, GET_FACULTIES, GET_EMPLOYEE_WATCHERS } from "../../utils/graphql";
@@ -12,6 +12,7 @@ import QueryBuilderIcon from '@material-ui/icons/QueryBuilder';
 import TodayIcon from '@material-ui/icons/Today';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
+import CropOriginalIcon from '@material-ui/icons/CropOriginal';
 import EditIcon from '@material-ui/icons/Edit';
 import DoneIcon from '@material-ui/icons/Done';
 import moment from "moment"
@@ -24,6 +25,7 @@ import default_profile from '../../imgs/profile.png';
 import { Alert, Autocomplete } from "@material-ui/lab";
 import * as XLSX from 'xlsx'
 import * as FileSaver from 'file-saver'
+import { uploadImg } from "../layout/uploadImg";
 
 const EmployeePage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -256,14 +258,14 @@ const EmployeePage = () => {
       render: (profilePictureUrl: any) => {
         return (
           <Tooltip title={profilePictureUrl ? 'คลิกเพื่อดูรูป' : ''} placement="bottom">
-            <div className={`w-12 h-12 ${profilePictureUrl ? 'cursor-pointer' : ''}`} onClick={(e: any) => {
+            <div className={`w-12 h-12 rounded-full object-cover ${profilePictureUrl ? 'cursor-pointer' : ''}`} onClick={(e: any) => {
               e.stopPropagation()
               if (profilePictureUrl) {
                 setShowIdCardModal(true)
                 setIdCard(profilePictureUrl)
               }
             }}>
-              <img className="object-cover rounded-full" src={profilePictureUrl ? profilePictureUrl : default_profile} />
+              <img className="object-cover rounded-full" style={{ height: '3rem', width: '3rem' }} src={profilePictureUrl ? profilePictureUrl : default_profile} />
             </div>
           </Tooltip>
         )
@@ -767,11 +769,12 @@ export const ViewEmployeeInfo = (props: any) => {
   const showViewEmployeeModal = props.showViewEmployeeModal
   const [updatedObject, setUpdatedObject]: any = useState(null)
 
+  console.log('updatedobject', updatedObject)
   return (
     <div>
       <MaterialModal
         open={showViewEmployeeModal}
-        onClose={() => { props.setShowViewEmployeeModal(false) }}
+        onClose={() => { props.setShowViewEmployeeModal(false); setUpdatedObject(null); }}
         aria-labelledby="employee-view"
         aria-describedby="employee-view"
       >
@@ -779,7 +782,7 @@ export const ViewEmployeeInfo = (props: any) => {
           <></> :
           <div className="w-11/12 bg-white p-8 absolute border-gray-300 overflow-y-scroll" style={{ minHeight: '95%', maxHeight: '95%', borderRadius: '0.5rem', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
             <div className="flex items-center border-b border-gray-300 pb-6">
-              <p className="mr-6 text-xl">{disabled ? '' : selectedEmployee ? 'แก้ไข' : 'เพิ่ม'}ข้อมูลพนักงาน</p>
+              <p className="mr-6 text-xl">{disabled ? '' : selectedEmployee && selectedEmployee.name ? 'แก้ไข' : 'เพิ่ม'}ข้อมูลพนักงาน</p>
               {disabled ? <MaterialButton color="primary" startIcon={<EditIcon />} onClick={() => { props.setDisabled(false) }}>แก้ไขข้อมูล</MaterialButton> : ''}
             </div>
             <div className="p-4 flex w-full items-start">
@@ -1163,13 +1166,59 @@ export const ViewEmployeeInfo = (props: any) => {
                 <div className="pr-4 mb-6 w-1/2">
                   รูปบัตรประชาชน
                 <div className="w-64 mt-5">
-                    <img className="object-cover" src={selectedEmployee && selectedEmployee.idCardPictureUrl ? selectedEmployee.idCardPictureUrl : 'https://lifestyle.campus-star.com/app/uploads/2017/03/id-cover.jpg'} />
+                    <Upload
+                      disabled={disabled}
+                      className="w-full full-img"
+                      customRequest={uploadImg}
+                      multiple={false}
+                      onChange={(file: any) => {
+                        let fileList = file && file.fileList
+                        fileList.map((img: any) => {
+                          setUpdatedObject({
+                            ...updatedObject,
+                            idCardPictureUrl: img && img.response && img.response.data.cloudStoragePublicUrl
+                          })
+                        });
+                      }}
+                    >
+                      <MaterialButton
+                        color="primary"
+                        style={{ textTransform: "none" }}
+                      >
+                        <CropOriginalIcon className="pr-2" />
+                        อัพโหลดรูปบัตรประชาชน
+                      </MaterialButton>
+                    </Upload>
+                    <img className="object-cover" src={updatedObject && updatedObject.idCardPictureUrl ? updatedObject.idCardPictureUrl : selectedEmployee && selectedEmployee.idCardPictureUrl ? selectedEmployee.idCardPictureUrl : 'https://lifestyle.campus-star.com/app/uploads/2017/03/id-cover.jpg'} />
                   </div>
                 </div>
                 <div className="pr-4 mb-6 w-1/2">
                   รูปโปรไฟล์
                 <div className="w-64 mt-5">
-                    <img className="object-cover" src={selectedEmployee && selectedEmployee.profilePictureUrl ? selectedEmployee.profilePictureUrl : default_profile} />
+                    <Upload
+                      disabled={disabled}
+                      className="w-full full-img"
+                      customRequest={uploadImg}
+                      multiple={false}
+                      onChange={(file: any) => {
+                        let fileList = file && file.fileList
+                        fileList.map((img: any) => {
+                          setUpdatedObject({
+                            ...updatedObject,
+                            profilePictureUrl: img && img.response && img.response.data.cloudStoragePublicUrl
+                          })
+                        });
+                      }}
+                    >
+                      <MaterialButton
+                        color="primary"
+                        style={{ textTransform: "none" }}
+                      >
+                        <CropOriginalIcon className="pr-2" />
+                        อัพโหลดรูปโปรไฟล์
+                      </MaterialButton>
+                    </Upload>
+                    <img className="object-cover" src={updatedObject && updatedObject.profilePictureUrl ? updatedObject.profilePictureUrl : selectedEmployee && selectedEmployee.profilePictureUrl ? selectedEmployee.profilePictureUrl : default_profile} />
                   </div>
                 </div>
               </div>

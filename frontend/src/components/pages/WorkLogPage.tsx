@@ -203,7 +203,7 @@ const WorkLogPage = () => {
               }
             }}
             >
-              <img className="object-cover rounded-full" src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
+              <img className="object-cover rounded-full" style={{ height: '3rem', width: '3rem' }} src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
             </div>
           </Tooltip>
         )

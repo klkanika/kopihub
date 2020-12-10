@@ -248,7 +248,7 @@ const WorkLogPage = () => {
                 }
               }}
               >
-                <img className="object-cover rounded-full" src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
+                <img className="object-cover rounded-full" style={{ height: '3rem', width: '3rem' }} src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
               </div>
             </Tooltip>
             <div className="ml-6">{emp && emp.name}</div>
@@ -682,7 +682,7 @@ const ViewPaymentModal = (props: any) => {
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center">
                 <div className={`w-12 h-12 ml-4`}>
-                  <img className="object-cover rounded-full" src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
+                  <img className="object-cover rounded-full" style={{ height: '3rem', width: '3rem' }} src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
                 </div>
                 <div className="ml-4">
                   {emp && emp.name} ({emp && emp.fullName}) {emp && emp.tel}
