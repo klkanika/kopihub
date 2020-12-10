@@ -1034,6 +1034,48 @@ schema.mutationType({
       },
     })
 
+    t.field('updateWorkLog', {
+      type: 'Boolean',
+      args: {
+        id: stringArg({ required: true }),
+        hours: floatArg({ required: true }),
+        earning: floatArg({ required: true })
+      },
+      resolve: async (_parent, args, ctx) => {
+        let oldWorkLog = await ctx.db.workingHistory.findOne({
+          where: {
+            id: args.id
+          },
+          include: {
+            employee: true
+          }
+        })
+
+        if (oldWorkLog) {
+          let updatedWorkLog = await ctx.db.workingHistory.update({
+            data: {
+              hours: args.hours,
+              earning: args.earning
+            },
+            where: {
+              id: args.id
+            }
+          })
+
+          let updatedEmployee = await ctx.db.employee.update({
+            data: {
+              withdrawableHours: oldWorkLog.employee.withdrawableHours + (updatedWorkLog.hours - oldWorkLog.hours),
+              withdrawableMoney: oldWorkLog.employee.withdrawableMoney + (updatedWorkLog.earning - oldWorkLog.earning),
+            },
+            where: {
+              id: oldWorkLog.employeeId
+            }
+          })
+        }
+        return true
+      },
+    })
+
     t.field('deleteWorkLog', {
       type: 'Boolean',
       args: {

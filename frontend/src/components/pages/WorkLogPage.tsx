@@ -2,7 +2,7 @@ import { useLazyQuery, useMutation, useQuery } from "@apollo/react-hooks";
 import { MenuItem, Button as MaterialButton, TextField, InputAdornment, Modal as MaterialModal, Popover, Snackbar, CircularProgress } from "@material-ui/core";
 import { Layout, Table, Tooltip } from "antd";
 import React, { useRef, useState } from "react";
-import { GET_EMPLOYEE, GET_EMPLOYEES, UPSERT_EMPLOYEE, GET_UNIVERSITIES, GET_FACULTIES, GET_EMPLOYEE_WATCHERS, GET_WORKLOG, DELETE_WORKLOG, CREATE_WORKLOGS } from "../../utils/graphql";
+import { GET_EMPLOYEE, GET_EMPLOYEES, UPSERT_EMPLOYEE, GET_UNIVERSITIES, GET_FACULTIES, GET_EMPLOYEE_WATCHERS, GET_WORKLOG, DELETE_WORKLOG, CREATE_WORKLOGS, GET_A_WORKLOG, UPDATE_WORKLOG } from "../../utils/graphql";
 import PayrollHeader from "./PayrollHeader";
 import AddIcon from '@material-ui/icons/Add';
 import GetAppIcon from '@material-ui/icons/GetApp';
@@ -37,27 +37,36 @@ const WorkLogPage = () => {
   const [showIdCardModal, setShowIdCardModal] = useState(false);
   const [showAddWorkLog, setShowAddWorkLog] = useState(false);
   const [showViewEmployeeModal, setShowViewEmployeeModal] = useState(false);
+  const [editWorkLogModal, setEditWorkLogModal] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
   const [selectedDate, handleDateChange]: any = React.useState([null, null]);
   const [idCard, setIdCard] = useState('');
   const [textSearch, setTextSearch] = useState('');
   const [selectedEmployee, setSelectedEmployee]: any = useState();
+  const [selectedWorkLog, setSelectedWorkLog]: any = useState();
   const [deleteWorkLog] = useMutation(DELETE_WORKLOG);
   const [upsertEmployee] = useMutation(UPSERT_EMPLOYEE);
+  const [updateWorkLog] = useMutation(UPDATE_WORKLOG);
+  const [updatedWorkLog, setUpdatedWorkLog]: any = useState();
+
 
   const [getEmployee, { called, loading: employeeLoading, data: employeeData }] = useLazyQuery(GET_EMPLOYEE, {
     fetchPolicy: 'network-only',
     onCompleted: (src) => {
       const emp = src && src.employees && src.employees[0]
       setSelectedEmployee(emp)
-      // editForm.setFieldsValue({
-      //   name: emp.name,
-      //   type: emp.hiringType,
-      //   earning: emp.earning,
-      //   university: emp.university,
-      //   faculty: emp.faculty
-      // })
+    },
+    onError: (err) => {
+      window.alert(err)
+    }
+  });
+
+  const [getAWorkLog, { loading: getAWorkLogLoading, data: getAWorkLogData }] = useLazyQuery(GET_A_WORKLOG, {
+    fetchPolicy: 'network-only',
+    onCompleted: (src) => {
+      const workLog = src && src.workingHistories && src.workingHistories[0]
+      setSelectedWorkLog(workLog)
     },
     onError: (err) => {
       window.alert(err)
@@ -142,6 +151,7 @@ const WorkLogPage = () => {
           }}
         >
           <div className="w-24">
+            <MenuItem disabled={props.workLog.status != 'NOT_PAID'} onClick={() => { getAWorkLog({ variables: { id: props && props.workLog && props.workLog.id } }); setEditWorkLogModal(true); }}>แก้ไข</MenuItem>
             <MenuItem disabled={props.workLog.status != 'NOT_PAID'} onClick={() => { let deleteWorkLogStatus = deleteWorkLog({ variables: { id: workLogId } }); if (deleteWorkLogStatus) { setShowSuccessMessage(true); } }}>ลบ</MenuItem>
           </div>
         </Popover>
@@ -298,6 +308,7 @@ const WorkLogPage = () => {
     }
   })
 
+  console.log('selectedworklog', selectedWorkLog)
 
   return (
     <Layout.Content>
@@ -386,6 +397,113 @@ const WorkLogPage = () => {
       >
         <div>
           <img className="absolute" style={{ width: '500px', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} src={idCard} />
+        </div>
+      </MaterialModal>
+      <MaterialModal
+        open={editWorkLogModal}
+        onClose={() => { setEditWorkLogModal(false); setUpdatedWorkLog(null); }}
+      >
+        <div>
+          <div className="absolute bg-white p-8 pt-6" style={{ width: '50%', minHeight: '50%', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }}>
+            <p className="text-base border-gray-300 border-b pb-4">แก้ไขบันทึกการทำงานของ {selectedWorkLog && selectedWorkLog.employee.name && selectedWorkLog.employee.name}</p>
+            <div className="mt-6 flex justify-center items-center">
+              <TextField
+                className="w-1/2"
+                label="วันที่ทำงาน"
+                type="date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                disabled
+                defaultValue={selectedWorkLog && selectedWorkLog.historyDate && moment(selectedWorkLog.historyDate).format('YYYY-MM-DD')}
+                key={selectedWorkLog && selectedWorkLog.historyDate && moment(selectedWorkLog.historyDate).format('YYYY-MM-DD')}
+              />
+            </div>
+            <div className="mt-6 flex justify-center items-center">
+              <TextField
+                className="w-1/2"
+                label="ชม. ทำงาน (กด Enter เพื่อคำนวณค่าจ้าง)"
+                type="number"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                defaultValue={updatedWorkLog && updatedWorkLog.hours ? updatedWorkLog.hours : selectedWorkLog && selectedWorkLog.hours}
+                key={updatedWorkLog && updatedWorkLog.hours ? updatedWorkLog.hours : selectedWorkLog && selectedWorkLog.hours}
+                onBlur={(e: any) => {
+                  setUpdatedWorkLog({
+                    ...updatedWorkLog,
+                    hours: parseFloat(e.target.value)
+                  })
+                }}
+                onKeyDown={async (e: any) => {
+                  if (e.keyCode === 13) {
+                    if (e.target.value) {
+                      let calculatedEarning: any = undefined
+                      if (selectedWorkLog.hiringType) {
+                        if (selectedWorkLog.hiringType === 'HOURLY') {
+                          if (e.target.value && parseFloat(e.target.value)) {
+                            calculatedEarning = selectedWorkLog.earningRate * parseFloat(e.target.value)
+                          }
+                        } else {
+                          calculatedEarning = selectedWorkLog.earningRate
+                        }
+                      }
+                      setUpdatedWorkLog({
+                        ...updatedWorkLog,
+                        earning: calculatedEarning
+                      })
+                    }
+                  }
+                }}
+              />
+            </div>
+            <div className="mt-6 flex justify-center items-center">
+              <TextField
+                className="w-1/2"
+                label="ค่าจ้าง"
+                type="number"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                defaultValue={updatedWorkLog && updatedWorkLog.earning ? updatedWorkLog.earning : selectedWorkLog && selectedWorkLog.earning}
+                key={updatedWorkLog && updatedWorkLog.earning ? updatedWorkLog.earning : selectedWorkLog && selectedWorkLog.earning}
+                onBlur={(e: any) => {
+                  setUpdatedWorkLog({
+                    ...updatedWorkLog,
+                    earning: parseFloat(e.target.value)
+                  })
+                }}
+              />
+            </div>
+            <div className="flex items-center justify-end mt-12">
+              <div>
+                <MaterialButton
+                  variant="contained"
+                  color="primary"
+                  startIcon={<DoneIcon />}
+                  size="large"
+                  onClick={() => {
+                    updateWorkLog({
+                      variables: {
+                        ...selectedWorkLog,
+                        ...updatedWorkLog
+                      }
+                    })
+                    setShowSuccessMessage(true)
+                    setEditWorkLogModal(false);
+                    setUpdatedWorkLog(null);
+                  }}
+                >
+                  ตกลง
+                </MaterialButton>
+              </div>
+              <div className="ml-6">
+                <MaterialButton variant="contained" key="cancel" onClick={() => { setEditWorkLogModal(false); setUpdatedWorkLog(null); }}>
+                  ยกเลิก
+                </MaterialButton>
+              </div>
+            </div>
+          </div>
         </div>
       </MaterialModal>
       <AddWorkLogModal
