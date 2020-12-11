@@ -6,7 +6,8 @@
     "start": "node dist/index.js",
     "watch": "tsc -w",
     "build": "tsc",
-    "dev": "nodemon dist/index.js"
+    "dev": "nodemon dist/index.js",
+    "ppt": "nodemon dist/puppeteer.js"
   },
   "author": "",
   "license": "ISC",
