@@ -1137,6 +1137,16 @@ export const ViewEmployeeInfo = (props: any) => {
                         ...updatedObject,
                         employeeWatcherName: data
                       })
+                      if (data) {
+                        let obj = props && props.employeeWatchers && props.employeeWatchers.employeeWatchers && props.employeeWatchers.employeeWatchers.find((element: any) => element.name === data)
+                        if (obj) {
+                          setUpdatedObject({
+                            ...updatedObject,
+                            employeeWatcherName: data,
+                            employeeWatcherTel: obj.tel
+                          })
+                        }
+                      }
                     }}
                   />
                 </div>
@@ -1149,10 +1159,10 @@ export const ViewEmployeeInfo = (props: any) => {
                       shrink: true,
                     }}
                     variant="outlined"
-                    defaultValue={selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel}
-                    key={selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel}
+                    defaultValue={updatedObject && updatedObject.employeeWatcherTel ? updatedObject.employeeWatcherTel : selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel}
+                    key={updatedObject && updatedObject.employeeWatcherTel ? updatedObject.employeeWatcherTel : selectedEmployee && selectedEmployee.employeeWatcher && selectedEmployee.employeeWatcher.tel}
                     disabled={disabled}
-                    onChange={(e: any) => {
+                    onBlur={(e: any) => {
                       setUpdatedObject({
                         ...updatedObject,
                         employeeWatcherTel: e.target.value

@@ -466,6 +466,7 @@ const WorkLogPage = () => {
         setShowSuccessMessage={setShowSuccessMessage}
         selectedEmployee={selectedEmployee}
         getEmployee={getEmployee}
+        getPaymentHistory={getPaymentHistory}
       />
     </Layout.Content >
   );
@@ -548,6 +549,7 @@ const PayModal = (props: any) => {
                           id: props.selectedEmployee.id
                         }
                       })
+                      await props.getPaymentHistory({ variables: { employeeId: props.selectedEmployee.id } })
                     } else {
                       alert('ไม่สามารถดำเนินการได้')
                     }
