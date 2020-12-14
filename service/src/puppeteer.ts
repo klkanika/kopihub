@@ -49,8 +49,8 @@ const { query } = require("./utils/database");
 
   await page.goto(url);
 
-  //refresh every 10 secs
-  const delay = 10 * 1000;
+  //refresh every 12 hours
+  const delay = 12 * 60 * 60 * 1000;
   const interval = () => {
     setTimeout(async () => {
       await page.reload();
