@@ -1,0 +1,5 @@
+DB_URI=postgres://root:root@localhost:5432/ocha
+
+API=http://localhost:4000/graphql
+
+USER=099f7b04-6487-4ec7-a585-73ccfdd9cefd

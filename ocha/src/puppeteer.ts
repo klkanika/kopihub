@@ -17,7 +17,7 @@ const { query } = require("./utils/database");
   //NOTE!! need to set your own
   const browser = await puppeteer.connect({
     browserWSEndpoint:
-      "ws://127.0.0.1:9222/devtools/browser/50d1f9c4-e11f-4207-adc1-2346d2728808",
+      "ws://127.0.0.1:9222/devtools/browser/df48a975-8f16-4704-b3f4-bed569bdf2e6",
   });
 
   const page = await browser.newPage();

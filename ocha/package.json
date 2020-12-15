@@ -1,12 +1,12 @@
 {
   "name": "service",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "puppeteer.js",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "node dist/puppeteer.js",
     "watch": "tsc -w",
     "build": "tsc",
-    "dev": "nodemon dist/index.js"
+    "dev": "nodemon dist/puppeteer.js"
   },
   "author": "",
   "license": "ISC",
@@ -14,11 +14,7 @@
   "description": "",
   "dependencies": {
     "@types/pg": "^7.14.7",
-    "apollo-link": "^1.2.14",
-    "axios": "^0.21.0",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "node-fetch": "^2.6.1",
     "pg": "^8.5.1",
     "puppeteer": "^5.2.1"
   },
