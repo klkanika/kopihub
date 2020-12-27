@@ -513,7 +513,7 @@ schema.mutationType({
           if (updateFetchQueue && updateFetchQueue.userId) {
             await sendMessageToClient(updateFetchQueue.userId, {
               type: "text",
-              text: `ขอบคุณสำหรับการรอค่ะ คุณ${updateFetchQueue.name ? updateFetchQueue.name : 'ลูกค้า'} ถึงคิว ${updateFetchQueue.queueNo} ของคุณแล้วที่โต๊ะ ${updateFetchQueue.table?.ochaTableName} กรุณาแจ้งพนักงาน`,
+              text: `🎉 ขอบคุณสำหรับการรอ ถึงเวลาแห่งความสุขของคุณ ${updateFetchQueue.name ? updateFetchQueue.name : 'ลูกค้า'} แล้วฮับ สำหรับคิว ${updateFetchQueue.queueNo} ได้โต๊ะ ${updateFetchQueue.table?.ochaTableName} กรุณาแจ้งพนักงานได้เลยฮับ`,
             });
           }
 
