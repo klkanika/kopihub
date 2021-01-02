@@ -21,6 +21,7 @@ app.post("/sync-order", async (req, res) => {
 
   res.send("ok");
 });
+
 app.listen(PORT || 5000, async () => {
   const { token, cookie, last_update } = await getAuth();
   console.log(`server started at http://localhost:${PORT || 5000}`);
@@ -61,7 +62,7 @@ const AddTask = async (orders) => {
     .map((o) => {
       return {
         serverId: `${o.cart.server_id}`,
-        name: `${o.tables[0].area_name} ${o.tables[0].table_name}`,
+        name: `${o.tables?.[0].area_name} ${o.tables?.[0].table_name}`,
         total: o.items
           .filter((i) => i.category_name === "ติ่มซำ")
           .reduce((acc, i) => i.quantity + acc, 0),
