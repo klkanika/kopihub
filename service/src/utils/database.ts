@@ -2,8 +2,7 @@ require("dotenv").config();
 import { Pool } from "pg";
 
 const pool = new Pool({
-  connectionString:
-    process.env.DB_URI || "postgres://root:root@localhost:5432/ocha",
+  connectionString: "postgresql://ochaauth:ochaAuth1234@34.87.187.163/ochaAuth",
 });
 
 module.exports = {
