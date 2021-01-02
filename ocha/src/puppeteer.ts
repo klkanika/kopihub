@@ -118,28 +118,28 @@ export const pptr = async () => {
 
     page.on("request", async (request) => {
       console.log(request.url());
-      if (request.url() === "https://live.ocha.in.th/api/transaction/last/") {
-        if (request.headers()["authorization"]) {
-          //save cookie to db
-          const cookie = await getCookie(page);
-          await query(
-            "update auth set cookie = $1, last_update = $2 where id = $3",
-            [cookie, new Date(), id]
-          );
-          console.log("saved cookie", cookie);
+      // if (request.url() === "https://live.ocha.in.th/api/transaction/last/") {
+      if (request.headers()["authorization"]) {
+        //save cookie to db
+        const cookie = await getCookie(page);
+        await query(
+          "update auth set cookie = $1, last_update = $2 where id = $3",
+          [cookie, new Date(), id]
+        );
+        console.log("saved cookie", cookie);
 
-          //save token to db
-          const token = request.headers()["authorization"];
-          await query(
-            "update auth set token = $1, last_update = $2 where id = $3",
-            [token, new Date(), id]
-          );
-          console.log("saved token", token);
-          reloadReady = true;
-          await uploadBrowserState();
-          resolve(null);
-        }
+        //save token to db
+        const token = request.headers()["authorization"];
+        await query(
+          "update auth set token = $1, last_update = $2 where id = $3",
+          [token, new Date(), id]
+        );
+        console.log("saved token", token);
+        reloadReady = true;
+        await uploadBrowserState();
+        resolve(null);
       }
+      // }
       request.continue();
     });
     console.log("goto");
