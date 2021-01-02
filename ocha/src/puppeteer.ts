@@ -57,7 +57,7 @@ const uploadBrowserState = async () => {
 
 let downloaded = false;
 const downloadBrowserState = async () => {
-  if (!downloaded) {
+  if (downloaded) {
     return;
   }
   console.group("downloadBrowserState");
