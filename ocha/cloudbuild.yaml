@@ -45,4 +45,4 @@ tags:
   - gcp-cloud-build-deploy-cloud-run
   - gcp-cloud-build-deploy-cloud-run-managed
   - kopihub-ocha
-timeout: 30000
+timeout: 30000s
