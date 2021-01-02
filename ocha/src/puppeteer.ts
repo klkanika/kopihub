@@ -98,7 +98,7 @@ export const pptr = async () => {
       ]);
     const id = rows[0]?.id || 1;
     console.log("rows id:", id);
-
+    console.log("start browser");
     //connect to existing browser
     //NOTE!! need to set your own
     let browser = await puppeteer.launch({
@@ -114,8 +114,10 @@ export const pptr = async () => {
     page = await browser.newPage();
     await page.setRequestInterception(true);
     const url = "https://manager.ocha.in.th/";
+    console.log("binding on request");
 
     page.on("request", async (request) => {
+      console.log(request.url());
       if (request.url() === "https://live.ocha.in.th/api/transaction/last/") {
         if (request.headers()["authorization"]) {
           //save cookie to db
@@ -140,7 +142,7 @@ export const pptr = async () => {
       }
       request.continue();
     });
-
+    console.log("goto");
     await page.goto(url, { waitUntil: "networkidle2" });
   });
 };
