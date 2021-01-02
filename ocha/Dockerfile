@@ -1,4 +1,4 @@
-FROM node:12.18.3-buster-slim@sha256:dd6aa3ed10af4374b88f8a6624aeee7522772bb08e8dd5e917ff729d1d3c3a4f
+FROM node:14.15.1-buster-slim@sha256:dd6aa3ed10af4374b88f8a6624aeee7522772bb08e8dd5e917ff729d1d3c3a4f
     
 RUN  apt-get update \
      && apt-get install -y wget gnupg ca-certificates \
@@ -17,9 +17,11 @@ RUN  apt-get update \
 
 # Install Puppeteer under /node_modules so it's available system-wide
 COPY . .
-RUN  apt-get install -y gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
 RUN ls -la
 ENV NODE_ENV production
+RUN rm -rf node_modules
+RUN rm -rf yarn.lock
+RUN rm -rf package-lock.json
 RUN yarn
 RUN yarn build
 CMD [ "yarn", "start" ]
