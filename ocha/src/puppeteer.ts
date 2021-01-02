@@ -115,11 +115,12 @@ export const pptr = async () => {
     await page.setRequestInterception(true);
     const url = "https://manager.ocha.in.th/";
     console.log("binding on request");
-
+    let saved = false;
     page.on("request", async (request) => {
       console.log(request.url());
       // if (request.url() === "https://live.ocha.in.th/api/transaction/last/") {
-      if (request.headers()["authorization"]) {
+      if (request.headers()["authorization"] && !saved) {
+        saved = true;
         //save cookie to db
         const cookie = await getCookie(page);
         await query(
