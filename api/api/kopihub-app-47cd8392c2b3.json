@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "kopihub-app",
+  "private_key_id": "47cd8392c2b3f2bfff534b2e779aaa5c788388a1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDm/ntsrtGWPquG\n6hVCcu7svlDKwP4KU9AJ8avVA0X48iZqmIK/5ijiHeq4AgylPxQuGxTdgwOgn9kD\n5ErzZIBh2OrExwanEjh50xg5Lg4A33UhliWwoamqpwUi1NrdLGs/FSEpj+v/q/cM\nn4CvJv9oLPe+pJvDgQDM69RVPc7Hz/sXZQOFRSL6Cfh2utUilBN61cLlBW/I4+f3\nlp61ohIiz4n4VafXfJDBifNwLd5pXy0m5FTip7enkbkHwVuDPblbtzUTb3LjGCmw\ntcOYm1gyewSK0yAIMQaIIYl2Zf6BpVpdJ68I61ZXvxf9VeqDMjNeMk5PEuuYTmgO\njX8toa4vAgMBAAECggEADx3+c9lpC/0j+ptdMtEUw9ecr/g7Z++eQNhZF4K0VJt8\nWiOLAwYMDOhKUSqJK1Nafb31+p01YpCzgiaxpQYhxMWOb7xauhpeKdLf1fYmonX9\nU2phIxMhaHKvylzFyg27IxC979tkZYIak+/oWw4hTu8Kc6aQLxZFOCQC7GU0IC1j\nehJHplPatXh3jA0ipcCFNl53L226z/dPMNK8I44c2UcgYRuqCN8FNG8ogdYbKIxl\nkdIKS6qmSRD/QBdal0Az4bc7nR2I3XjtsPn6bnZJTWfEAkqUu6p+Wo20+chPDop+\nWmIb+TOYjmQoxMNyYMEClAt+m3nEtL7FAWZmXUCN4QKBgQD4o76fQaUvtkUUahcn\nCxyrL6jGZ1EZ38EcbS47kcRF7fgtpFhAXOoxPqf4dMaoLGtFFhtrD2clMdKy22+1\nDtPoldByyuuKQlEzYKMdzxJBVyg6lIf61uhKenQw0IUTu+J6U8tNxwlpO5p4uXEM\nQDwBKqADneCkLRa3KJzKhB4xPwKBgQDt1QPRwS1oWjN9p3zmrqUhVOyM4a+qYwK7\nxnU47HYYpJPvJUB8Cf9q8bNtdo/MuyipzGf5TUHEyyRqFbiSELAPVJuIbNssUDYX\nNNC6abGw3nuXKiB3mzdN/JpVg9b1dy32AkpF9iopokcr9BQxJ9cjg9jNtUrcAp3U\n0eu0vhxXEQKBgB9F4S0AwbkdkNS/f0f+4s05Ql4qEo5RkWV06hK+A9TT2JpNCHiX\n9zDYc6IRdgcjBx76Z9pwZoXMHXc3mHZKdibT6RL3KOcL7lCq//k42U/0mW+8zNmk\n/DSZ8FFPeN2BjTvbnD+dIDbnM0ep82kaDzIKXXP3AJFFxoylBAuI0I9bAoGBAMU0\nqjQVIFe045k/dfu5uMcIqhSvVn/MFYoqJy0KNWp9nQThOLUhfR7qR8NuWhKC5lbV\nXSmE/BH397vXQvIq0DIGD+lxidMWt6NKcgEAfwyPjp9rmPxUQelymW5rIaTsK7of\ncALO+WsIWkeB3fRcerHCM9VujCIeMU00u2NleA5hAoGBAI7jigFeJIYxD1Bk7VhR\nx+x0P1brn/1IlVL1Ke6XaKeYGHnsGiDIn2aFoPlgblLngeY167/dm4H8YXkpMDsj\nxZoG7bVg+tvgiaZOah56emttUTdEsU8YamqcCoXg9CO5DUFy2RZbu4r8iDzwTZsH\nbPbP2+WbjyWo++vPNZ02tqwo\n-----END PRIVATE KEY-----\n",
+  "client_email": "kopihub@kopihub-app.iam.gserviceaccount.com",
+  "client_id": "116438198340386906648",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/kopihub%40kopihub-app.iam.gserviceaccount.com"
+}

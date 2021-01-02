@@ -95,9 +95,12 @@ const WorkLogPage = () => {
     }
   });
 
+  let remaining = 0
+
   let withdrawableEmployee = employeesData && employeesData.employees && employeesData.employees
     .slice()
     .filter((data: any) => {
+      remaining += data.withdrawableMoney - data.withdrawnMoney
       return data.withdrawableMoney - data.withdrawnMoney > 0
     })
     .sort((a: any, b: any) => {
@@ -115,9 +118,11 @@ const WorkLogPage = () => {
         return (b.withdrawnMoney) - (a.withdrawnMoney)
       })
   } else if (selectedTab === 'all') {
-    withdrawableEmployee = employeesData && employeesData.employees.slice().sort((a: any, b: any) => {
-      return (((b.withdrawableMoney - b.withdrawnMoney) - (a.withdrawableMoney - a.withdrawnMoney)) * 1000000) + (b.withdrawnMoney) - (a.withdrawnMoney)
-    })
+    withdrawableEmployee = employeesData && employeesData.employees
+      .slice()
+      .sort((a: any, b: any) => {
+        return (((b.withdrawableMoney - b.withdrawnMoney) - (a.withdrawableMoney - a.withdrawnMoney)) * 1000000) + (b.withdrawnMoney) - (a.withdrawnMoney)
+      })
   }
 
   const { data: workLogsData, loading: workLogsLoading } = useQuery(GET_WORKLOG, {
@@ -248,7 +253,7 @@ const WorkLogPage = () => {
                 }
               }}
               >
-                <img className="object-cover rounded-full" src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
+                <img className="object-cover rounded-full" style={{ height: '3rem', width: '3rem' }} src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
               </div>
             </Tooltip>
             <div className="ml-6">{emp && emp.name}</div>
@@ -356,7 +361,7 @@ const WorkLogPage = () => {
           <div className="w-1/6">
             การจ่ายเงิน
           </div>
-          <div className="w-5/6">
+          <div className="w-4/6">
             <Tabs
               value={selectedTab}
               indicatorColor="primary"
@@ -372,6 +377,11 @@ const WorkLogPage = () => {
                 setSelectedTab('all')
               }} />
             </Tabs>
+          </div>
+          <div className="w-1/6 text-right pr-6 font-bold">
+            ยอดเงินคงค้าง : ฿ {remaining.toFixed(2)
+              .toString()
+              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           </div>
         </div>
         <div className="flex items-center justify-between text-lg pt-6 pb-6">
@@ -466,6 +476,7 @@ const WorkLogPage = () => {
         setShowSuccessMessage={setShowSuccessMessage}
         selectedEmployee={selectedEmployee}
         getEmployee={getEmployee}
+        getPaymentHistory={getPaymentHistory}
       />
     </Layout.Content >
   );
@@ -548,6 +559,7 @@ const PayModal = (props: any) => {
                           id: props.selectedEmployee.id
                         }
                       })
+                      await props.getPaymentHistory({ variables: { employeeId: props.selectedEmployee.id } })
                     } else {
                       alert('ไม่สามารถดำเนินการได้')
                     }
@@ -682,7 +694,7 @@ const ViewPaymentModal = (props: any) => {
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center">
                 <div className={`w-12 h-12 ml-4`}>
-                  <img className="object-cover rounded-full" src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
+                  <img className="object-cover rounded-full" style={{ height: '3rem', width: '3rem' }} src={emp && emp.profilePictureUrl ? emp.profilePictureUrl : default_profile} />
                 </div>
                 <div className="ml-4">
                   {emp && emp.name} ({emp && emp.fullName}) {emp && emp.tel}
