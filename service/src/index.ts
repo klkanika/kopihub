@@ -63,7 +63,7 @@ const AddTask = async (orders) => {
       if (!o.tables) {
         return {
           serverId: `${o.cart.server_id}`,
-          name: `รับที่ร้าน ${o.cart.name}`,
+          name: `สั่งกลับบ้าน ${o.cart.name}`,
           total: o.items
             .filter((i) => i.category_name === "ติ่มซำ")
             .reduce((acc, i) => i.quantity + acc, 0),
