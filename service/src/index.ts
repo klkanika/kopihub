@@ -12,7 +12,11 @@ app.post("/sync-order", async (req, res) => {
   try {
     if (token && cookie) {
       const orders = await getOrders(token, cookie);
-      await AddTask(orders);
+      const tasks = await getTask();
+
+      await AddTask(tasks, orders);
+      await CancelTask(tasks, orders);
+
       console.log("fetched");
     }
   } catch (ex) {
@@ -41,22 +45,10 @@ const getAuth = async () => {
   return rows[0];
 };
 
-const AddTask = async (orders) => {
+const AddTask = async (tasks, orders) => {
   if (orders === []) return;
 
-  const taskRes = await (
-    await fetch(API, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        query: TASK_QUERY,
-      }),
-    })
-  ).json();
-  const tasks = taskRes.data.tasks.map((t) => `${t.serverId}`);
+  const serverIds = tasks.map((t) => `${t.serverId}`);
 
   orders
     .map((o) => {
@@ -79,7 +71,7 @@ const AddTask = async (orders) => {
       };
     })
     .filter((o) => o.total > 0)
-    .filter((o) => !tasks.includes(o.serverId))
+    .filter((o) => !serverIds.includes(o.serverId))
     .forEach(async (order) => {
       const { serverId, total, name } = order;
       console.log("before created: ", serverId, total, name);
@@ -107,10 +99,61 @@ const AddTask = async (orders) => {
     });
 };
 
+const getTask = async () => {
+  let today = new Date();
+  today.setHours(0, 0, 0, 0);
+  console.log(`get tasks from ${today} to ${new Date()}`);
+  const taskRes = await (
+    await fetch(API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        query: TASK_QUERY,
+        variables: { today },
+      }),
+    })
+  ).json();
+  const tasks = taskRes.data.tasks;
+  return tasks;
+};
+
+const CancelTask = async (tasks, orders) => {
+  const serverIds = orders.map((o) => `${o.cart.server_id}`);
+  tasks
+    .filter((t) => !serverIds.includes(t.serverId))
+    .filter((t) => t.status === "PENDING")
+    .forEach(async (t) => {
+      console.log("to be cancel", t.id, t.serverId);
+      const res = await (
+        await fetch(API, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            query: TASK_CANCEL,
+            variables: {
+              taskId: t.id,
+            },
+          }),
+        })
+      ).json();
+      console.log("cancelled", JSON.stringify(res));
+    });
+};
+
 const TASK_QUERY = `
+query tasks($today: DateTime!)
 {
-  tasks(where: {NOT : [{status:CANCELED}, {status:COMPLETED}]}){
+  tasks (where:{createdAt:{gte: $today}}){
+    id
+    name
     serverId
+    status
   }
 }
 `;
@@ -145,4 +188,14 @@ mutation
       serverId
     }
   }
+`;
+
+const TASK_CANCEL = `
+mutation updateTaskCancel($taskId: String!){
+  updateTaskCancel(taskId: $taskId){
+    id
+    serverId
+    name
+  }
+}
 `;
