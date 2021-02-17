@@ -16,7 +16,7 @@ let booked = params.get("booked");
 
 const CustomerQueue = () => {
 
-    const [userId, setUserId]: any = useState();
+    const [userId, setUserId]: any = useState('');
     const [pictureUrl, setPictureUrl]: any = useState();
     const [displayName, setDisplayName]: any = useState();
 
@@ -87,6 +87,12 @@ const CustomerQueue = () => {
             .bg-transparent{
                 background-color: rgb(255,255,255,0.8)
             }
+            .gap-left {
+                width: 100%;
+            }
+            .gap-right {
+                width: 100%;
+            }
 
             @media (min-width:768px) {
                 .recent-queue-profile-img {
@@ -98,6 +104,14 @@ const CustomerQueue = () => {
                 }
                 .common-queue-no-font-size {
                     font-size: 10em;
+                }
+                .gap-left {
+                    width: 49%;
+                    margin-right : 1%;
+                }
+                .gap-right {
+                    width: 49%;
+                    margin-left : 1%;
                 }
             }
             `}
@@ -205,33 +219,26 @@ const CustomerQueue = () => {
                             {
                                 activeQueues && activeQueues.map((item: any, index: any) => {
                                     return (
-                                        <div key={index} className={`mb-4 ${userId && userId === item.userId ? 'my-queue' : 'bg-transparent'}`} style={index % 2 === 0 ? { borderRadius: '0.5rem', width: '48%', marginRight: '2%' } : { borderRadius: '0.5rem', width: '48%', marginLeft: '2%' }}>
+                                        <div key={index} className={`mb-4 ${userId && userId === item.userId ? 'my-queue' : 'bg-transparent'} ${index % 2 === 0 ? 'gap-left' : 'gap-right'}`} style={{ borderRadius: '0.5rem' }}>
                                             <div className="w-full" style={{ borderBottom: '1px solid rgb(23,23,23,0.1)' }}>
                                                 <div className="flex items-center justify-between w-full p-4">
                                                     <div className="flex items-center">
                                                         <img className="object-cover rounded-full" style={{ height: '4em', width: '4em' }} src={`${item.pictureUrl ? item.pictureUrl : kopihub}`} />
-                                                        <div className="md:ml-4 ml-2">
-                                                            <b className="md:text-base text-xs whitespace-no-wrap" style={{ color: '#683830' }}>คุณ{item && item.name ? item.name : 'ลูกค้า'}</b><br />
+                                                        <div className="md:ml-8 ml-6">
+                                                            <b className="md:text-base text-xs" style={{ color: '#683830' }}>คุณ{item && item.name ? item.name : 'ลูกค้า'}</b><br />
                                                             <p className="md:text-sm text-xs mb-0 whitespace-no-wrap" style={{ color: '#585568' }}>จำนวน {item && item.seat} ท่าน</p>
-                                                            <div className="pr-4 block md:hidden text-center mt-1">
-                                                                {userId && userId === item.userId ?
-                                                                    item.ordered ?
-                                                                        <div className="p-1 text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
-                                                                        <div className="p-1 text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
-                                                                    : ''
-                                                                }
+                                                        </div>
+                                                    </div>
+                                                    {userId && userId === item.userId ?
+                                                        <div className="flex items-center">
+                                                            <div>
+                                                                {item.ordered ?
+                                                                    <div className="p-1 text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
+                                                                    <div className="p-1 text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>}
                                                             </div>
+                                                            {/* <img onClick={() => { setCancelQueueId(item && item.id); setCancelQueueNo(item && item.queueNo); setCancelQueueOrderFoodStatus(item && item.ordered); setCancelQueueVisible(true) }} className="object-cover w-4 h-4" src={queue_bin} /> */}
                                                         </div>
-                                                    </div>
-                                                    <div className="md:flex items-center hidden">
-                                                        <div className="pr-4">
-                                                            {item.ordered ?
-                                                                <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
-                                                                <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
-                                                            }
-                                                        </div>
-                                                        <img onClick={() => { setCancelQueueId(item && item.id); setCancelQueueNo(item && item.queueNo); setCancelQueueOrderFoodStatus(item && item.ordered); setCancelQueueVisible(true) }} className="object-cover" style={{ width: '2em' }} src={queue_bin} />
-                                                    </div>
+                                                        : ''}
                                                 </div>
                                             </div>
                                             <div className="flex pt-4 pb-4">

@@ -548,11 +548,9 @@ schema.mutationType({
           if (updateFetchQueue && updateFetchQueue.userId) {
             await sendMessageToClient(updateFetchQueue.userId, {
               type: "text",
-              text: `🎉 ขอบคุณสำหรับการรอ ถึงเวลาแห่งความสุขของคุณ ${
-                updateFetchQueue.name ? updateFetchQueue.name : "ลูกค้า"
-              } แล้วฮับ สำหรับคิว ${updateFetchQueue.queueNo} ได้ ${
-                updateFetchQueue.table?.ochaTableName
-              } กรุณาแจ้งพนักงานได้เลยฮับ`,
+              text: `🎉 ขอบคุณสำหรับการรอ ถึงเวลาแห่งความสุขของคุณ ${updateFetchQueue.name ? updateFetchQueue.name : "ลูกค้า"
+                } แล้วฮับ สำหรับคิว ${updateFetchQueue.queueNo} ได้ ${updateFetchQueue.table?.ochaTableName
+                } กรุณาแจ้งพนักงานได้เลยฮับ`,
             });
           }
 
@@ -560,6 +558,30 @@ schema.mutationType({
         } else {
           return false;
         }
+      },
+    });
+
+    t.field("editTableByQueue", {
+      type: "Boolean",
+      args: {
+        queueId: intArg({ required: true }),
+        tableId: intArg({ required: true }),
+      },
+      resolve: async (_parent, { queueId, tableId }, ctx) => {
+        const edittable = await ctx.db.queue.update({
+          where: {
+            id: queueId,
+          },
+          data: {
+            table: {
+              connect: {
+                id: tableId
+              }
+            }
+          },
+        });
+
+        return edittable ? true : false;
       },
     });
 
@@ -715,11 +737,10 @@ schema.mutationType({
                   contents: [
                     {
                       type: "text",
-                      text: `${
-                        createBookQueue.name
-                          ? `คุณ${createBookQueue.name}`
-                          : "คุณลูกค้า"
-                      }`,
+                      text: `${createBookQueue.name
+                        ? `คุณ${createBookQueue.name}`
+                        : "คุณลูกค้า"
+                        }`,
                       weight: "bold",
                       size: "xxl",
                       margin: "md",
@@ -958,33 +979,33 @@ schema.mutationType({
 
           let universityConnectObject = universityId
             ? {
-                connect: { id: universityId },
-              }
+              connect: { id: universityId },
+            }
             : emp?.universityId
-            ? {
+              ? {
                 disconnect: true,
               }
-            : undefined;
+              : undefined;
 
           let facultyConnectObject = facultyId
             ? {
-                connect: { id: facultyId },
-              }
+              connect: { id: facultyId },
+            }
             : emp?.facultyId
-            ? {
+              ? {
                 disconnect: true,
               }
-            : undefined;
+              : undefined;
 
           let employeeWatcherConnectObject = employeeWatcherId
             ? {
-                connect: { id: employeeWatcherId },
-              }
+              connect: { id: employeeWatcherId },
+            }
             : emp?.employeeWatcherId
-            ? {
+              ? {
                 disconnect: true,
               }
-            : undefined;
+              : undefined;
 
           await ctx.db.employee.update({
             data: {
@@ -1002,14 +1023,14 @@ schema.mutationType({
                 args.bank === "BAY"
                   ? "BAY"
                   : args.bank === "SCB"
-                  ? "SCB"
-                  : args.bank === "KBANK"
-                  ? "KBANK"
-                  : args.bank === "KTB"
-                  ? "KTB"
-                  : args.bank === "BBL"
-                  ? "BBL"
-                  : null,
+                    ? "SCB"
+                    : args.bank === "KBANK"
+                      ? "KBANK"
+                      : args.bank === "KTB"
+                        ? "KTB"
+                        : args.bank === "BBL"
+                          ? "BBL"
+                          : null,
               bankAccount: args.bankAccount,
               profilePictureUrl: args.profilePictureUrl,
               idCardPictureUrl: args.idCardPictureUrl,
@@ -1022,20 +1043,20 @@ schema.mutationType({
         } else {
           let universityConnectObject = universityId
             ? {
-                connect: { id: universityId },
-              }
+              connect: { id: universityId },
+            }
             : undefined;
 
           let facultyConnectObject = facultyId
             ? {
-                connect: { id: facultyId },
-              }
+              connect: { id: facultyId },
+            }
             : undefined;
 
           let employeeWatcherConnectObject = employeeWatcherId
             ? {
-                connect: { id: employeeWatcherId },
-              }
+              connect: { id: employeeWatcherId },
+            }
             : undefined;
 
           await ctx.db.employee.create({
@@ -1054,14 +1075,14 @@ schema.mutationType({
                 args.bank === "BAY"
                   ? "BAY"
                   : args.bank === "SCB"
-                  ? "SCB"
-                  : args.bank === "KBANK"
-                  ? "KBANK"
-                  : args.bank === "KTB"
-                  ? "KTB"
-                  : args.bank === "BBL"
-                  ? "BBL"
-                  : null,
+                    ? "SCB"
+                    : args.bank === "KBANK"
+                      ? "KBANK"
+                      : args.bank === "KTB"
+                        ? "KTB"
+                        : args.bank === "BBL"
+                          ? "BBL"
+                          : null,
               bankAccount: args.bankAccount,
               profilePictureUrl: args.profilePictureUrl,
               idCardPictureUrl: args.idCardPictureUrl,
@@ -1233,7 +1254,7 @@ schema.mutationType({
           if (
             args.paid >
             selectedEmployee?.withdrawableMoney -
-              selectedEmployee?.withdrawnMoney
+            selectedEmployee?.withdrawnMoney
           ) {
             return false;
           }
@@ -1289,8 +1310,8 @@ schema.mutationType({
                   workLogStatus === "NOT_PAID"
                     ? "NOT_PAID"
                     : workLogStatus === "FULL_PAID"
-                    ? "FULL_PAID"
-                    : "PARTIAL_PAID",
+                      ? "FULL_PAID"
+                      : "PARTIAL_PAID",
               },
               where: {
                 id: workLog.id,

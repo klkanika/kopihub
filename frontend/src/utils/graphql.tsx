@@ -342,9 +342,11 @@ query getSuccessQueues($startDate: DateTime, $endDate: DateTime){
     table {
       ochaTableName
       tableName
+      id
     },
     updateAt,
-    orderedAt
+    orderedAt,
+    id
   }
 }
 `
@@ -397,6 +399,12 @@ mutation orderFood($id : Int!){
 export const BOOK_QUEUE = gql`
 mutation bookQueue($userId: String, $seat: Int!, $name: String, $pictureUrl: String){
   bookQueue(userId: $userId, seat: $seat, name: $name, pictureUrl: $pictureUrl)
+}
+`
+
+export const EDIT_TABLE_BY_QUEUE = gql`
+mutation editTableByQueue($queueId: Int!, $tableId: Int!){
+  editTableByQueue(queueId: $queueId, tableId: $tableId)
 }
 `
 
