@@ -160,7 +160,7 @@ schema.queryType({
     });
 
     t.field("getMyQueue", {
-      type: "Boolean",
+      type: "getQueuesArgs",
       args: {
         userId: stringArg({ required: true })
       },
@@ -168,22 +168,29 @@ schema.queryType({
         const myQueue = await prisma.queue.findMany({
           where: {
             AND: {
-              OR: [
-                { status: 'ACTIVE' },
-                {
-                  AND: {
-                    status: 'SUCCESS',
-                    createdAt: {
-                      gte: moment().utcOffset(7).subtract(1, "hour").toDate()
-                    }
-                  }
+              //   OR: [
+              //     { status: 'ACTIVE' },
+              //     {
+              AND: {
+                // status: 'SUCCESS',
+                createdAt: {
+                  gte: moment().utcOffset(7).subtract(1, "hour").toDate()
                 }
-              ]
+              }
+              //     }
+              //   ]
             },
             userId: { equals: args.userId }
+          },
+          orderBy: {
+            createdAt: 'desc'
           }
         })
-        return myQueue && myQueue.length > 0 ? true : false
+
+        return {
+          recentQueue: myQueue && myQueue.length > 0 && myQueue[0].status === 'SUCCESS' ? myQueue[0] : null,
+          activeQueues: myQueue && myQueue.length > 0 && myQueue[0].status != 'SUCCESS' ? [myQueue[0]] : null
+        }
       },
     });
 

@@ -16,7 +16,7 @@ let booked = params.get("booked");
 
 const CustomerQueue = () => {
 
-    const [userId, setUserId]: any = useState('');
+    const [userId, setUserId]: any = useState('U6b0155d290a76f5ad491dbc419abd76f');
     const [pictureUrl, setPictureUrl]: any = useState();
     const [displayName, setDisplayName]: any = useState();
 
@@ -59,8 +59,10 @@ const CustomerQueue = () => {
         }
     });
 
-    const recentQueue = (queuesData && queuesData.getQueues && queuesData.getQueues.recentQueue)
-    const activeQueues = (queuesData && queuesData.getQueues && queuesData.getQueues.activeQueues)
+    // const recentQueue = (queuesData && queuesData.getQueues && queuesData.getQueues.recentQueue)
+    // const activeQueues = (queuesData && queuesData.getQueues && queuesData.getQueues.activeQueues)
+    const recentQueue = (myQueueData && myQueueData.getMyQueue && myQueueData.getMyQueue.recentQueue)
+    const activeQueues = (myQueueData && myQueueData.getMyQueue && myQueueData.getMyQueue.activeQueues)
 
     let countA = 0, countB = 0, countC = 0
     if (!userId) {
@@ -255,7 +257,7 @@ const CustomerQueue = () => {
                                                 userId && userId === item.userId ?
                                                     <div className="text-white text-center pt-2 pb-2" style={{ backgroundColor: '#683830' }} onClick={() => { setCancelQueueId(item.id); setCancelQueueNo(item.queueNo); setCancelQueueOrderFoodStatus(item.ordered); setCancelQueueVisible(true); }}>
                                                         ยกเลิกคิว
-                                                </div>
+                                            </div>
                                                     : ''
                                             }
                                         </div>

@@ -374,7 +374,32 @@ query getQueue($id: Int!){
 
 export const GET_MY_QUEUE = gql`
 query getMyQueue ($userId: String!){
-    getMyQueue (userId:$userId)
+    getMyQueue (userId:$userId){
+      recentQueue{
+        id
+        queueNo
+        status
+        ordered
+        userId
+        seat
+        name
+        pictureUrl
+        table {
+          tableName
+          ochaTableName
+        }
+      }
+      activeQueues{
+        id
+        queueNo
+        status
+        ordered
+        userId
+        seat
+        name
+        pictureUrl
+      }
+    }
 }
 `
 
