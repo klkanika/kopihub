@@ -601,6 +601,16 @@ schema.mutationType({
           },
         });
 
+        if (updateOrderFood) {
+          if (updateOrderFood.userId) {
+            await sendMessageToClient(updateOrderFood.userId, {
+              type: "text",
+              text: `🍴🍲 ถึงเวลาสั่งอาหารของคุณ ${updateOrderFood.name ? updateOrderFood.name : "ลูกค้า"
+            } แล้ว สำหรับคิว ${updateOrderFood.queueNo} กรุณาแจ้งพนักงานเพื่อสั่งอาหารได้เลยฮับ`,
+            });
+          }
+        }
+
         return updateOrderFood ? true : false;
       },
     });

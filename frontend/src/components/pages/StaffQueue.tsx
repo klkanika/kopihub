@@ -290,7 +290,7 @@ const StaffQueue = () => {
 
             <CustomModal
                 buttonColor="#683830"
-                buttonText="สั่งอาหารแล้ว"
+                buttonText="เรียกสั่งอาหาร"
                 content={
                     <div>
                         <div className="pt-12 pb-12">
@@ -423,8 +423,8 @@ const StaffQueue = () => {
                                     <div className="text-right">
                                         <div className="flex items-center justify-end">
                                             {recentQueue.ordered ?
-                                                <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
-                                                <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
+                                                <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งอาหารแล้ว</div> :
+                                                <div className="p-1 pl-2 pr-2 md:text-base text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>เรียกสั่งอาหาร</div>
                                             }
                                             <p className="mb-0 md:text-xl text-xs md:ml-4 ml-2 whitespace-no-wrap" style={{ color: '#585568' }}>หมายเลขคิว</p>
                                         </div>
@@ -456,8 +456,8 @@ const StaffQueue = () => {
                                                         <div className="md:hidden text-center mt-1 flex items-center w-full">
                                                             <div>
                                                                 {item.ordered ?
-                                                                    <div className="p-1 text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
-                                                                    <div className="p-1 text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
+                                                                    <div className="p-1 text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งอาหารแล้ว</div> :
+                                                                    <div className="p-1 text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>เรียกสั่งอาหาร</div>
                                                                 }
                                                             </div>
                                                             <img onClick={(e) => { e.stopPropagation(); setCancelQueueId(item && item.id); setCancelQueueNo(item && item.queueNo); setCancelQueueOrderFoodStatus(item && item.ordered); setCancelQueueVisible(true) }} className="w-4 h-4 ml-4" src={queue_bin} />
@@ -467,8 +467,8 @@ const StaffQueue = () => {
                                                 <div className="md:flex items-center hidden">
                                                     <div className="pr-4">
                                                         {item.ordered ?
-                                                            <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งแล้ว</div> :
-                                                            <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>ยังไม่สั่ง</div>
+                                                            <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#088C0D', border: '1px solid #088C0D', borderRadius: '0.5rem' }}>สั่งอาหารแล้ว</div> :
+                                                            <div className="p-1 md:text-xs whitespace-no-wrap" style={{ color: '#FD0F0F', border: '1px solid #FD0F0F', borderRadius: '0.5rem' }}>เรียกสั่งอาหาร</div>
                                                         }
                                                     </div>
                                                     <img onClick={(e) => { e.stopPropagation(); setCancelQueueId(item && item.id); setCancelQueueNo(item && item.queueNo); setCancelQueueOrderFoodStatus(item && item.ordered); setCancelQueueVisible(true) }} className="object-cover" style={{ width: '1.5em' }} src={queue_bin} />
